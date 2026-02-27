@@ -1,6 +1,10 @@
-import os
 from pathlib import Path
+import os
 import dj_database_url
+
+# ==============================
+# BASE
+# ==============================
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -36,7 +40,7 @@ INSTALLED_APPS = [
 ]
 
 # ==============================
-# MIDDLEWARE (CORRIGIDO)
+# MIDDLEWARE
 # ==============================
 
 MIDDLEWARE = [
@@ -52,6 +56,7 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = "biblioteca.urls"
+WSGI_APPLICATION = "biblioteca.wsgi.application"
 
 # ==============================
 # TEMPLATES
@@ -73,8 +78,6 @@ TEMPLATES = [
         },
     },
 ]
-
-WSGI_APPLICATION = "biblioteca.wsgi.application"
 
 # ==============================
 # BANCO DE DADOS
@@ -120,8 +123,12 @@ USE_TZ = True
 # ==============================
 
 STATIC_URL = "/static/"
-STATICFILES_DIRS = [BASE_DIR / "static"]
 STATIC_ROOT = BASE_DIR / "staticfiles"
+
+STATICFILES_DIRS = []
+static_dir = BASE_DIR / "static"
+if static_dir.exists():
+    STATICFILES_DIRS.append(static_dir)
 
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
@@ -131,7 +138,6 @@ STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
 MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
-
 TEMP_MEDIA_ROOT = MEDIA_ROOT / "temp_pages"
 
 # ==============================
@@ -160,7 +166,10 @@ CSRF_TRUSTED_ORIGINS = [
     "http://localhost:8000",
 ]
 
-# Se estiver em produção (Render)
+# ==============================
+# PRODUÇÃO (Render)
+# ==============================
+
 if not DEBUG:
     render_url = os.environ.get("RENDER_EXTERNAL_HOSTNAME")
 
