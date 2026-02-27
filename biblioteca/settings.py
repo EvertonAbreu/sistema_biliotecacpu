@@ -176,3 +176,17 @@ if not DEBUG:
     SECURE_CONTENT_TYPE_NOSNIFF = True
     SECURE_BROWSER_XSS_FILTER = True
     X_FRAME_OPTIONS = "SAMEORIGIN"
+
+
+
+if os.environ.get("DJANGO_SUPERUSER_PASSWORD"):
+    from django.contrib.auth import get_user_model
+    User = get_user_model()
+
+    username = os.environ.get("DJANGO_SUPERUSER_USERNAME")
+    password = os.environ.get("DJANGO_SUPERUSER_PASSWORD")
+    email = os.environ.get("DJANGO_SUPERUSER_EMAIL")
+
+    if username and password:
+        if not User.objects.filter(username=username).exists():
+            User.objects.create_superuser(username, email, password)

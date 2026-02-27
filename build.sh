@@ -1,12 +1,13 @@
 #!/usr/bin/env bash
-# Exit on error
 set -o errexit
 
-# Instalar dependências
 pip install -r requirements.txt
 
-# Coletar arquivos estáticos
 python manage.py collectstatic --no-input
-
-# Aplicar migrações
 python manage.py migrate
+
+# Cria superusuário automaticamente
+python manage.py createsuperuser \
+    --noinput \
+    --username $DJANGO_SUPERUSER_USERNAME \
+    --email $DJANGO_SUPERUSER_EMAIL || true
