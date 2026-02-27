@@ -1,6 +1,6 @@
 asgiref==3.11.0
 blinker==1.6.3
-boltons @ file:///home/conda/feedstock_root/build_artifacts/boltons_1677499911949/work
+boltons==25.0.0
 Brotli @ file:///Users/runner/miniforge3/conda-bld/brotli-split_1695989838345/work
 certifi==2026.1.4
 cffi @ file:///Users/runner/miniforge3/conda-bld/cffi_1696001744638/work
