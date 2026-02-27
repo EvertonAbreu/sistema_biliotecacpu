@@ -1,0 +1,539 @@
+<!doctype html>
+/Users/evertonabreu//bibliteca_publica/templates/usuario/perfil.html
+<html lang="pt-br">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Meu Perfil - Biblioteca</title>
+
+    <!-- Bootstrap 5 -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <!-- Bootstrap Icons -->
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css"
+    />
+
+    <style>
+      body {
+        background-color: #f8f9fa;
+      }
+      .sidebar {
+        background: linear-gradient(180deg, #2c3e50 0%, #1a252f 100%);
+        color: white;
+        min-height: 100vh;
+      }
+      .sidebar .nav-link {
+        color: #ecf0f1;
+        padding: 12px 20px;
+        margin: 2px 0;
+        border-radius: 5px;
+      }
+      .sidebar .nav-link:hover {
+        background: rgba(255, 255, 255, 0.1);
+        color: white;
+      }
+      .sidebar .nav-link.active {
+        background: #3498db;
+        color: white;
+      }
+      .card-stat {
+        border-radius: 10px;
+        border: none;
+        transition: transform 0.3s;
+      }
+      .card-stat:hover {
+        transform: translateY(-5px);
+      }
+      .user-avatar {
+        width: 80px;
+        height: 80px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2rem;
+        color: white;
+        margin: 0 auto;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container-fluid">
+      <div class="row">
+        <!-- Sidebar do Usuário -->
+        <nav class="col-md-3 col-lg-2 d-md-block sidebar collapse">
+          <div class="position-sticky pt-3">
+            <div class="sidebar-header p-4 border-bottom text-center">
+              <div class="user-avatar mb-3">
+                <i class="bi bi-person-circle"></i>
+              </div>
+              <h5 class="mb-0">
+                {{ user.get_full_name|default:user.username }}
+              </h5>
+              <small class="text-muted d-block mt-2">{{ user.email }}</small>
+              {% if perfil %}
+              <span class="badge bg-secondary mt-2"
+                >{{ perfil.get_categoria_display }}</span
+              >
+              {% endif %}
+            </div>
+
+            <ul class="nav flex-column">
+              <li class="nav-item">
+                <a class="nav-link active" href="/perfil/">
+                  <i class="bi bi-speedometer2"></i> Meu Dashboard
+                </a>
+              </li>
+
+              <li class="nav-item mt-3">
+                <small class="text-uppercase text-muted">Livros</small>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="/acervo/">
+                  <i class="bi bi-book"></i> Acervo da Biblioteca
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="#meus-emprestimos">
+                  <i class="bi bi-clock-history"></i> Meus Empréstimos
+                </a>
+              </li>
+
+              <li class="nav-item mt-3">
+                <small class="text-uppercase text-muted">Minha Conta</small>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="#meus-dados">
+                  <i class="bi bi-person"></i> Meus Dados
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="#historico">
+                  <i class="bi bi-clock-history"></i> Histórico
+                </a>
+              </li>
+
+              <li class="nav-item mt-3">
+                <small class="text-uppercase text-muted">Sistema</small>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="/informacoes/">
+                  <i class="bi bi-info-circle"></i> Informações
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="/logout/">
+                  <i class="bi bi-box-arrow-right"></i> Sair
+                </a>
+              </li>
+            </ul>
+          </div>
+        </nav>
+
+        <!-- Conteúdo Principal -->
+        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+          <!-- Header -->
+          <div
+            class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom"
+          >
+            <h1 class="h2"><i class="bi bi-speedometer2"></i> Meu Dashboard</h1>
+            <div class="btn-toolbar mb-2 mb-md-0">
+              <span class="badge bg-primary">
+                <i class="bi bi-calendar3"></i> {% now "d/m/Y" %}
+              </span>
+            </div>
+          </div>
+
+          <!-- Mensagens -->
+          {% if messages %}
+          <div class="row mb-4">
+            <div class="col-12">
+              {% for message in messages %}
+              <div
+                class="alert alert-{{ message.tags }} alert-dismissible fade show"
+                role="alert"
+              >
+                <i class="bi bi-check-circle me-2"></i> {{ message }}
+                <button
+                  type="button"
+                  class="btn-close"
+                  data-bs-dismiss="alert"
+                ></button>
+              </div>
+              {% endfor %}
+            </div>
+          </div>
+          {% endif %}
+
+          <!-- Estatísticas do Usuário -->
+          <div class="row mb-4">
+            <div class="col-md-3">
+              <div class="card card-stat border-left-primary h-100 py-2">
+                <div class="card-body">
+                  <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                      <div
+                        class="text-xs font-weight-bold text-primary text-uppercase mb-1"
+                      >
+                        Empréstimos Ativos
+                      </div>
+                      <div class="h5 mb-0 font-weight-bold text-gray-800">
+                        {{ emprestimos_ativos.count }}
+                      </div>
+                    </div>
+                    <div class="col-auto">
+                      <i class="bi bi-clock-history text-primary fs-2"></i>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-md-3">
+              <div class="card card-stat border-left-success h-100 py-2">
+                <div class="card-body">
+                  <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                      <div
+                        class="text-xs font-weight-bold text-success text-uppercase mb-1"
+                      >
+                        Total de Empréstimos
+                      </div>
+                      <div class="h5 mb-0 font-weight-bold text-gray-800">
+                        {{ emprestimos_total }}
+                      </div>
+                    </div>
+                    <div class="col-auto">
+                      <i class="bi bi-book text-success fs-2"></i>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-md-3">
+              <div class="card card-stat border-left-warning h-100 py-2">
+                <div class="card-body">
+                  <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                      <div
+                        class="text-xs font-weight-bold text-warning text-uppercase mb-1"
+                      >
+                        Livros Lidos
+                      </div>
+                      <div class="h5 mb-0 font-weight-bold text-gray-800">
+                        {{ livros_lidos }}
+                      </div>
+                    </div>
+                    <div class="col-auto">
+                      <i class="bi bi-check-circle text-warning fs-2"></i>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-md-3">
+              <div class="card card-stat border-left-info h-100 py-2">
+                <div class="card-body">
+                  <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                      <div
+                        class="text-xs font-weight-bold text-info text-uppercase mb-1"
+                      >
+                        Visitas
+                      </div>
+                      <div class="h5 mb-0 font-weight-bold text-gray-800">
+                        {{ perfil.visitas|default:"0" }}
+                      </div>
+                    </div>
+                    <div class="col-auto">
+                      <i class="bi bi-door-open text-info fs-2"></i>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Seção: Meus Dados -->
+          <div class="row mb-4" id="meus-dados">
+            <div class="col-12">
+              <div class="card shadow">
+                <div class="card-header py-3">
+                  <h6 class="m-0 font-weight-bold text-primary">
+                    <i class="bi bi-person me-2"></i>Meus Dados
+                  </h6>
+                </div>
+                <div class="card-body">
+                  <div class="row">
+                    <div class="col-md-6">
+                      <table class="table">
+                        <tr>
+                          <th>Nome Completo:</th>
+                          <td>
+                            {{ user.get_full_name|default:"Não informado" }}
+                          </td>
+                        </tr>
+                        <tr>
+                          <th>Usuário:</th>
+                          <td>{{ user.username }}</td>
+                        </tr>
+                        <tr>
+                          <th>Email:</th>
+                          <td>{{ user.email }}</td>
+                        </tr>
+                        {% if perfil %}
+                        <tr>
+                          <th>Telefone:</th>
+                          <td>{{ perfil.telefone|default:"Não informado" }}</td>
+                        </tr>
+                        <tr>
+                          <th>WhatsApp:</th>
+                          <td>{{ perfil.whatsapp|default:"Não informado" }}</td>
+                        </tr>
+                        {% endif %}
+                      </table>
+                    </div>
+                    <div class="col-md-6">
+                      {% if perfil %}
+                      <table class="table">
+                        <tr>
+                          <th>Endereço:</th>
+                          <td>
+                            {{ perfil.rua|default:"" }} {{
+                            perfil.numero|default:"" }}<br />
+                            {{ perfil.bairro|default:"" }}<br />
+                            {{ perfil.cidade|default:"" }}
+                          </td>
+                        </tr>
+                        <tr>
+                          <th>Nome da Mãe:</th>
+                          <td>{{ perfil.nome_mae|default:"Não informado" }}</td>
+                        </tr>
+                        <tr>
+                          <th>Nome do Pai:</th>
+                          <td>{{ perfil.nome_pai|default:"Não informado" }}</td>
+                        </tr>
+                        <tr>
+                          <th>Categoria:</th>
+                          <td>
+                            <span class="badge bg-secondary"
+                              >{{ perfil.get_categoria_display }}</span
+                            >
+                          </td>
+                        </tr>
+                      </table>
+                      {% endif %}
+                    </div>
+                  </div>
+                  <div class="text-end">
+                    <button class="btn btn-primary" onclick="editarDados()">
+                      <i class="bi bi-pencil"></i> Editar Dados
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Seção: Meus Empréstimos Ativos -->
+          <!-- Seção: Meus Empréstimos Ativos -->
+          <div class="row mb-4" id="meus-emprestimos">
+            <div class="col-12">
+              <div class="card shadow">
+                <div
+                  class="card-header py-3 d-flex justify-content-between align-items-center"
+                >
+                  <h6 class="m-0 font-weight-bold text-primary">
+                    <i class="bi bi-clock-history me-2"></i>Meus Empréstimos
+                    Ativos
+                  </h6>
+                  <div>
+                    <a href="/acervo/" class="btn btn-primary btn-sm">
+                      <i class="bi bi-plus-circle me-1"></i> Novo Empréstimo
+                    </a>
+                  </div>
+                </div>
+                <div class="card-body">
+                  {% if emprestimos_ativos %}
+                  <div class="table-responsive">
+                    <table class="table table-hover">
+                      <thead>
+                        <tr>
+                          <th>Livro</th>
+                          <th>Data Empréstimo</th>
+                          <th>Devolução Prevista</th>
+                          <th>Dias Restantes</th>
+                          <th>Status</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {% for emprestimo in emprestimos_ativos %}
+                        <tr>
+                          <td>
+                            <strong>{{ emprestimo.livro.titulo }}</strong><br />
+                            <small class="text-muted"
+                              >{{ emprestimo.livro.autor }}</small
+                            >
+                          </td>
+                          <td>{{ emprestimo.data_emprestimo|date:"d/m/Y" }}</td>
+                          <td>
+                            {{ emprestimo.data_devolucao_prevista|date:"d/m/Y"
+                            }}
+                          </td>
+                          <td>
+                            {% if emprestimo.dias_restantes > 0 %}
+                            <span class="text-success">
+                              <i class="bi bi-calendar-check me-1"></i>
+                              {{ emprestimo.dias_restantes }} dias
+                            </span>
+                            {% elif emprestimo.dias_restantes == 0 %}
+                            <span class="text-warning">
+                              <i class="bi bi-exclamation-triangle me-1"></i>
+                              Hoje
+                            </span>
+                            {% else %}
+                            <span class="text-danger">
+                              <i class="bi bi-clock-history me-1"></i>
+                              {{
+                              emprestimo.dias_restantes|stringformat:"+d"|cut:"-"
+                              }} dias atrasado
+                            </span>
+                            {% endif %}
+                          </td>
+                          <td>
+                            {% if emprestimo.status == 'ativo' %} {% if
+                            emprestimo.dias_restantes > 3 %}
+                            <span class="badge bg-success">No Prazo</span>
+                            {% elif emprestimo.dias_restantes >= 0 %}
+                            <span class="badge bg-warning text-dark"
+                              >Vencendo</span
+                            >
+                            {% else %}
+                            <span class="badge bg-danger">Atrasado</span>
+                            {% endif %} {% else %}
+                            <span class="badge bg-secondary"
+                              >{{ emprestimo.get_status_display }}</span
+                            >
+                            {% endif %}
+                          </td>
+                        </tr>
+                        {% endfor %}
+                      </tbody>
+                    </table>
+                  </div>
+                  {% else %}
+                  <div class="text-center py-5">
+                    <i class="bi bi-book display-1 text-muted"></i>
+                    <h4 class="mt-3 text-muted">Nenhum empréstimo ativo</h4>
+                    <p class="text-muted">
+                      Você não tem livros emprestados no momento.
+                    </p>
+                    <a href="/acervo/" class="btn btn-primary">
+                      <i class="bi bi-plus-circle me-2"></i> Buscar Livros
+                    </a>
+                  </div>
+                  {% endif %}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Seção: Histórico -->
+          <div class="row" id="historico">
+            <div class="col-12">
+              <div class="card shadow">
+                <div class="card-header py-3">
+                  <h6 class="m-0 font-weight-bold text-primary">
+                    <i class="bi bi-clock me-2"></i>Histórico de Empréstimos
+                  </h6>
+                </div>
+                <div class="card-body">
+                  {% if emprestimos_historico %}
+                  <div class="table-responsive">
+                    <table class="table table-sm">
+                      <thead>
+                        <tr>
+                          <th>Livro</th>
+                          <th>Data Empréstimo</th>
+                          <th>Data Devolução</th>
+                          <th>Status</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {% for emprestimo in emprestimos_historico %}
+                        <tr>
+                          <td>{{ emprestimo.livro.titulo }}</td>
+                          <td>{{ emprestimo.data_emprestimo|date:"d/m/Y" }}</td>
+                          <td>
+                            {% if emprestimo.data_devolucao_real %} {{
+                            emprestimo.data_devolucao_real|date:"d/m/Y" }} {%
+                            else %} - {% endif %}
+                          </td>
+                          <td>
+                            <span
+                              class="badge bg-{% if emprestimo.status == 'devolvido' %}success{% elif emprestimo.status == 'ativo' %}primary{% elif emprestimo.status == 'atrasado' %}danger{% else %}secondary{% endif %}"
+                            >
+                              {{ emprestimo.get_status_display }}
+                            </span>
+                          </td>
+                        </tr>
+                        {% endfor %}
+                      </tbody>
+                    </table>
+                  </div>
+                  {% else %}
+                  <div class="text-center py-4">
+                    <i class="bi bi-journal text-muted display-6"></i>
+                    <p class="text-muted mt-2">Nenhum histórico disponível</p>
+                  </div>
+                  {% endif %}
+                </div>
+              </div>
+            </div>
+          </div>
+        </main>
+      </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+      // Ativar tooltips
+      document.addEventListener("DOMContentLoaded", function () {
+        var tooltips = [].slice.call(
+          document.querySelectorAll('[data-bs-toggle="tooltip"]'),
+        );
+        tooltips.map(function (tooltip) {
+          return new bootstrap.Tooltip(tooltip);
+        });
+      });
+
+      // Função para editar dados
+      function editarDados() {
+        alert("Funcionalidade de edição de dados em desenvolvimento!");
+      }
+
+      // Navegação suave para as seções
+      document.querySelectorAll('.nav-link[href^="#"]').forEach((anchor) => {
+        anchor.addEventListener("click", function (e) {
+          e.preventDefault();
+          const targetId = this.getAttribute("href");
+          if (targetId !== "#") {
+            const targetElement = document.querySelector(targetId);
+            if (targetElement) {
+              targetElement.scrollIntoView({ behavior: "smooth" });
+            }
+          }
+        });
+      });
+    </script>
+  </body>
+</html>

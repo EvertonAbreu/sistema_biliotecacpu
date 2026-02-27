@@ -1,0 +1,194 @@
+{% extends 'base/base_admin.html' %}
+{% load static %}
+
+{% block title %}Editar Evento - Admin{% endblock %}
+{% block icon %}calendar-check{% endblock %}
+{% block page_title %}Editar Evento: {{ evento.titulo }}{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card shadow">
+            <div class="card-header bg-warning text-white">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-edit me-2"></i>Editar Evento
+                </h5>
+            </div>
+            <div class="card-body">
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    
+                    {% if form.errors %}
+                    <div class="alert alert-danger">
+                        <strong>Erro!</strong> Por favor, corrija os erros abaixo.
+                    </div>
+                    {% endif %}
+                    
+                    <!-- Foto Atual -->
+                    {% if evento.foto %}
+                    <div class="mb-4 text-center">
+                        <label class="form-label d-block">
+                            <i class="fas fa-image me-2"></i>Foto Atual
+                        </label>
+                        <img src="{{ evento.foto.url }}" alt="{{ evento.titulo }}" 
+                             class="img-fluid rounded shadow" style="max-height: 300px;">
+                        <small class="text-muted d-block mt-2">Para alterar, selecione uma nova foto abaixo.</small>
+                    </div>
+                    {% endif %}
+                    
+                    <!-- Título -->
+                    <div class="mb-3">
+                        <label for="{{ form.titulo.id_for_label }}" class="form-label">
+                            <i class="fas fa-heading me-2"></i>Título do Evento *
+                        </label>
+                        {{ form.titulo }}
+                        {% if form.titulo.errors %}
+                        <div class="text-danger">{{ form.titulo.errors }}</div>
+                        {% endif %}
+                    </div>
+                    
+                    <!-- Descrição -->
+                    <div class="mb-3">
+                        <label for="{{ form.descricao.id_for_label }}" class="form-label">
+                            <i class="fas fa-align-left me-2"></i>Descrição *
+                        </label>
+                        {{ form.descricao }}
+                        <small class="text-muted">Descreva o evento com detalhes</small>
+                        {% if form.descricao.errors %}
+                        <div class="text-danger">{{ form.descricao.errors }}</div>
+                        {% endif %}
+                    </div>
+                    
+                    <!-- Data do Evento -->
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="{{ form.data_evento.id_for_label }}" class="form-label">
+                                <i class="fas fa-calendar-day me-2"></i>Data do Evento *
+                            </label>
+                            {{ form.data_evento }}
+                            {% if form.data_evento.errors %}
+                            <div class="text-danger">{{ form.data_evento.errors }}</div>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">
+                                <i class="fas fa-info-circle me-2"></i>Informações
+                            </label>
+                            <div class="alert alert-info">
+                                <small>
+                                    <i class="fas fa-calendar-alt me-1"></i>
+                                    Criado em: {{ evento.data_criacao|date:"d/m/Y H:i" }}
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Nova Foto -->
+                    <div class="mb-3">
+                        <label for="{{ form.foto.id_for_label }}" class="form-label">
+                            <i class="fas fa-camera me-2"></i>{% if evento.foto %}Alterar Foto{% else %}Foto do Evento{% endif %}
+                        </label>
+                        <div class="input-group">
+                            {{ form.foto }}
+                        </div>
+                        <small class="text-muted">Deixe em branco para manter a foto atual. Formatos: JPG, PNG, GIF</small>
+                        {% if form.foto.errors %}
+                        <div class="text-danger">{{ form.foto.errors }}</div>
+                        {% endif %}
+                    </div>
+                    
+                    <!-- Prévia da Nova Foto -->
+                    <div class="mb-4" id="preview-container" style="display: none;">
+                        <label class="form-label">
+                            <i class="fas fa-eye me-2"></i>Prévia da Nova Foto
+                        </label>
+                        <div class="border rounded p-3 text-center">
+                            <img id="image-preview" src="#" alt="Prévia" class="img-fluid rounded" style="max-height: 300px;">
+                        </div>
+                    </div>
+                    
+                    <!-- Status -->
+                    <div class="mb-4">
+                        <div class="form-check">
+                            {{ form.ativo }}
+                            <label class="form-check-label" for="{{ form.ativo.id_for_label }}">
+                                Evento Ativo (visível no site público)
+                            </label>
+                        </div>
+                        <small class="text-muted">Desmarque para ocultar o evento temporariamente</small>
+                    </div>
+                    
+                    <!-- Botões -->
+                    <div class="d-flex justify-content-between mt-4">
+                        <div>
+                            <a href="{% url 'lista_eventos_admin' %}" class="btn btn-secondary">
+                                <i class="fas fa-arrow-left me-2"></i>Voltar
+                            </a>
+                            <a href="{% url 'eventos' %}" target="_blank" class="btn btn-info">
+                                <i class="fas fa-eye me-2"></i>Ver no Site
+                            </a>
+                        </div>
+                        <div>
+                            <button type="submit" class="btn btn-warning">
+                                <i class="fas fa-save me-2"></i>Atualizar Evento
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Preview de nova imagem
+    const fotoInput = document.getElementById('{{ form.foto.id_for_label }}');
+    const previewContainer = document.getElementById('preview-container');
+    const imagePreview = document.getElementById('image-preview');
+    
+    if (fotoInput) {
+        fotoInput.addEventListener('change', function() {
+            if (this.files && this.files[0]) {
+                const reader = new FileReader();
+                
+                reader.onload = function(e) {
+                    imagePreview.src = e.target.result;
+                    previewContainer.style.display = 'block';
+                }
+                
+                reader.readAsDataURL(this.files[0]);
+            } else {
+                previewContainer.style.display = 'none';
+            }
+        });
+    }
+    
+    // Validação do formulário
+    const form = document.querySelector('form');
+    form.addEventListener('submit', function(e) {
+        const titulo = document.getElementById('{{ form.titulo.id_for_label }}').value;
+        const dataEvento = document.getElementById('{{ form.data_evento.id_for_label }}').value;
+        
+        if (!titulo.trim()) {
+            e.preventDefault();
+            alert('Por favor, insira um título para o evento.');
+            return false;
+        }
+        
+        if (!dataEvento) {
+            e.preventDefault();
+            alert('Por favor, selecione uma data para o evento.');
+            return false;
+        }
+        
+        // Mostrar loading
+        const submitBtn = form.querySelector('button[type="submit"]');
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Atualizando...';
+        submitBtn.disabled = true;
+    });
+});
+</script>
+{% endblock %}

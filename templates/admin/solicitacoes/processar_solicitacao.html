@@ -1,0 +1,107 @@
+{% extends 'base/base_admin.html' %}
+
+{% block title %}Processar Solicitação - Admin{% endblock %}
+{% block icon %}check-circle{% endblock %}
+{% block page_title %}Processar Solicitação #{{ solicitacao.id }}{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header bg-white">
+                    <h5 class="card-title mb-0">
+                        <i class="bi bi-info-circle me-2"></i>Detalhes da Solicitação
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <table class="table table-borderless">
+                        <tr>
+                            <th style="width: 150px;">Usuário:</th>
+                            <td>
+                                <strong>{{ solicitacao.usuario.get_full_name|default:solicitacao.usuario.username }}</strong><br>
+                                <small class="text-muted">{{ solicitacao.usuario.email }}</small>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>Livro:</th>
+                            <td>
+                                <strong>{{ solicitacao.livro.titulo }}</strong><br>
+                                <small class="text-muted">{{ solicitacao.livro.autor }}</small>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>Data Solicitação:</th>
+                            <td>{{ solicitacao.data_solicitacao|date:"d/m/Y H:i" }}</td>
+                        </tr>
+                        <tr>
+                            <th>Devolução Prevista:</th>
+                            <td>{{ solicitacao.data_devolucao_prevista|date:"d/m/Y" }}</td>
+                        </tr>
+                        <tr>
+                            <th>Disponibilidade:</th>
+                            <td>
+                                <span class="badge bg-success">{{ solicitacao.livro.quantidade_disponivel }} exemplar(es) disponível(eis)</span>
+                            </td>
+                        </tr>
+                        {% if solicitacao.observacoes %}
+                        <tr>
+                            <th>Observações:</th>
+                            <td>{{ solicitacao.observacoes }}</td>
+                        </tr>
+                        {% endif %}
+                    </table>
+                    
+                    <form method="post">
+                        {% csrf_token %}
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Observações do Admin</label>
+                            <textarea name="observacoes_admin" class="form-control" rows="3" 
+                                      placeholder="Motivo da aprovação/rejeição..."></textarea>
+                        </div>
+                        
+                        <div class="d-flex gap-2">
+                            <button type="submit" name="acao" value="aprovar" class="btn btn-success flex-fill"
+                                    {% if solicitacao.livro.quantidade_disponivel <= 0 %}disabled{% endif %}>
+                                <i class="bi bi-check-circle"></i> Aprovar e Criar Empréstimo
+                            </button>
+                            <button type="submit" name="acao" value="rejeitar" class="btn btn-danger flex-fill">
+                                <i class="bi bi-x-circle"></i> Rejeitar
+                            </button>
+                            <a href="{% url 'lista_solicitacoes' %}" class="btn btn-secondary">
+                                <i class="bi bi-arrow-left"></i> Voltar
+                            </a>
+                        </div>
+                        
+                        {% if solicitacao.livro.quantidade_disponivel <= 0 %}
+                        <div class="alert alert-warning mt-3">
+                            <i class="bi bi-exclamation-triangle"></i>
+                            Este livro não está disponível no momento!
+                        </div>
+                        {% endif %}
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <!-- Informações do usuário -->
+            <div class="card mb-4">
+                <div class="card-header bg-white">
+                    <h6 class="card-title mb-0">
+                        <i class="bi bi-person"></i> Sobre o Usuário
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <p class="mb-1"><strong>Telefone:</strong> {{ solicitacao.usuario.perfilusuario.telefone }}</p>
+                    <p class="mb-1"><strong>WhatsApp:</strong> {{ solicitacao.usuario.perfilusuario.whatsapp|default:"Não informado" }}</p>
+                    <p class="mb-1"><strong>Empréstimos ativos:</strong> 
+                        <span class="badge bg-warning">{{ solicitacao.usuario.emprestimo_set.all.count }}</span>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

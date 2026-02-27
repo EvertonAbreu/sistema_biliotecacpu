@@ -1,0 +1,310 @@
+{% extends 'base/base_usuario.html' %}
+{% load static %}
+
+{% block title %}Eventos da Biblioteca{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+<style>
+    :root {
+        --primary-color: #667eea;
+        --secondary-color: #764ba2;
+        --text-dark: #2d3436;
+        --text-light: #636e72;
+        --white: #ffffff;
+        --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        --shadow: 0 10px 20px rgba(0,0,0,0.1), 0 6px 6px rgba(0,0,0,0.1);
+    }
+
+    .eventos-page {
+        padding: 4rem 1rem;
+        background: #f8f9fa;
+        min-height: 100vh;
+    }
+
+    .section-header {
+        text-align: center;
+        margin-bottom: 4rem;
+    }
+
+    .section-header h1 {
+        font-size: clamp(2rem, 5vw, 3rem);
+        color: var(--text-dark);
+        font-weight: 800;
+        letter-spacing: -1px;
+    }
+
+    /* Carrossel Profissional */
+    .carrossel-viewport {
+        max-width: 1100px;
+        margin: 0 auto 5rem;
+        position: relative;
+        border-radius: 20px;
+        overflow: hidden;
+        box-shadow: var(--shadow);
+        background: #000;
+    }
+
+    .carrossel-track {
+        display: flex;
+        transition: transform 0.6s cubic-bezier(0.65, 0, 0.35, 1);
+        height: 500px;
+    }
+
+    .carrossel-item {
+        min-width: 100%;
+        height: 100%;
+        position: relative;
+    }
+
+    .carrossel-img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        opacity: 0.8;
+    }
+
+    .carrossel-info {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        padding: 4rem 2rem 2rem;
+        background: linear-gradient(transparent, rgba(0,0,0,0.9));
+        color: var(--white);
+    }
+
+    /* Controles */
+    .c-btn {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        background: rgba(255, 255, 255, 0.15);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255,255,255,0.2);
+        color: white;
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        cursor: pointer;
+        z-index: 10;
+        transition: var(--transition);
+    }
+
+    .c-btn:hover { background: var(--white); color: var(--secondary-color); }
+    .btn-prev { left: 20px; }
+    .btn-next { right: 20px; }
+
+    /* Grid de Cards */
+    .eventos-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+        gap: 2.5rem;
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+
+    .evento-card {
+        background: var(--white);
+        border-radius: 16px;
+        border: 1px solid #edf2f7;
+        overflow: hidden;
+        transition: var(--transition);
+    }
+
+    .evento-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1);
+    }
+
+    .card-banner {
+        height: 220px;
+        overflow: hidden;
+        position: relative;
+    }
+
+    .card-banner img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.5s ease;
+    }
+
+    .evento-card:hover .card-banner img { transform: scale(1.1); }
+
+    .card-body { padding: 1.5rem; }
+
+    .event-date {
+        font-size: 0.85rem;
+        font-weight: 700;
+        color: var(--primary-color);
+        text-transform: uppercase;
+        margin-bottom: 0.5rem;
+        display: block;
+    }
+
+    .event-title {
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: var(--text-dark);
+        margin-bottom: 0.75rem;
+    }
+
+    .event-desc {
+        color: var(--text-light);
+        font-size: 0.95rem;
+        line-height: 1.6;
+        margin-bottom: 1.5rem;
+    }
+
+    .btn-link {
+        color: var(--secondary-color);
+        text-decoration: none;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    @media (max-width: 768px) {
+        .carrossel-track { height: 350px; }
+        .c-btn { width: 40px; height: 40px; }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<main class="eventos-page">
+    <header class="section-header">
+        <div class="container">
+            <h1>Explorar Eventos</h1>
+            <p class="text-muted">Participe das nossas atividades e oficinas culturais</p>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="carrossel-viewport" id="carrossel-root">
+            <div class="carrossel-track" id="track">
+                {% if eventos %}
+                    {% for evento in eventos %}
+                    <div class="carrossel-item">
+                        {% if evento.foto %}
+                        <img src="{{ evento.foto.url }}" class="carrossel-img" alt="{{ evento.titulo }}">
+                        {% else %}
+                        <div class="carrossel-img d-flex align-items-center justify-content-center bg-dark">
+                            <i class="fas fa-calendar-check fa-4x text-white-50"></i>
+                        </div>
+                        {% endif %}
+                        <div class="carrossel-info">
+                            <span class="badge bg-primary mb-2">{{ evento.data_evento|date:"d M Y" }}</span>
+                            <h2>{{ evento.titulo }}</h2>
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="carrossel-item">
+                        <div class="carrossel-img bg-secondary d-flex align-items-center justify-content-center">
+                             <i class="fas fa-book-reader fa-4x text-white-50"></i>
+                        </div>
+                        <div class="carrossel-info">
+                            <h2>Bem-vindo à nossa Biblioteca</h2>
+                            <p>Fique atento às nossas próximas atualizações.</p>
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+            
+            <button class="c-btn btn-prev" aria-label="Anterior"><i class="fas fa-chevron-left"></i></button>
+            <button class="c-btn btn-next" aria-label="Próximo"><i class="fas fa-chevron-right"></i></button>
+        </div>
+
+        {% if eventos %}
+        <div class="eventos-grid">
+            {% for evento in eventos %}
+            <article class="evento-card">
+                <div class="card-banner">
+                    {% if evento.foto %}
+                    <img src="{{ evento.foto.url }}" alt="{{ evento.titulo }}">
+                    {% else %}
+                    <div class="w-100 h-100 bg-light d-flex align-items-center justify-content-center">
+                        <i class="fas fa-image text-muted fa-3x"></i>
+                    </div>
+                    {% endif %}
+                </div>
+                <div class="card-body">
+                    <time class="event-date">{{ evento.data_evento|date:"d \d\e F" }}</time>
+                    <h3 class="event-title">{{ evento.titulo }}</h3>
+                    <p class="event-desc">{{ evento.descricao|truncatechars:110 }}</p>
+                    <a href="#" class="btn-link">
+                        Saber mais <i class="fas fa-arrow-right"></i>
+                    </a>
+                </div>
+            </article>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="text-center py-5 bg-white rounded-3 shadow-sm">
+            <i class="fas fa-calendar-times fa-4x text-muted mb-3"></i>
+            <h3>Nenhum evento no momento</h3>
+            <p class="text-muted">Volte em breve para conferir as novidades!</p>
+            <a href="{% url 'home' %}" class="btn btn-primary mt-3 px-4">Ir para Home</a>
+        </div>
+        {% endif %}
+    </div>
+</main>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    const LibraryCarousel = {
+        track: document.getElementById('track'),
+        slides: Array.from(document.getElementById('track').children),
+        nextBtn: document.querySelector('.btn-next'),
+        prevBtn: document.querySelector('.btn-prev'),
+        currentIndex: 0,
+
+        init() {
+            if (this.slides.length <= 1) {
+                this.nextBtn.style.display = 'none';
+                this.prevBtn.style.display = 'none';
+                return;
+            }
+
+            this.nextBtn.addEventListener('click', () => this.move('next'));
+            this.prevBtn.addEventListener('click', () => this.move('prev'));
+            
+            // Auto-play seguro
+            this.startAutoPlay();
+            
+            // Pausar ao interagir
+            document.getElementById('carrossel-root').addEventListener('mouseenter', () => clearInterval(this.interval));
+            document.getElementById('carrossel-root').addEventListener('mouseleave', () => this.startAutoPlay());
+
+            // Suporte Teclado
+            document.addEventListener('keydown', (e) => {
+                if(e.key === "ArrowRight") this.move('next');
+                if(e.key === "ArrowLeft") this.move('prev');
+            });
+        },
+
+        move(direction) {
+            if (direction === 'next') {
+                this.currentIndex = (this.currentIndex + 1) % this.slides.length;
+            } else {
+                this.currentIndex = (this.currentIndex - 1 + this.slides.length) % this.slides.length;
+            }
+            this.update();
+        },
+
+        update() {
+            this.track.style.transform = `translateX(-${this.currentIndex * 100}%)`;
+        },
+
+        startAutoPlay() {
+            this.interval = setInterval(() => this.move('next'), 5000);
+        }
+    };
+
+    document.addEventListener('DOMContentLoaded', () => LibraryCarousel.init());
+</script>
+{% endblock %}

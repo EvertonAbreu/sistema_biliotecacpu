@@ -1,0 +1,539 @@
+{% extends 'base/base_usuario.html' %}
+{% load static %}
+
+{% block title %}{{ livro.titulo }} - Leitor de Imagens{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Reset para tela cheia */
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    body {
+        overflow: hidden; /* Remove scroll da página */
+    }
+
+    .visualizador-fullscreen {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background: #1a1a1a;
+        display: flex;
+        flex-direction: column;
+        z-index: 9999;
+    }
+
+    /* Barra superior com informações */
+    .top-bar {
+        background: rgba(0, 0, 0, 0.8);
+        color: white;
+        padding: 0.75rem 2rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        backdrop-filter: blur(10px);
+        border-bottom: 1px solid rgba(255,255,255,0.1);
+        flex-shrink: 0;
+    }
+
+    .livro-info-top {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .livro-titulo-top {
+        font-size: 1.2rem;
+        font-weight: 500;
+        color: white;
+    }
+
+    .livro-autor-top {
+        color: #aaa;
+        font-size: 0.9rem;
+    }
+
+    .acoes-top {
+        display: flex;
+        gap: 1rem;
+        align-items: center;
+    }
+
+    .btn-top {
+        background: transparent;
+        color: white;
+        border: 1px solid rgba(255,255,255,0.2);
+        padding: 0.5rem 1rem;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: all 0.3s;
+        text-decoration: none;
+        font-size: 0.9rem;
+    }
+
+    .btn-top:hover {
+        background: rgba(255,255,255,0.1);
+        border-color: rgba(255,255,255,0.3);
+    }
+
+    /* Área principal do leitor */
+    .leitor-area {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        position: relative;
+        background: #1a1a1a;
+    }
+
+    /* Container da imagem */
+    .imagem-container {
+        flex: 1;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        overflow: auto;
+        padding: 1rem;
+        background: #1a1a1a;
+        position: relative;
+    }
+
+    .pagina-imagem {
+        max-width: 100%;
+        max-height: 100%;
+        object-fit: contain;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        border-radius: 5px;
+        user-select: none;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        pointer-events: none;
+    }
+
+    /* Overlay de proteção */
+    .protecao-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: transparent;
+        z-index: 10;
+        cursor: default;
+    }
+
+    /* Barra inferior de controles */
+    .bottom-bar {
+        background: rgba(0, 0, 0, 0.8);
+        color: white;
+        padding: 1rem 2rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        backdrop-filter: blur(10px);
+        border-top: 1px solid rgba(255,255,255,0.1);
+        flex-shrink: 0;
+    }
+
+    .controles-paginacao {
+        display: flex;
+        align-items: center;
+        gap: 1.5rem;
+        background: rgba(255,255,255,0.1);
+        padding: 0.5rem 1rem;
+        border-radius: 50px;
+    }
+
+    .btn-pagina {
+        background: transparent;
+        color: white;
+        border: none;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        cursor: pointer;
+        transition: all 0.3s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.2rem;
+    }
+
+    .btn-pagina:hover:not(:disabled) {
+        background: rgba(255,255,255,0.2);
+    }
+
+    .btn-pagina:disabled {
+        opacity: 0.3;
+        cursor: not-allowed;
+    }
+
+    .info-pagina {
+        font-size: 1rem;
+        min-width: 120px;
+        text-align: center;
+    }
+
+    .progresso-container {
+        flex: 1;
+        max-width: 300px;
+        margin: 0 2rem;
+    }
+
+    .progresso-bar {
+        width: 100%;
+        height: 4px;
+        background: rgba(255,255,255,0.2);
+        border-radius: 2px;
+        cursor: pointer;
+        position: relative;
+    }
+
+    .progresso-preenchido {
+        height: 100%;
+        background: #667eea;
+        border-radius: 2px;
+        transition: width 0.1s;
+    }
+
+    .zoom-controles {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        background: rgba(255,255,255,0.1);
+        padding: 0.3rem;
+        border-radius: 5px;
+    }
+
+    .btn-zoom {
+        background: transparent;
+        color: white;
+        border: none;
+        width: 32px;
+        height: 32px;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: all 0.3s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .btn-zoom:hover {
+        background: rgba(255,255,255,0.2);
+    }
+
+    .zoom-nivel {
+        min-width: 60px;
+        text-align: center;
+        font-size: 0.9rem;
+    }
+
+    /* Aviso de proteção */
+    .aviso-flutuante {
+        position: fixed;
+        bottom: 100px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: rgba(0, 0, 0, 0.9);
+        color: white;
+        padding: 0.5rem 1rem;
+        border-radius: 50px;
+        font-size: 0.9rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255,255,255,0.2);
+        z-index: 10000;
+        pointer-events: none;
+        opacity: 0.8;
+    }
+
+    .aviso-flutuante i {
+        color: #ffc107;
+    }
+
+    /* Responsividade */
+    @media (max-width: 768px) {
+        .top-bar {
+            padding: 0.5rem 1rem;
+        }
+
+        .livro-titulo-top {
+            font-size: 1rem;
+        }
+
+        .livro-autor-top {
+            display: none;
+        }
+
+        .bottom-bar {
+            padding: 0.5rem 1rem;
+            flex-wrap: wrap;
+        }
+
+        .progresso-container {
+            max-width: 150px;
+            margin: 0 1rem;
+        }
+
+        .zoom-controles {
+            display: none;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .info-pagina {
+            min-width: 80px;
+            font-size: 0.9rem;
+        }
+
+        .controles-paginacao {
+            gap: 0.5rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="visualizador-fullscreen">
+    <!-- Barra Superior -->
+    <div class="top-bar">
+        <div class="livro-info-top">
+            <i class="fas fa-book" style="color: #667eea;"></i>
+            <span class="livro-titulo-top">{{ livro.titulo }}</span>
+            <span class="livro-autor-top">por {{ livro.autor }}</span>
+        </div>
+        
+        <div class="acoes-top">
+            <a href="{% url 'acervo_pdf' %}" class="btn-top">
+                <i class="fas fa-arrow-left"></i> Sair
+            </a>
+        </div>
+    </div>
+
+    <!-- Área Principal -->
+    <div class="leitor-area">
+        <!-- Container da Imagem -->
+        <div class="imagem-container" id="imagemContainer">
+            <img src="{{ imagens.0.url }}" 
+                 alt="Página 1" 
+                 class="pagina-imagem" 
+                 id="paginaImagem"
+                 style="transform: scale(1);">
+            <div class="protecao-overlay" id="protecaoOverlay"></div>
+        </div>
+        
+        <!-- Barra Inferior -->
+        <div class="bottom-bar">
+            <div class="controles-paginacao">
+                <button class="btn-pagina" id="btnPrimeira" onclick="irParaPrimeira()" title="Primeira página">
+                    <i class="fas fa-angle-double-left"></i>
+                </button>
+                <button class="btn-pagina" id="btnAnterior" onclick="mudarPagina(-1)" title="Página anterior">
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+                
+                <span class="info-pagina" id="paginaInfo">
+                    <span id="paginaAtual">1</span> / {{ total_paginas }}
+                </span>
+                
+                <button class="btn-pagina" id="btnProxima" onclick="mudarPagina(1)" title="Próxima página">
+                    <i class="fas fa-chevron-right"></i>
+                </button>
+                <button class="btn-pagina" id="btnUltima" onclick="irParaUltima()" title="Última página">
+                    <i class="fas fa-angle-double-right"></i>
+                </button>
+            </div>
+
+            <div class="progresso-container" id="progressoContainer">
+                <div class="progresso-bar" onclick="irParaPaginaPorClique(event)">
+                    <div class="progresso-preenchido" id="progressoPreenchido" style="width: {{ progresso }}%"></div>
+                </div>
+            </div>
+
+            <div class="zoom-controles">
+                <button class="btn-zoom" onclick="zoomOut()" title="Reduzir zoom">
+                    <i class="fas fa-search-minus"></i>
+                </button>
+                <span class="zoom-nivel" id="zoomNivel">100%</span>
+                <button class="btn-zoom" onclick="zoomIn()" title="Aumentar zoom">
+                    <i class="fas fa-search-plus"></i>
+                </button>
+                <button class="btn-zoom" onclick="resetZoom()" title="Zoom original">
+                    <i class="fas fa-expand"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Aviso flutuante -->
+    <div class="aviso-flutuante">
+        <i class="fas fa-lock"></i>
+        <span>Conteúdo protegido - Não é possível copiar</span>
+    </div>
+</div>
+
+<script>
+    // Dados das páginas
+    const imagens = [
+        {% for img in imagens %}
+        "{{ img.url }}",
+        {% endfor %}
+    ];
+    
+    let paginaAtual = 0;
+    const totalPaginas = {{ total_paginas }};
+    let zoomLevel = 1;
+    const zoomStep = 0.1;
+    const zoomMin = 0.5;
+    const zoomMax = 3;
+    
+    const imagemEl = document.getElementById('paginaImagem');
+    const paginaAtualEl = document.getElementById('paginaAtual');
+    const btnAnterior = document.getElementById('btnAnterior');
+    const btnProxima = document.getElementById('btnProxima');
+    const btnPrimeira = document.getElementById('btnPrimeira');
+    const btnUltima = document.getElementById('btnUltima');
+    const progressoPreenchido = document.getElementById('progressoPreenchido');
+    const zoomNivelEl = document.getElementById('zoomNivel');
+    
+    function mudarPagina(direcao) {
+        const novaPagina = paginaAtual + direcao;
+        
+        if (novaPagina >= 0 && novaPagina < totalPaginas) {
+            paginaAtual = novaPagina;
+            atualizarPagina();
+        }
+    }
+    
+    function irParaPrimeira() {
+        if (paginaAtual !== 0) {
+            paginaAtual = 0;
+            atualizarPagina();
+        }
+    }
+    
+    function irParaUltima() {
+        if (paginaAtual !== totalPaginas - 1) {
+            paginaAtual = totalPaginas - 1;
+            atualizarPagina();
+        }
+    }
+    
+    function irParaPaginaPorClique(event) {
+        const progressoBar = document.getElementById('progressoContainer');
+        const rect = progressoBar.getBoundingClientRect();
+        const clickX = event.clientX - rect.left;
+        const percentage = clickX / rect.width;
+        const novaPagina = Math.floor(percentage * totalPaginas);
+        
+        if (novaPagina >= 0 && novaPagina < totalPaginas) {
+            paginaAtual = novaPagina;
+            atualizarPagina();
+        }
+    }
+    
+    function atualizarPagina() {
+        imagemEl.src = imagens[paginaAtual];
+        paginaAtualEl.textContent = paginaAtual + 1;
+        
+        // Atualizar botões
+        btnAnterior.disabled = paginaAtual === 0;
+        btnPrimeira.disabled = paginaAtual === 0;
+        btnProxima.disabled = paginaAtual === totalPaginas - 1;
+        btnUltima.disabled = paginaAtual === totalPaginas - 1;
+        
+        // Atualizar barra de progresso
+        const progresso = ((paginaAtual + 1) / totalPaginas) * 100;
+        progressoPreenchido.style.width = `${progresso}%`;
+    }
+    
+    // Funções de zoom
+    function zoomIn() {
+        if (zoomLevel < zoomMax) {
+            zoomLevel += zoomStep;
+            aplicarZoom();
+        }
+    }
+    
+    function zoomOut() {
+        if (zoomLevel > zoomMin) {
+            zoomLevel -= zoomStep;
+            aplicarZoom();
+        }
+    }
+    
+    function resetZoom() {
+        zoomLevel = 1;
+        aplicarZoom();
+    }
+    
+    function aplicarZoom() {
+        imagemEl.style.transform = `scale(${zoomLevel})`;
+        zoomNivelEl.textContent = `${Math.round(zoomLevel * 100)}%`;
+    }
+    
+    // Proteções anti-cópia
+    document.addEventListener('keydown', function(e) {
+        if (e.ctrlKey || e.metaKey) {
+            if (['c', 'v', 'x', 's', 'p', 'a'].includes(e.key)) {
+                e.preventDefault();
+                return false;
+            }
+        }
+        if (e.key === 'PrintScreen') {
+            e.preventDefault();
+            alert('Captura de tela não é permitida.');
+            return false;
+        }
+    });
+    
+    document.addEventListener('contextmenu', function(e) {
+        e.preventDefault();
+        return false;
+    });
+    
+    document.addEventListener('selectstart', function(e) {
+        e.preventDefault();
+        return false;
+    });
+    
+    window.addEventListener('beforeprint', function(e) {
+        e.preventDefault();
+        alert('A impressão não é permitida para este conteúdo.');
+        return false;
+    });
+    
+    document.querySelectorAll('img').forEach(img => {
+        img.addEventListener('dragstart', (e) => e.preventDefault());
+    });
+    
+    // Teclas de seta para navegação
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'ArrowLeft') {
+            e.preventDefault();
+            mudarPagina(-1);
+        } else if (e.key === 'ArrowRight') {
+            e.preventDefault();
+            mudarPagina(1);
+        } else if (e.key === 'Home') {
+            e.preventDefault();
+            irParaPrimeira();
+        } else if (e.key === 'End') {
+            e.preventDefault();
+            irParaUltima();
+        }
+    });
+    
+    // Inicialização
+    atualizarPagina();
+</script>
+{% endblock %}

@@ -1,0 +1,394 @@
+/* Efeitos especiais avançados */
+
+/* Texto que aparece letra por letra */
+.typewriter {
+    overflow: hidden;
+    border-right: .15em solid #d4af37;
+    white-space: nowrap;
+    margin: 0 auto;
+    animation: 
+        typing 3.5s steps(40, end),
+        blink-caret .75s step-end infinite;
+}
+
+@keyframes typing {
+    from { width: 0 }
+    to { width: 100% }
+}
+
+@keyframes blink-caret {
+    from, to { border-color: transparent }
+    50% { border-color: #d4af37; }
+}
+
+/* Efeito de papiro que se desenrola */
+.papyrus-scroll {
+    position: relative;
+    background: linear-gradient(to right, 
+        rgba(139, 69, 19, 0.1) 0%, 
+        rgba(139, 69, 19, 0.3) 10%, 
+        rgba(210, 180, 140, 0.5) 50%, 
+        rgba(139, 69, 19, 0.3) 90%, 
+        rgba(139, 69, 19, 0.1) 100%);
+    animation: unroll 2s ease-out;
+}
+
+@keyframes unroll {
+    0% {
+        height: 0;
+        opacity: 0;
+    }
+    100% {
+        height: auto;
+        opacity: 1;
+    }
+}
+
+/* Efeito de tinta secando */
+.ink-dry {
+    position: relative;
+    color: #321414;
+}
+
+.ink-dry::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(to right, 
+        transparent 0%, 
+        rgba(139, 69, 19, 0.1) 10%, 
+        transparent 20%,
+        rgba(139, 69, 19, 0.1) 30%,
+        transparent 100%);
+    animation: ink-drying 5s linear;
+    pointer-events: none;
+}
+
+@keyframes ink-drying {
+    0% { opacity: 1; }
+    100% { opacity: 0; }
+}
+
+/* Efeito de água corrente nas bordas */
+.water-edge {
+    position: relative;
+    overflow: hidden;
+}
+
+.water-edge::before {
+    content: '';
+    position: absolute;
+    top: -2px;
+    left: -100%;
+    width: 100%;
+    height: 2px;
+    background: linear-gradient(90deg, 
+        transparent, 
+        rgba(64, 164, 223, 0.8), 
+        transparent);
+    animation: water-flow 3s linear infinite;
+}
+
+@keyframes water-flow {
+    0% { left: -100%; }
+    100% { left: 100%; }
+}
+
+/* Efeito de luz solar através das árvores */
+.sunlight-filter {
+    position: relative;
+}
+
+.sunlight-filter::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: 
+        radial-gradient(
+            circle at 20% 80%,
+            rgba(212, 175, 55, 0.1) 0%,
+            transparent 50%
+        ),
+        radial-gradient(
+            circle at 80% 20%,
+            rgba(212, 175, 55, 0.05) 0%,
+            transparent 50%
+        );
+    pointer-events: none;
+    animation: sunlight-move 20s infinite alternate;
+}
+
+@keyframes sunlight-move {
+    0% { transform: translate(0, 0); }
+    100% { transform: translate(50px, 50px); }
+}
+
+/* Efeito de folhas caindo */
+.falling-leaves {
+    position: relative;
+    overflow: hidden;
+}
+
+.falling-leaves::after {
+    content: '🍃';
+    position: absolute;
+    top: -50px;
+    font-size: 20px;
+    animation: leaf-fall 10s linear infinite;
+    opacity: 0;
+}
+
+@keyframes leaf-fall {
+    0% {
+        transform: translate(0, 0) rotate(0deg);
+        opacity: 0;
+    }
+    10% {
+        opacity: 1;
+    }
+    90% {
+        opacity: 1;
+    }
+    100% {
+        transform: translate(100px, 100vh) rotate(360deg);
+        opacity: 0;
+    }
+}
+
+/* Efeito de reflexo na água */
+.water-reflection {
+    position: relative;
+}
+
+.water-reflection::after {
+    content: attr(data-text);
+    position: absolute;
+    bottom: -100%;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(to top, 
+        rgba(64, 164, 223, 0.3) 0%,
+        transparent 100%);
+    transform: scaleY(-1);
+    opacity: 0.3;
+    animation: water-ripple 3s infinite;
+}
+
+@keyframes water-ripple {
+    0%, 100% { 
+        transform: scaleY(-1) translateY(0);
+        opacity: 0.3;
+    }
+    50% { 
+        transform: scaleY(-1) translateY(-10px);
+        opacity: 0.5;
+    }
+}
+
+/* Efeito de brasa ardente */
+.ember-glow {
+    position: relative;
+}
+
+.ember-glow::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: radial-gradient(
+        circle at center,
+        rgba(255, 69, 0, 0.2) 0%,
+        transparent 70%
+    );
+    animation: ember-pulse 2s infinite alternate;
+}
+
+@keyframes ember-pulse {
+    0% { opacity: 0.2; }
+    100% { opacity: 0.5; }
+}
+
+/* Efeito de névoa matinal */
+.morning-mist {
+    position: relative;
+}
+
+.morning-mist::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(
+        to bottom,
+        transparent 0%,
+        rgba(255, 255, 255, 0.1) 20%,
+        transparent 100%
+    );
+    animation: mist-rise 10s infinite;
+}
+
+@keyframes mist-rise {
+    0% { transform: translateY(0); opacity: 0.1; }
+    50% { transform: translateY(-20px); opacity: 0.3; }
+    100% { transform: translateY(-40px); opacity: 0.1; }
+}
+
+/* Efeito de fogo dançante */
+.fire-dance {
+    position: relative;
+}
+
+.fire-dance::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    width: 100px;
+    height: 150px;
+    background: linear-gradient(
+        to top,
+        rgba(255, 69, 0, 0.8) 0%,
+        rgba(255, 140, 0, 0.6) 30%,
+        rgba(255, 215, 0, 0.4) 60%,
+        transparent 100%
+    );
+    border-radius: 50% 50% 20% 20%;
+    transform: translateX(-50%);
+    filter: blur(10px);
+    animation: fire-flicker 0.5s infinite alternate;
+}
+
+@keyframes fire-flicker {
+    0% { 
+        height: 140px; 
+        width: 90px;
+        opacity: 0.8;
+    }
+    100% { 
+        height: 160px; 
+        width: 110px;
+        opacity: 1;
+    }
+}
+
+/* Efeito de chuva */
+.rain-effect {
+    position: relative;
+    overflow: hidden;
+}
+
+.rain-effect::before {
+    content: '';
+    position: absolute;
+    top: -100%;
+    left: 0;
+    width: 2px;
+    height: 100px;
+    background: linear-gradient(
+        to bottom,
+        transparent,
+        rgba(64, 164, 223, 0.8),
+        transparent
+    );
+    animation: rain-fall 1s linear infinite;
+    opacity: 0;
+}
+
+@keyframes rain-fall {
+    0% {
+        top: -100%;
+        opacity: 0;
+    }
+    10% {
+        opacity: 1;
+    }
+    90% {
+        opacity: 1;
+    }
+    100% {
+        top: 100%;
+        opacity: 0;
+    }
+}
+
+/* Adicionar múltiplas gotas de chuva */
+.rain-effect::before {
+    animation-delay: calc(var(--i) * 0.1s);
+    left: calc(var(--i) * 2%);
+}
+
+/* Efeito de terremoto (para cenas dramáticas) */
+.earthquake {
+    animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both;
+}
+
+@keyframes shake {
+    10%, 90% { transform: translate3d(-1px, 0, 0); }
+    20%, 80% { transform: translate3d(2px, 0, 0); }
+    30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
+    40%, 60% { transform: translate3d(4px, 0, 0); }
+}
+
+/* Efeito de névoa espessa */
+.thick-fog {
+    position: relative;
+}
+
+.thick-fog::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: 
+        radial-gradient(
+            circle at 30% 30%,
+            rgba(255, 255, 255, 0.3) 0%,
+            transparent 50%
+        ),
+        radial-gradient(
+            circle at 70% 70%,
+            rgba(255, 255, 255, 0.2) 0%,
+            transparent 50%
+        );
+    animation: fog-swirl 20s infinite linear;
+    mix-blend-mode: overlay;
+}
+
+@keyframes fog-swirl {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Efeito de respiração (para textos importantes) */
+.breathing-text {
+    animation: breathing 3s ease-in-out infinite;
+}
+
+@keyframes breathing {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+}
+
+/* Efeito de pulso */
+.pulse-glow {
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% { box-shadow: 0 0 0 0 rgba(212, 175, 55, 0.7); }
+    70% { box-shadow: 0 0 0 20px rgba(212, 175, 55, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(212, 175, 55, 0); }
+}

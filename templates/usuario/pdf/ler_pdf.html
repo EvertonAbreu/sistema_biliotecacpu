@@ -1,0 +1,545 @@
+{% extends 'base/base_usuario.html' %}
+{% load static %}
+
+{% block title %}{{ livro.titulo }} - Leitor PDF{% endblock %}
+
+{% block extra_css %}
+<style>
+    .leitor-container {
+        padding: 2rem 0;
+        background: #f5f5f5;
+        min-height: 100vh;
+    }
+
+    .leitor-header {
+        background: white;
+        border-radius: 15px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+
+    .livro-info {
+        display: flex;
+        gap: 2rem;
+        align-items: flex-start;
+    }
+
+    .livro-capa-leitor {
+        width: 200px;
+        height: 280px;
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        flex-shrink: 0;
+    }
+
+    .livro-capa-leitor img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .livro-detalhes {
+        flex-grow: 1;
+    }
+
+    .livro-titulo-leitor {
+        color: #2c3e50;
+        font-size: 2rem;
+        font-weight: bold;
+        margin-bottom: 0.5rem;
+    }
+
+    .livro-autor-leitor {
+        color: #667eea;
+        font-size: 1.2rem;
+        margin-bottom: 1rem;
+    }
+
+    .livro-descricao-leitor {
+        color: #666;
+        line-height: 1.6;
+        margin-bottom: 1.5rem;
+    }
+
+    .livro-meta-leitor {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .meta-item-leitor {
+        background: #f8f9fa;
+        padding: 1rem;
+        border-radius: 8px;
+        text-align: center;
+    }
+
+    .meta-label {
+        font-size: 0.9rem;
+        color: #888;
+        margin-bottom: 0.3rem;
+    }
+
+    .meta-value {
+        font-size: 1.2rem;
+        font-weight: bold;
+        color: #667eea;
+    }
+
+    .leitor-actions {
+        display: flex;
+        gap: 1rem;
+        flex-wrap: wrap;
+    }
+
+    .btn-voltar {
+        background: #6c757d;
+        color: white;
+    }
+
+    .btn-voltar:hover {
+        background: #5a6268;
+        color: white;
+    }
+
+    /* Container do PDF */
+    .pdf-container {
+        background: white;
+        border-radius: 15px;
+        padding: 2rem;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+
+    .pdf-viewer {
+        width: 100%;
+        height: 600px;
+        border: 2px solid #e0e6ed;
+        border-radius: 10px;
+        overflow: hidden;
+        position: relative;
+    }
+
+    .pdf-frame {
+        width: 100%;
+        height: 100%;
+        border: none;
+    }
+
+    .pdf-error {
+        display: none;
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        padding: 2rem;
+        text-align: center;
+    }
+
+    .zoom-controls {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        z-index: 1000;
+        display: flex;
+        gap: 5px;
+        background: rgba(255,255,255,0.9);
+        padding: 8px;
+        border-radius: 5px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+
+    /* Livros relacionados */
+    .livros-relacionados {
+        margin-top: 3rem;
+    }
+
+    .relacionados-title {
+        color: #2c3e50;
+        font-size: 1.5rem;
+        margin-bottom: 1.5rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 3px solid #667eea;
+    }
+
+    .relacionados-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        gap: 1.5rem;
+    }
+
+    /* Melhorias para o visualizador de PDF */
+    .pdf-viewer {
+        overflow: auto;
+        position: relative;
+        background: #f0f0f0;
+        border-radius: 10px;
+    }
+
+    .pdf-frame {
+        display: block;
+        margin: 0 auto;
+        transition: all 0.1s ease;
+        background: white;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+
+    .zoom-controls {
+        position: sticky;
+        top: 10px;
+        right: 10px;
+        z-index: 1000;
+        display: flex;
+        gap: 5px;
+        background: rgba(255,255,255,0.95);
+        padding: 8px;
+        border-radius: 5px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        backdrop-filter: blur(5px);
+    }
+
+    .zoom-controls button {
+        width: 40px;
+        height: 40px;
+        border-radius: 5px;
+        transition: all 0.2s;
+    }
+
+    .zoom-controls button:hover {
+        background: #667eea;
+        color: white;
+    }
+
+    /* Indicador de zoom */
+    .zoom-indicator {
+        position: sticky;
+        top: 10px;
+        left: 10px;
+        background: rgba(0,0,0,0.7);
+        color: white;
+        padding: 5px 10px;
+        border-radius: 5px;
+        font-size: 14px;
+        z-index: 1000;
+    }
+
+    /* Mensagem de erro */
+    .pdf-error {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 600px;
+        background: #f8f9fa;
+        border-radius: 10px;
+    }
+
+    @media (max-width: 768px) {
+        .livro-info {
+            flex-direction: column;
+        }
+
+        .livro-capa-leitor {
+            width: 100%;
+            height: 300px;
+        }
+
+        .pdf-viewer {
+            height: 400px;
+        }
+
+        .leitor-actions {
+            flex-direction: column;
+        }
+
+        .leitor-actions .btn {
+            width: 100%;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="leitor-container">
+    <div class="container">
+        <!-- Cabeçalho do Livro -->
+        <div class="leitor-header">
+            <div class="livro-info">
+                <div class="livro-capa-leitor">
+                    {% if livro.capa %}
+                    <img src="{{ livro.capa.url }}" alt="{{ livro.titulo }}">
+                    {% else %}
+                    <div style="width: 100%; height: 100%; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
+                               display: flex; align-items: center; justify-content: center;">
+                        <i class="fas fa-book" style="font-size: 4rem; color: white;"></i>
+                    </div>
+                    {% endif %}
+                </div>
+                
+                <div class="livro-detalhes">
+                    <h1 class="livro-titulo-leitor">{{ livro.titulo }}</h1>
+                    <div class="livro-autor-leitor">
+                        <i class="fas fa-user-edit"></i> {{ livro.autor }}
+                    </div>
+                    
+                    <p class="livro-descricao-leitor">{{ livro.descricao }}</p>
+                    
+                    <div class="livro-meta-leitor">
+                        <div class="meta-item-leitor">
+                            <div class="meta-label">Categoria</div>
+                            <div class="meta-value">{{ livro.get_categoria_display }}</div>
+                        </div>
+                        <div class="meta-item-leitor">
+                            <div class="meta-label">Páginas</div>
+                            <div class="meta-value">{{ livro.paginas }}</div>
+                        </div>
+                        <div class="meta-item-leitor">
+                            <div class="meta-label">Visualizações</div>
+                            <div class="meta-value">{{ livro.visualizacoes }}</div>
+                        </div>
+                        <div class="meta-item-leitor">
+                            <div class="meta-label">Downloads</div>
+                            <div class="meta-value">{{ livro.downloads }}</div>
+                        </div>
+                    </div>
+                    
+                    <div class="leitor-actions">
+                        <a href="{% url 'acervo_pdf' %}" class="btn btn-voltar">
+                            <i class="fas fa-arrow-left"></i> Voltar ao Acervo
+                        </a>
+                        {% if livro.arquivo_pdf %}
+                        <a href="{% url 'download_livro_pdf' livro.id %}" class="btn btn-primary"
+                           onclick="return confirm('Deseja baixar este livro?')">
+                            <i class="fas fa-download"></i> Baixar PDF
+                        </a>
+                        <button class="btn btn-outline-primary" onclick="window.print()">
+                            <i class="fas fa-print"></i> Imprimir
+                        </button>
+                        <button class="btn btn-outline-secondary" onclick="toggleFullscreen()">
+                            <i class="fas fa-expand"></i> Tela Cheia
+                        </button>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Debug info - remover depois -->
+        <div class="alert alert-info">
+            <strong>Debug:</strong><br>
+            PDF Disponível: {{ pdf_disponivel }}<br>
+            PDF URL: {{ pdf_url }}<br>
+            Arquivo: {{ livro.arquivo_pdf }}<br>
+            ID do Livro: {{ livro.id }}
+        </div>
+
+        <!-- Leitor de PDF -->
+        <div class="pdf-container">
+            <h3 class="mb-3"><i class="fas fa-book-open"></i> Leitor Online</h3>
+            
+            <div class="pdf-viewer">
+                {% if pdf_disponivel and pdf_url %}
+                    <!-- Usando iframe que tem melhor compatibilidade -->
+                    <iframe src="{{ pdf_url }}#toolbar=1&navpanes=1&scrollbar=1&view=FitH" 
+                            style="width: 100%; height: 600px; border: none;" 
+                            id="pdfFrame"
+                            class="pdf-frame"
+                            allowfullscreen>
+                        <p>Seu navegador não suporta iframes. 
+                           <a href="{{ pdf_url }}" target="_blank">Clique aqui para abrir o PDF</a>
+                        </p>
+                    </iframe>
+                    
+                    <div class="zoom-controls" id="zoomControls">
+                        <button class="btn btn-sm btn-outline-secondary" onclick="zoomOut()" title="Reduzir zoom">
+                            <i class="fas fa-search-minus"></i>
+                        </button>
+                        <button class="btn btn-sm btn-outline-secondary" onclick="resetZoom()" title="Zoom padrão">
+                            <i class="fas fa-search"></i>
+                        </button>
+                        <button class="btn btn-sm btn-outline-secondary" onclick="zoomIn()" title="Aumentar zoom">
+                            <i class="fas fa-search-plus"></i>
+                        </button>
+                    </div>
+                    
+                    <!-- Link alternativo -->
+                    <div class="text-center mt-3">
+                        <a href="{{ pdf_url }}" target="_blank" class="btn btn-outline-primary">
+                            <i class="fas fa-external-link-alt"></i> Abrir em nova aba
+                        </a>
+                        <a href="{% url 'download_livro_pdf' livro.id %}" class="btn btn-outline-success ms-2">
+                            <i class="fas fa-download"></i> Download
+                        </a>
+                    </div>
+                {% else %}
+                    <div class="pdf-error" style="display: flex; height: 600px;">
+                        <div class="text-center">
+                            <i class="fas fa-exclamation-triangle fa-4x text-warning mb-3"></i>
+                            <h4>PDF não disponível</h4>
+                            <p class="text-muted">Este livro não possui versão digital disponível ou houve um erro ao carregar.</p>
+                            {% if livro.arquivo_pdf %}
+                            <p>Tente: <a href="{% url 'download_livro_pdf' livro.id %}" class="btn btn-primary">Baixar o PDF</a></p>
+                            {% endif %}
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Livros Relacionados -->
+        {% if livros_relacionados %}
+        <div class="livros-relacionados">
+            <h3 class="relacionados-title">
+                <i class="fas fa-bookmark"></i> Livros Relacionados
+            </h3>
+            
+            <div class="relacionados-grid">
+                {% for relacionado in livros_relacionados %}
+                <div class="card h-100">
+                    <div class="row g-0">
+                        <div class="col-4">
+                            {% if relacionado.capa %}
+                            <img src="{{ relacionado.capa.url }}" class="img-fluid rounded-start" alt="{{ relacionado.titulo }}" style="height: 100%; object-fit: cover;">
+                            {% else %}
+                            <div style="height: 100%; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center;">
+                                <i class="fas fa-book" style="font-size: 2rem; color: white;"></i>
+                            </div>
+                            {% endif %}
+                        </div>
+                        <div class="col-8">
+                            <div class="card-body">
+                                <h6 class="card-title">{{ relacionado.titulo|truncatechars:30 }}</h6>
+                                <p class="card-text small text-muted">{{ relacionado.autor|truncatechars:20 }}</p>
+                                <a href="{% url 'ler_livro_pdf' relacionado.id %}" class="btn btn-sm btn-outline-primary">
+                                    <i class="fas fa-book-open"></i> Ler
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Função para tela cheia
+    function toggleFullscreen() {
+        const pdfFrame = document.getElementById('pdfFrame');
+        if (!pdfFrame) return;
+        
+        if (!document.fullscreenElement) {
+            if (pdfFrame.requestFullscreen) {
+                pdfFrame.requestFullscreen();
+            } else if (pdfFrame.mozRequestFullScreen) {
+                pdfFrame.mozRequestFullScreen();
+            } else if (pdfFrame.webkitRequestFullscreen) {
+                pdfFrame.webkitRequestFullscreen();
+            } else if (pdfFrame.msRequestFullscreen) {
+                pdfFrame.msRequestFullscreen();
+            }
+        } else {
+            if (document.exitFullscreen) {
+                document.exitFullscreen();
+            } else if (document.mozCancelFullScreen) {
+                document.mozCancelFullScreen();
+            } else if (document.webkitExitFullscreen) {
+                document.webkitExitFullscreen();
+            } else if (document.msExitFullscreen) {
+                document.msExitFullscreen();
+            }
+        }
+    }
+    
+    // Controles de zoom
+    let zoomLevel = 1;
+    const zoomStep = 0.1;
+    
+    function zoomIn() {
+        if (zoomLevel < 2) {
+            zoomLevel += zoomStep;
+            applyZoom();
+        }
+    }
+    
+    function zoomOut() {
+        if (zoomLevel > 0.5) {
+            zoomLevel -= zoomStep;
+            applyZoom();
+        }
+    }
+    
+    function resetZoom() {
+        zoomLevel = 1;
+        applyZoom();
+    }
+    
+    function applyZoom() {
+        const pdfFrame = document.getElementById('pdfFrame');
+        if (pdfFrame) {
+            pdfFrame.style.width = `${100 * zoomLevel}%`;
+            pdfFrame.style.height = `${600 * zoomLevel}px`;
+            
+            const container = pdfFrame.parentElement;
+            container.style.overflow = 'auto';
+            container.style.height = '600px';
+        }
+    }
+    
+    // Detectar carregamento do PDF
+    document.addEventListener('DOMContentLoaded', function() {
+        const pdfFrame = document.getElementById('pdfFrame');
+        
+        if (pdfFrame) {
+            pdfFrame.onload = function() {
+                console.log('✅ PDF carregado com sucesso');
+                document.querySelector('.zoom-controls').style.display = 'flex';
+            };
+        }
+    });
+    
+    // Atalhos de teclado
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && document.fullscreenElement) {
+            toggleFullscreen();
+        }
+        
+        if (e.ctrlKey) {
+            if (e.key === '+' || e.key === '=') {
+                e.preventDefault();
+                zoomIn();
+            } else if (e.key === '-' || e.key === '_') {
+                e.preventDefault();
+                zoomOut();
+            } else if (e.key === '0') {
+                e.preventDefault();
+                resetZoom();
+            }
+        }
+    });
+    
+    // Zoom com scroll do mouse
+    document.querySelector('.pdf-viewer')?.addEventListener('wheel', function(e) {
+        if (e.ctrlKey) {
+            e.preventDefault();
+            if (e.deltaY < 0) {
+                zoomIn();
+            } else {
+                zoomOut();
+            }
+        }
+    });
+</script>
+{% endblock %}

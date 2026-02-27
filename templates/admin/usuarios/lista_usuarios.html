@@ -1,0 +1,110 @@
+{% extends 'base/base_admin.html' %}
+
+{% block title %}Lista de Usuários - Admin{% endblock %}
+{% block icon %}people{% endblock %}
+{% block page_title %}Lista de Usuários{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Ações -->
+    <div class="d-flex justify-content-between mb-3">
+        <div>
+            <a href="{% url 'cadastro_usuario_admin' %}" class="btn btn-success">
+                <i class="bi bi-plus-circle"></i> Novo Usuário
+            </a>
+        </div>
+        <div>
+            <span class="badge bg-info">
+                {{ usuarios|length }} usuário{{ usuarios|length|pluralize:"s" }}
+            </span>
+        </div>
+    </div>
+    
+    <!-- Tabela de Usuários -->
+    <div class="card">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Usuário</th>
+                            <th>Nome Completo</th>
+                            <th>Categoria</th>
+                            <th>Contato</th>
+                            <th>Endereço</th>
+                            <th>Visitas</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for usuario in usuarios %}
+                        <tr>
+                            <td>
+                                <strong>{{ usuario.username }}</strong><br>
+                                <small class="text-muted">{{ usuario.email }}</small>
+                            </td>
+                            <td>{{ usuario.get_full_name|default:"-" }}</td>
+                            <td>
+                                {% with perfil=usuario.perfilusuario %}
+                                    {% if perfil %}
+                                        {% if perfil.categoria == 'admin' %}
+                                            <span class="badge bg-danger">{{ perfil.get_categoria_display }}</span>
+                                        {% elif perfil.categoria == 'funcionario' %}
+                                            <span class="badge bg-warning">{{ perfil.get_categoria_display }}</span>
+                                        {% else %}
+                                            <span class="badge bg-info">{{ perfil.get_categoria_display }}</span>
+                                        {% endif %}
+                                    {% else %}
+                                        <span class="badge bg-secondary">Sem perfil</span>
+                                    {% endif %}
+                                {% endwith %}
+                            </td>
+                            <td>
+                                {% with perfil=usuario.perfilusuario %}
+                                    {% if perfil %}
+                                        {{ perfil.telefone }}<br>
+                                        {% if perfil.whatsapp %}
+                                            <small class="text-success">WhatsApp: {{ perfil.whatsapp }}</small>
+                                        {% endif %}
+                                    {% else %}
+                                        -
+                                    {% endif %}
+                                {% endwith %}
+                            </td>
+                            <td>
+                                {% with perfil=usuario.perfilusuario %}
+                                    {% if perfil %}
+                                        {{ perfil.rua }}, {{ perfil.numero }}<br>
+                                        <small>{{ perfil.bairro }} - {{ perfil.cidade }}</small>
+                                    {% else %}
+                                        -
+                                    {% endif %}
+                                {% endwith %}
+                            </td>
+                            <td class="text-center">
+                                {% with perfil=usuario.perfilusuario %}
+                                    {% if perfil %}
+                                        <span class="badge bg-primary">{{ perfil.visitas }}</span>
+                                    {% else %}
+                                        0
+                                    {% endif %}
+                                {% endwith %}
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="6" class="text-center py-4">
+                                <div class="text-muted">
+                                    <i class="bi bi-people display-6"></i>
+                                    <h5 class="mt-3">Nenhum usuário encontrado</h5>
+                                    <p>Cadastre seu primeiro usuário clicando no botão "Novo Usuário"</p>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

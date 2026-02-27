@@ -1,0 +1,94 @@
+http://127.0.0.1:8000/admin/core/emprestimo/?status__exact=perdido
+Usuário: evertonabreu
+Senha: Riulla@#2023
+
+superusuario:evertonlima
+email:  everton.comshow@gmail.com
+senha: Riulla@#2023
+
+Usuário: admin
+Senha: Gomesdelima2023@
+
+Usuario: riullacosta
+Senha: Gomesdelima2023@
+
+Use as credenciais:
+
+Usuário: admin@biblioteca.local
+
+Senha: admin@biblioteca.local
+
+vamos criar um sistema de controles de entrada e saida de livros de uma biblioteca publica
+1 - acesso administrador 
+O administrador cadastra livros com quantidades na prateleira, ano de publicacao, editora, autor, quantidades de paginas, prateleira , classificacao, categoria
+O administrador da baixa ao sistema quando um usuario pega o livro cadastra o usuario a primeira vez com nome, numero telefone, watsap, endereco rua, bairro, numero, cidade, nome da mae ou pai, email , marca o dia e horario de saida do livro e dia  entrega do livro, criar uma api para mandar mensagem via watsap no dia da entrega
+O administrador cadastra Nome do livro, Editora, autor ano de publicacao 
+2 - acesso usuarios  
+o usuario acessa e tem uma visao dos acervos disponiveis na biblioteca e os que estao disponiveis nas prateleiras por categorias. o usuario vera uma breve historia da biblioteca implantada e um pouco da historia do municipio , olha o endereco, o nome da bibliotecaria responsavel, contato telefone e email e o nome da administracao municipal. Isso em uma aba informação
+
+vamos criar a estrutura do projeto e comecar montar por parte em python flask e django no vscode.
+O acesso do administrador vai ser criado no banco de dados com email e senha, o acesso dos usuarios podemos colocar um campo para cadastro para acessar com email e senha .
+cada visita de um usuario vamos colocar um campo no acesso do administrador com um contador. na estrutura do administrador vamos criar header, sidebar footer no acesso do usuario tambem
+
+biblioteca_publica/
+├── biblioteca/
+│   ├── __init__.py
+│   ├── settings.py
+│   ├── urls.py
+│   ├── wsgi.py
+│   └── asgi.py
+├── core/
+│   ├── __init__.py
+│   ├── admin.py
+│   ├── apps.py
+│   ├── models.py
+│   ├── views.py
+│   ├── urls.py
+│   └── forms.py
+├── templates/
+│   ├── admin/
+│   │   ├── base_admin.html
+│   │   ├── dashboard.html
+│   │   ├── cadastro_livro.html
+│   │   ├── cadastro_usuario.html
+│   │   ├── emprestimos.html
+│   │   └── relatorios.html
+│   ├── usuario/
+│   │   ├── base_usuario.html
+│   │   ├── home.html
+│   │   ├── acervo.html
+│   │   ├── informacoes.html
+│   │   └── perfil.html
+│   └── auth/
+│       ├── login.html
+│       └── cadastro.html
+├── static/
+│   ├── css/
+│   │   ├── admin.css
+│   │   └── usuario.css
+│   ├── js/
+│   └── images/
+├── media/
+├── requirements.txt
+├── manage.py
+└── README.md
+
+Dentro da pasta do projeto:
+cd ~/Documents/biblioteca_publica
+
+1. Criar ambiente virtual (se ainda não existir)
+python3 -m venv venv
+
+2. Ativar o ambiente virtual
+source venv/bin/activate
+
+▶️ 3. Rodar o servidor
+python manage.py runserver
+
+# Pare com Ctrl+C
+# Inicie novamente:
+python manage.py runserver
+
+
+# Pressione Ctrl+C para parar o servidor se estiver rodando
+python manage.py runserver

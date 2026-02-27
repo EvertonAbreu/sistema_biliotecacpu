@@ -1,0 +1,117 @@
+{% extends 'usuario/home/home.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-4">
+            <!-- Capa do Livro -->
+            <div class="card mb-4">
+                <div class="card-body text-center">
+                    <i class="bi bi-book" style="font-size: 10rem; color: #0d6efd;"></i>
+                    <h4 class="mt-3">{{ livro.titulo }}</h4>
+                    <p class="text-muted">por {{ livro.autor }}</p>
+                    
+                    <!-- Status de Disponibilidade -->
+                    {% if livro.quantidade_disponivel > 0 %}
+                        <div class="alert alert-success">
+                            <i class="bi bi-check-circle"></i> Disponível para empréstimo
+                            <br><strong>{{ livro.quantidade_disponivel }} exemplar(es) disponível(eis)</strong>
+                        </div>
+                    {% else %}
+                        <div class="alert alert-danger">
+                            <i class="bi bi-x-circle"></i> Indisponível no momento
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-8">
+            <!-- Informações do Livro -->
+            <div class="card mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="bi bi-info-circle"></i> Informações do Livro</h5>
+                </div>
+                <div class="card-body">
+                    <table class="table table-borderless">
+                        <tr>
+                            <th width="150">Título:</th>
+                            <td>{{ livro.titulo }}</td>
+                        </tr>
+                        <tr>
+                            <th>Autor:</th>
+                            <td>{{ livro.autor }}</td>
+                        </tr>
+                        <tr>
+                            <th>Editora:</th>
+                            <td>{{ livro.editora }}</td>
+                        </tr>
+                        <tr>
+                            <th>Ano de Publicação:</th>
+                            <td>{{ livro.ano_publicacao }}</td>
+                        </tr>
+                        <tr>
+                            <th>Nº de Páginas:</th>
+                            <td>{{ livro.quantidade_paginas }}</td>
+                        </tr>
+                        <tr>
+                            <th>Categoria:</th>
+                            <td><span class="badge bg-info">{{ livro.get_categoria_display }}</span></td>
+                        </tr>
+                        <tr>
+                            <th>Classificação:</th>
+                            <td><span class="badge bg-secondary">{{ livro.get_classificacao_display }}</span></td>
+                        </tr>
+                        <tr>
+                            <th>Prateleira:</th>
+                            <td>
+                                <i class="bi bi-box"></i> {{ livro.prateleira.nome }}
+                                {% if livro.prateleira.localizacao_fisica %}
+                                    <br><small class="text-muted">Localização: {{ livro.prateleira.localizacao_fisica }}</small>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>Quantidade Total:</th>
+                            <td>{{ livro.quantidade_total }} exemplar(es)</td>
+                        </tr>
+                        <tr>
+                            <th>Disponíveis:</th>
+                            <td>
+                                {% if livro.quantidade_disponivel > 0 %}
+                                    <span class="text-success">{{ livro.quantidade_disponivel }} exemplar(es)</span>
+                                {% else %}
+                                    <span class="text-danger">Nenhum exemplar disponível</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+            
+            <!-- Sinopse -->
+            <div class="card mb-4">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0"><i class="bi bi-file-text"></i> Sinopse</h5>
+                </div>
+                <div class="card-body">
+                    <p class="mb-0">{{ livro.sinopse|default:"Sinopse não disponível." }}</p>
+                </div>
+            </div>
+            
+            <!-- Botões de Ação -->
+            <div class="d-flex gap-2">
+                <a href="{% url 'acervo_prateleiras' %}" class="btn btn-outline-secondary">
+                    <i class="bi bi-arrow-left"></i> Voltar
+                </a>
+                {% if user.is_authenticated and livro.quantidade_disponivel > 0 %}
+                    <a href="#" class="btn btn-success" onclick="alert('Funcionalidade de empréstimo em desenvolvimento')">
+                        <i class="bi bi-hand-index"></i> Solicitar Empréstimo
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

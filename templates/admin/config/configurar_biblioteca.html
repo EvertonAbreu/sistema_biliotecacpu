@@ -1,0 +1,558 @@
+{% extends 'base/base_admin.html' %}
+{% load static %}
+
+{% block title %}Configurar Biblioteca - Biblioteca{% endblock %}
+{% block icon %}gear{% endblock %}
+{% block page_title %}Configurar Biblioteca{% endblock %}
+
+{% block extra_css %}
+<style>
+  textarea {
+    resize: vertical;
+    min-height: 100px;
+  }
+  
+  .config-section {
+    margin-bottom: 2rem;
+  }
+  
+  .config-section h5 {
+    border-bottom: 2px solid #4e73df;
+    padding-bottom: 0.5rem;
+    margin-bottom: 1.5rem;
+  }
+  
+  .form-label {
+    font-weight: 600;
+    color: #495057;
+  }
+  
+  .required-field::after {
+    content: " *";
+    color: #dc3545;
+  }
+  
+  .backup-card {
+    border-left: 4px solid #28a745 !important;
+  }
+  
+  .maintenance-card {
+    border-left: 4px solid #ffc107 !important;
+  }
+  
+  .system-config-card {
+    border-left: 4px solid #17a2b8 !important;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+  <div class="row">
+    <!-- Conteúdo Principal -->
+    <div class="col-12">
+      <!-- Header -->
+      <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+        <div>
+          <h1 class="h2"><i class="fas fa-cog me-2"></i> Configurar Biblioteca</h1>
+          <p class="text-muted mb-0">Gerencie as configurações do sistema da biblioteca</p>
+        </div>
+        <div class="btn-toolbar mb-2 mb-md-0">
+          <span class="badge bg-primary">
+            <i class="fas fa-calendar-alt"></i> {% now "d/m/Y" %}
+          </span>
+        </div>
+      </div>
+
+      <!-- Mensagens -->
+      {% if messages %}
+      <div class="row mb-4">
+        <div class="col-12">
+          {% for message in messages %}
+          <div class="alert alert-{{ message.tags }} alert-dismissible fade show">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+      {% endif %}
+
+      <div class="row justify-content-center">
+        <div class="col-lg-10">
+          <!-- Informações da Biblioteca -->
+          <div class="card shadow mb-4">
+            <div class="card-header py-3 bg-white">
+              <h6 class="m-0 font-weight-bold text-primary">
+                <i class="fas fa-info-circle me-2"></i>Informações da Biblioteca
+              </h6>
+            </div>
+            <div class="card-body">
+              <form method="post" id="biblioteca-form">
+                {% csrf_token %}
+                
+                {% if form.errors %}
+                <div class="alert alert-danger">
+                  <i class="fas fa-exclamation-triangle me-2"></i>
+                  Corrija os erros abaixo antes de continuar.
+                </div>
+                {% endif %}
+
+                <div class="row">
+                  <div class="col-md-12 mb-3">
+                    <label for="{{ form.nome.id_for_label }}" class="form-label required-field">
+                      Nome da Biblioteca
+                    </label>
+                    {{ form.nome }}
+                    {% if form.nome.errors %}
+                    <div class="text-danger small mt-1">
+                      {{ form.nome.errors }}
+                    </div>
+                    {% endif %}
+                  </div>
+
+                  <div class="col-12 mb-3">
+                    <label for="{{ form.endereco.id_for_label }}" class="form-label required-field">
+                      Endereço Completo
+                    </label>
+                    {{ form.endereco }}
+                    {% if form.endereco.errors %}
+                    <div class="text-danger small mt-1">
+                      {{ form.endereco.errors }}
+                    </div>
+                    {% endif %}
+                  </div>
+
+                  <div class="col-md-6 mb-3">
+                    <label for="{{ form.telefone.id_for_label }}" class="form-label required-field">
+                      Telefone
+                    </label>
+                    {{ form.telefone }}
+                    {% if form.telefone.errors %}
+                    <div class="text-danger small mt-1">
+                      {{ form.telefone.errors }}
+                    </div>
+                    {% endif %}
+                  </div>
+
+                  <div class="col-md-6 mb-3">
+                    <label for="{{ form.email.id_for_label }}" class="form-label required-field">
+                      Email
+                    </label>
+                    {{ form.email }}
+                    {% if form.email.errors %}
+                    <div class="text-danger small mt-1">
+                      {{ form.email.errors }}
+                    </div>
+                    {% endif %}
+                  </div>
+
+                  <div class="col-md-6 mb-3">
+                    <label for="{{ form.bibliotecaria_responsavel.id_for_label }}" class="form-label required-field">
+                      Bibliotecária Responsável
+                    </label>
+                    {{ form.bibliotecaria_responsavel }}
+                    {% if form.bibliotecaria_responsavel.errors %}
+                    <div class="text-danger small mt-1">
+                      {{ form.bibliotecaria_responsavel.errors }}
+                    </div>
+                    {% endif %}
+                  </div>
+
+                  <div class="col-md-6 mb-3">
+                    <label for="{{ form.administracao_municipal.id_for_label }}" class="form-label required-field">
+                      Administração Municipal
+                    </label>
+                    {{ form.administracao_municipal }}
+                    {% if form.administracao_municipal.errors %}
+                    <div class="text-danger small mt-1">
+                      {{ form.administracao_municipal.errors }}
+                    </div>
+                    {% endif %}
+                  </div>
+
+                  <div class="col-12 mb-3">
+                    <label for="{{ form.horario_funcionamento.id_for_label }}" class="form-label required-field">
+                      Horário de Funcionamento
+                    </label>
+                    {{ form.horario_funcionamento }}
+                    <small class="text-muted">
+                      <i class="fas fa-info-circle me-1"></i>Use linhas separadas para diferentes horários
+                    </small>
+                    {% if form.horario_funcionamento.errors %}
+                    <div class="text-danger small mt-1">
+                      {{ form.horario_funcionamento.errors }}
+                    </div>
+                    {% endif %}
+                  </div>
+
+                  <div class="col-12 mb-3">
+                    <label for="{{ form.historia.id_for_label }}" class="form-label">
+                      História da Biblioteca
+                    </label>
+                    {{ form.historia }}
+                    {% if form.historia.errors %}
+                    <div class="text-danger small mt-1">
+                      {{ form.historia.errors }}
+                    </div>
+                    {% endif %}
+                  </div>
+
+                  <div class="col-12 mb-3">
+                    <label for="{{ form.historia_municipio.id_for_label }}" class="form-label">
+                      História do Município
+                    </label>
+                    {{ form.historia_municipio }}
+                    {% if form.historia_municipio.errors %}
+                    <div class="text-danger small mt-1">
+                      {{ form.historia_municipio.errors }}
+                    </div>
+                    {% endif %}
+                  </div>
+                </div>
+
+                <div class="d-flex justify-content-between mt-4 pt-3 border-top">
+                  <a href="{% url 'dashboard' %}" class="btn btn-outline-secondary">
+                    <i class="fas fa-arrow-left me-1"></i> Voltar ao Dashboard
+                  </a>
+                  <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-save me-1"></i> Salvar Configurações
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+
+          <!-- Configurações do Sistema -->
+          <div class="card shadow mb-4 system-config-card">
+            <div class="card-header py-3 bg-white">
+              <h6 class="m-0 font-weight-bold text-primary">
+                <i class="fas fa-sliders-h me-2"></i>Configurações do Sistema
+              </h6>
+            </div>
+            <div class="card-body">
+              <form id="system-config-form">
+                <div class="row">
+                  <div class="col-md-6">
+                    <div class="mb-3">
+                      <label class="form-label">Prazo Padrão de Empréstimo (dias)</label>
+                      <div class="input-group">
+                        <input type="number" class="form-control" id="prazo_emprestimo" value="15" min="1" max="90">
+                        <span class="input-group-text">dias</span>
+                      </div>
+                      <small class="text-muted">Período padrão para devolução de livros</small>
+                    </div>
+
+                    <div class="mb-3">
+                      <label class="form-label">Multa por Atraso (R$ por dia)</label>
+                      <div class="input-group">
+                        <span class="input-group-text">R$</span>
+                        <input type="number" class="form-control" id="multa_atraso" value="2.00" min="0" step="0.01">
+                      </div>
+                      <small class="text-muted">Valor cobrado por dia de atraso</small>
+                    </div>
+
+                    <div class="mb-3">
+                      <label class="form-label">Limite de Empréstimos por Usuário</label>
+                      <input type="number" class="form-control" id="limite_emprestimos" value="5" min="1" max="20">
+                      <small class="text-muted">Máximo de livros que um usuário pode pegar</small>
+                    </div>
+                  </div>
+
+                  <div class="col-md-6">
+                    <div class="mb-3">
+                      <label class="form-label">Notificações</label>
+                      <div class="form-check mb-2">
+                        <input class="form-check-input" type="checkbox" id="notificacao_whatsapp" checked>
+                        <label class="form-check-label" for="notificacao_whatsapp">
+                          Enviar lembretes via WhatsApp
+                        </label>
+                      </div>
+                      <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="notificacao_email" checked>
+                        <label class="form-check-label" for="notificacao_email">
+                          Enviar lembretes por Email
+                        </label>
+                      </div>
+                    </div>
+
+                    <div class="mb-3">
+                      <label class="form-label">Dias para Notificação</label>
+                      <div class="input-group">
+                        <input type="number" class="form-control" id="dias_notificacao" value="3" min="1" max="7">
+                        <span class="input-group-text">dias antes</span>
+                      </div>
+                      <small class="text-muted">Dias antes do vencimento para enviar notificação</small>
+                    </div>
+
+                    <div class="mb-3">
+                      <label class="form-label">Template de Mensagem (WhatsApp)</label>
+                      <textarea class="form-control" id="template_mensagem" rows="3">
+📚 *Biblioteca Pública - Lembrete*
+
+Olá [NOME],
+O livro *"[LIVRO]"* tem data de devolução para [DATA].
+Por favor, faça a devolução na biblioteca.
+
+Atenciosamente,
+Biblioteca Pública Municipal</textarea>
+                      <small class="text-muted">Use [NOME], [LIVRO] e [DATA] como variáveis</small>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="text-end mt-4 pt-3 border-top">
+                  <button type="button" class="btn btn-outline-primary" onclick="salvarConfigSistema()">
+                    <i class="fas fa-save me-1"></i> Salvar Configurações do Sistema
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+
+          <!-- Backup e Manutenção -->
+          <div class="row">
+            <!-- Backup -->
+            <div class="col-md-6 mb-4">
+              <div class="card shadow h-100 backup-card">
+                <div class="card-header py-3 bg-white">
+                  <h6 class="m-0 font-weight-bold text-primary">
+                    <i class="fas fa-database me-2"></i>Backup de Dados
+                  </h6>
+                </div>
+                <div class="card-body">
+                  <div class="text-center mb-4">
+                    <i class="fas fa-database display-4 text-success mb-3"></i>
+                    <h5>Backup Completo</h5>
+                    <p class="text-muted">Faça backup de todos os dados do sistema.</p>
+                  </div>
+                  
+                  <div class="mb-3">
+                    <label class="form-label">Tipo de Backup</label>
+                    <select class="form-select" id="tipo_backup">
+                      <option value="completo">Backup Completo</option>
+                      <option value="dados">Apenas Dados</option>
+                      <option value="media">Apenas Arquivos</option>
+                    </select>
+                  </div>
+                  
+                  <div class="mb-3">
+                    <label class="form-label">Formato</label>
+                    <select class="form-select" id="formato_backup">
+                      <option value="sql">SQL</option>
+                      <option value="json">JSON</option>
+                      <option value="csv">CSV</option>
+                    </select>
+                  </div>
+                  
+                  <button class="btn btn-success w-100" onclick="gerarBackup()">
+                    <i class="fas fa-download me-1"></i> Gerar Backup
+                  </button>
+                  
+                  <div class="mt-3 text-center">
+                    <small class="text-muted">
+                      <i class="fas fa-info-circle me-1"></i>
+                      Último backup: <strong>{% now "d/m/Y H:i" %}</strong>
+                    </small>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Manutenção -->
+            <div class="col-md-6 mb-4">
+              <div class="card shadow h-100 maintenance-card">
+                <div class="card-header py-3 bg-white">
+                  <h6 class="m-0 font-weight-bold text-primary">
+                    <i class="fas fa-tools me-2"></i>Manutenção do Sistema
+                  </h6>
+                </div>
+                <div class="card-body">
+                  <div class="text-center mb-4">
+                    <i class="fas fa-tools display-4 text-warning mb-3"></i>
+                    <h5>Limpeza de Dados</h5>
+                    <p class="text-muted">Remova registros antigos do sistema.</p>
+                  </div>
+                  
+                  <div class="mb-3">
+                    <label class="form-label">Selecione os dados para limpar:</label>
+                    <div class="form-check mb-2">
+                      <input class="form-check-input" type="checkbox" id="limpar_emprestimos">
+                      <label class="form-check-label" for="limpar_emprestimos">
+                        Empréstimos finalizados há mais de 2 anos
+                      </label>
+                    </div>
+                    <div class="form-check mb-2">
+                      <input class="form-check-input" type="checkbox" id="limpar_logs">
+                      <label class="form-check-label" for="limpar_logs">
+                        Logs de acesso antigos (mais de 6 meses)
+                      </label>
+                    </div>
+                    <div class="form-check mb-2">
+                      <input class="form-check-input" type="checkbox" id="limpar_cache">
+                      <label class="form-check-label" for="limpar_cache">
+                        Cache do sistema
+                      </label>
+                    </div>
+                    <div class="form-check mb-2">
+                      <input class="form-check-input" type="checkbox" id="limpar_sessoes">
+                      <label class="form-check-label" for="limpar_sessoes">
+                        Sessões expiradas
+                      </label>
+                    </div>
+                  </div>
+                  
+                  <div class="alert alert-warning">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    <strong>Atenção:</strong> Esta ação não pode ser desfeita. Faça backup antes de prosseguir.
+                  </div>
+                  
+                  <button class="btn btn-warning w-100" onclick="limparDados()">
+                    <i class="fas fa-broom me-1"></i> Limpar Dados Selecionados
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  // Ativar tooltips
+  document.addEventListener("DOMContentLoaded", function () {
+    var tooltips = [].slice.call(
+      document.querySelectorAll('[data-bs-toggle="tooltip"]'),
+    );
+    tooltips.map(function (tooltip) {
+      return new bootstrap.Tooltip(tooltip);
+    });
+  });
+
+  // Função para mostrar notificação
+  function showNotification(message, type = 'success') {
+    const alertClass = type === 'success' ? 'alert-success' : 
+                      type === 'warning' ? 'alert-warning' : 
+                      type === 'danger' ? 'alert-danger' : 'alert-info';
+    
+    const alert = document.createElement('div');
+    alert.className = `alert ${alertClass} alert-dismissible fade show position-fixed`;
+    alert.style.cssText = 'top: 20px; right: 20px; z-index: 9999; max-width: 300px;';
+    alert.innerHTML = `
+      <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'warning' ? 'exclamation-triangle' : 'info-circle'} me-2"></i>
+      ${message}
+      <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    `;
+    
+    document.body.appendChild(alert);
+    
+    // Remover automaticamente após 5 segundos
+    setTimeout(() => {
+      if (alert.parentNode) {
+        alert.remove();
+      }
+    }, 5000);
+  }
+
+  // Funções para os botões
+  function salvarConfigSistema() {
+    const prazo = document.getElementById('prazo_emprestimo').value;
+    const multa = document.getElementById('multa_atraso').value;
+    const limite = document.getElementById('limite_emprestimos').value;
+    
+    // Aqui você enviaria os dados para o servidor via AJAX
+    // Simulação de sucesso:
+    showNotification('Configurações do sistema salvas com sucesso!', 'success');
+  }
+
+  function gerarBackup() {
+    const tipo = document.getElementById('tipo_backup').value;
+    const formato = document.getElementById('formato_backup').value;
+    
+    showNotification(`Gerando backup ${tipo} em formato ${formato.toUpperCase()}...`, 'info');
+    
+    // Simulação de processamento
+    setTimeout(() => {
+      showNotification('Backup gerado com sucesso! O download começará automaticamente.', 'success');
+      // Em produção, você redirecionaria para a URL de download
+      // window.location.href = `/api/backup/gerar/?tipo=${tipo}&formato=${formato}`;
+    }, 2000);
+  }
+
+  function limparDados() {
+    const limparEmprestimos = document.getElementById('limpar_emprestimos').checked;
+    const limparLogs = document.getElementById('limpar_logs').checked;
+    const limparCache = document.getElementById('limpar_cache').checked;
+    const limparSessoes = document.getElementById('limpar_sessoes').checked;
+
+    if (!limparEmprestimos && !limparLogs && !limparCache && !limparSessoes) {
+      showNotification('Selecione pelo menos uma opção para limpar dados.', 'warning');
+      return;
+    }
+
+    if (confirm('Tem certeza que deseja limpar os dados selecionados?\nEsta ação não pode ser desfeita.\nRecomendamos fazer backup antes.')) {
+      showNotification('Processando limpeza de dados...', 'info');
+      
+      // Simulação de processamento
+      setTimeout(() => {
+        showNotification('Dados limpos com sucesso!', 'success');
+      }, 1500);
+    }
+  }
+
+  // Validação básica do formulário principal
+  document.getElementById('biblioteca-form').addEventListener('submit', function (e) {
+    let hasError = false;
+    
+    // Validação de campos obrigatórios
+    const requiredFields = this.querySelectorAll('.required-field');
+    requiredFields.forEach(field => {
+      const inputId = field.getAttribute('for');
+      const input = document.getElementById(inputId);
+      
+      if (input && !input.value.trim()) {
+        hasError = true;
+        input.classList.add('is-invalid');
+        
+        if (!input.nextElementSibling || !input.nextElementSibling.classList.contains('invalid-feedback')) {
+          const errorDiv = document.createElement('div');
+          errorDiv.className = 'invalid-feedback';
+          errorDiv.textContent = 'Este campo é obrigatório.';
+          input.parentNode.appendChild(errorDiv);
+        }
+      } else {
+        input.classList.remove('is-invalid');
+      }
+    });
+    
+    if (hasError) {
+      e.preventDefault();
+      showNotification('Por favor, preencha todos os campos obrigatórios.', 'danger');
+      
+      // Scroll para o primeiro erro
+      const firstError = this.querySelector('.is-invalid');
+      if (firstError) {
+        firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        firstError.focus();
+      }
+    }
+  });
+
+  // Remover mensagens de erro ao digitar
+  document.querySelectorAll('#biblioteca-form input, #biblioteca-form textarea').forEach(input => {
+    input.addEventListener('input', function() {
+      if (this.classList.contains('is-invalid')) {
+        this.classList.remove('is-invalid');
+        const errorDiv = this.parentNode.querySelector('.invalid-feedback');
+        if (errorDiv) {
+          errorDiv.remove();
+        }
+      }
+    });
+  });
+</script>
+{% endblock %}

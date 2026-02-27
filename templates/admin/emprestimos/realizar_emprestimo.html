@@ -1,0 +1,212 @@
+{% extends 'base/base_admin.html' %}
+
+{% block title %}Realizar Empréstimo - Admin{% endblock %}
+{% block icon %}cart-plus{% endblock %}
+{% block page_title %}Realizar Empréstimo{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-header bg-white">
+                    <h5 class="card-title mb-0">
+                        <i class="bi bi-cart-plus me-2"></i>Novo Empréstimo
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <form method="post">
+                        {% csrf_token %}
+                        
+                        <div class="row">
+                            <div class="col-md-12 mb-3">
+                                <label for="{{ form.livro.id_for_label }}" class="form-label">Livro *</label>
+                                <div class="input-group">
+                                    {{ form.livro }}
+                                    <button type="button" class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#modalLivros">
+                                        <i class="bi bi-search"></i> Buscar
+                                    </button>
+                                </div>
+                                <small class="text-muted">Selecione um livro disponível</small>
+                            </div>
+                            
+                            <div class="col-md-12 mb-3">
+                                <label for="{{ form.usuario.id_for_label }}" class="form-label">Usuário *</label>
+                                <div class="input-group">
+                                    {{ form.usuario }}
+                                    <button type="button" class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#modalUsuarios">
+                                        <i class="bi bi-search"></i> Buscar
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.data_devolucao_prevista.id_for_label }}" class="form-label">Data de Devolução Prevista *</label>
+                                {{ form.data_devolucao_prevista }}
+                                <small class="text-muted">Selecione a data desejada para devolução</small>
+                            </div>
+                            
+                            
+                            <div class="col-12 mb-3">
+                                <label for="{{ form.observacoes.id_for_label }}" class="form-label">Observações</label>
+                                {{ form.observacoes }}
+                                <small class="text-muted">Informações adicionais sobre o empréstimo</small>
+                            </div>
+                        </div>
+                        
+                        <div class="alert alert-info mt-3">
+                            <i class="bi bi-info-circle"></i>
+                            <strong>Informação:</strong> Ao realizar o empréstimo, a quantidade disponível do livro será automaticamente reduzida.
+                        </div>
+                        
+                        <div class="d-flex justify-content-between mt-4">
+                            <a href="{% url 'lista_emprestimos' %}" class="btn btn-secondary">
+                                <i class="bi bi-arrow-left"></i> Cancelar
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-check-circle"></i> Realizar Empréstimo
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-4">
+            <!-- Resumo do Livro -->
+            <div class="card mb-4">
+                <div class="card-header bg-white">
+                    <h6 class="card-title mb-0">
+                        <i class="bi bi-book me-2"></i>Informações do Livro
+                    </h6>
+                </div>
+                <div class="card-body" id="livro-info">
+                    <p class="text-muted text-center py-4">
+                        Selecione um livro para ver as informações
+                    </p>
+                </div>
+            </div>
+            
+            <!-- Resumo do Usuário -->
+            <div class="card">
+                <div class="card-header bg-white">
+                    <h6 class="card-title mb-0">
+                        <i class="bi bi-person me-2"></i>Informações do Usuário
+                    </h6>
+                </div>
+                <div class="card-body" id="usuario-info">
+                    <p class="text-muted text-center py-4">
+                        Selecione um usuário para ver as informações
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para Buscar Livros -->
+<div class="modal fade" id="modalLivros" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Buscar Livro</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="input-group mb-3">
+                    <input type="text" class="form-control" id="buscaLivro" placeholder="Buscar por título, autor...">
+                    <button class="btn btn-primary" onclick="buscarLivros()">
+                        <i class="bi bi-search"></i> Buscar
+                    </button>
+                </div>
+                <div id="resultados-livros" class="list-group" style="max-height: 300px; overflow-y: auto;">
+                    <!-- Resultados serão carregados aqui -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para Buscar Usuários -->
+<div class="modal fade" id="modalUsuarios" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Buscar Usuário</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="input-group mb-3">
+                    <input type="text" class="form-control" id="buscaUsuario" placeholder="Buscar por nome, email...">
+                    <button class="btn btn-primary" onclick="buscarUsuarios()">
+                        <i class="bi bi-search"></i> Buscar
+                    </button>
+                </div>
+                <div id="resultados-usuarios" class="list-group" style="max-height: 300px; overflow-y: auto;">
+                    <!-- Resultados serão carregados aqui -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Configurar data mínima (hoje)
+        const hoje = new Date().toISOString().split('T')[0];
+        document.getElementById('{{ form.data_devolucao_prevista.id_for_label }}').min = hoje;
+        
+        // Se não tiver data, definir padrão de 15 dias
+        const campoData = document.getElementById('{{ form.data_devolucao_prevista.id_for_label }}');
+        if (!campoData.value) {
+            const dataFutura = new Date();
+            dataFutura.setDate(dataFutura.getDate() + 15);
+            campoData.value = dataFutura.toISOString().split('T')[0];
+        }
+        
+        // Atualizar informações quando livro for selecionado
+        document.getElementById('{{ form.livro.id_for_label }}').addEventListener('change', function() {
+            atualizarInfoLivro(this.value);
+        });
+        
+        // Atualizar informações quando usuário for selecionado
+        document.getElementById('{{ form.usuario.id_for_label }}').addEventListener('change', function() {
+            atualizarInfoUsuario(this.value);
+        });
+    });
+    
+    function setPrazo(dias) {
+        const dataFutura = new Date();
+        dataFutura.setDate(dataFutura.getDate() + dias);
+        document.getElementById('{{ form.data_devolucao_prevista.id_for_label }}').value = dataFutura.toISOString().split('T')[0];
+    }
+    
+    function atualizarInfoLivro(livroId) {
+        if (!livroId) return;
+        
+        // Esta função seria implementada com AJAX
+        console.log('Atualizando info do livro:', livroId);
+    }
+    
+    function atualizarInfoUsuario(usuarioId) {
+        if (!usuarioId) return;
+        
+        // Esta função seria implementada com AJAX
+        console.log('Atualizando info do usuário:', usuarioId);
+    }
+    
+    function buscarLivros() {
+        const termo = document.getElementById('buscaLivro').value;
+        console.log('Buscando livros:', termo);
+        // Implementar busca AJAX
+    }
+    
+    function buscarUsuarios() {
+        const termo = document.getElementById('buscaUsuario').value;
+        console.log('Buscando usuários:', termo);
+        // Implementar busca AJAX
+    }
+</script>
+{% endblock %}

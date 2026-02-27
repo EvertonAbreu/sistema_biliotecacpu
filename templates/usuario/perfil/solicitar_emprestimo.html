@@ -1,0 +1,67 @@
+{% extends 'usuario/home/home.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">
+                        <i class="bi bi-cart-plus"></i> Solicitar Empréstimo
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-info">
+                        <i class="bi bi-info-circle"></i>
+                        Sua solicitação será analisada pela biblioteca. Você será notificado quando for aprovada.
+                    </div>
+                    
+                    <!-- Informações do Livro -->
+                    <div class="card mb-4 bg-light">
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-3 text-center">
+                                    <i class="bi bi-book" style="font-size: 4rem; color: #0d6efd;"></i>
+                                </div>
+                                <div class="col-md-9">
+                                    <h5>{{ livro.titulo }}</h5>
+                                    <p class="mb-1"><strong>Autor:</strong> {{ livro.autor }}</p>
+                                    <p class="mb-1"><strong>Editora:</strong> {{ livro.editora.nome }}</p>
+                                    <p class="mb-1"><strong>Disponível:</strong> {{ livro.quantidade_disponivel }} exemplar(es)</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <form method="post">
+                        {% csrf_token %}
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Data de Devolução Prevista</label>
+                            <input type="date" name="data_devolucao" class="form-control" 
+                                   value="{{ data_padrao }}" min="{{ data_padrao }}">
+                            <small class="text-muted">Prazo padrão: 15 dias</small>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Observações (opcional)</label>
+                            <textarea name="observacoes" class="form-control" rows="3" 
+                                      placeholder="Informações adicionais sobre sua solicitação"></textarea>
+                        </div>
+                        
+                        <div class="d-flex justify-content-between">
+                            <a href="{% url 'acervo_prateleiras' %}" class="btn btn-secondary">
+                                <i class="bi bi-arrow-left"></i> Voltar
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-check-circle"></i> Enviar Solicitação
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

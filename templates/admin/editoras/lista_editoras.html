@@ -1,0 +1,177 @@
+{% extends 'admin/base_admin.html' %}
+{% load static %}
+
+{% block title %}Editoras - Admin{% endblock %}
+{% block icon %}building{% endblock %}
+{% block page_title %}Gerenciar Editoras{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Cards de Estatísticas -->
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <div class="card text-white bg-primary">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="card-title">Total de Editoras</h6>
+                            <h2 class="mb-0">{{ total_editoras }}</h2>
+                        </div>
+                        <i class="bi bi-building fs-1"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card text-white bg-success">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="card-title">Editoras Ativas</h6>
+                            <h2 class="mb-0">{{ editoras_ativas }}</h2>
+                        </div>
+                        <i class="bi bi-check-circle fs-1"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card text-white bg-info">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="card-title">Total de Livros</h6>
+                            <h2 class="mb-0">{{ total_livros }}</h2>
+                        </div>
+                        <i class="bi bi-book fs-1"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Botão Nova Editora e Busca -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <div class="d-flex justify-content-between align-items-center flex-wrap">
+                <a href="{% url 'cadastro_editora' %}" class="btn btn-success">
+                    <i class="bi bi-plus-circle"></i> Nova Editora
+                </a>
+                
+                <form method="get" class="d-flex gap-2">
+                    <input type="text" name="busca" class="form-control" placeholder="Buscar editora..." value="{{ busca }}">
+                    <select name="status" class="form-select" style="width: auto;">
+                        <option value="">Todos</option>
+                        <option value="ativo" {% if status == 'ativo' %}selected{% endif %}>Ativas</option>
+                        <option value="inativo" {% if status == 'inativo' %}selected{% endif %}>Inativas</option>
+                    </select>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-search"></i> Filtrar
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Lista de Editoras -->
+    <div class="row">
+        {% for editora in editoras %}
+        <div class="col-md-6 col-lg-4 mb-4">
+            <div class="card h-100 {% if not editora.ativo %}bg-light{% endif %}">
+                <div class="card-header {% if editora.ativo %}bg-primary text-white{% else %}bg-secondary text-white{% endif %}">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">
+                            <i class="bi bi-building me-2"></i>{{ editora.nome }}
+                        </h5>
+                        {% if editora.ativo %}
+                        <span class="badge bg-light text-primary">Ativa</span>
+                        {% else %}
+                        <span class="badge bg-dark">Inativa</span>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="card-body">
+                    {% if editora.site %}
+                    <p class="small text-muted mb-2">
+                        <i class="bi bi-globe"></i> <a href="{{ editora.site }}" target="_blank">{{ editora.site }}</a>
+                    </p>
+                    {% endif %}
+                    
+                    {% if editora.telefone %}
+                    <p class="small text-muted mb-2">
+                        <i class="bi bi-telephone"></i> {{ editora.telefone }}
+                    </p>
+                    {% endif %}
+                    
+                    {% if editora.email %}
+                    <p class="small text-muted mb-2">
+                        <i class="bi bi-envelope"></i> {{ editora.email }}
+                    </p>
+                    {% endif %}
+                    
+                    <p class="small text-muted mb-2">
+                        <i class="bi bi-book"></i> Livros: {{ editora.total_livros }}
+                    </p>
+                    
+                    {% if editora.observacoes %}
+                    <p class="small mt-2 mb-0">{{ editora.observacoes|truncatechars:80 }}</p>
+                    {% endif %}
+                </div>
+                <div class="card-footer bg-transparent">
+                    <div class="btn-group w-100">
+                        <a href="{% url 'detalhes_editora' editora.id %}" class="btn btn-sm btn-outline-info">
+                            <i class="bi bi-eye"></i> Detalhes
+                        </a>
+                        <a href="{% url 'editar_editora' editora.id %}" class="btn btn-sm btn-outline-primary">
+                            <i class="bi bi-pencil"></i> Editar
+                        </a>
+                        {% if not editora.livros.exists %}
+                        <a href="{% url 'excluir_editora' editora.id %}" class="btn btn-sm btn-outline-danger">
+                            <i class="bi bi-trash"></i> Excluir
+                        </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12">
+            <div class="alert alert-info text-center">
+                <i class="bi bi-info-circle fs-4 d-block mb-2"></i>
+                <h5>Nenhuma editora encontrada</h5>
+                <p>Clique no botão "Nova Editora" para começar a cadastrar.</p>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Paginação -->
+    {% if editoras.has_other_pages %}
+    <nav aria-label="Paginação" class="mt-4">
+        <ul class="pagination justify-content-center">
+            {% if editoras.has_previous %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ editoras.previous_page_number }}{% if busca %}&busca={{ busca }}{% endif %}{% if status %}&status={{ status }}{% endif %}">Anterior</a>
+            </li>
+            {% endif %}
+
+            {% for i in editoras.paginator.page_range %}
+                {% if editoras.number == i %}
+                <li class="page-item active"><span class="page-link">{{ i }}</span></li>
+                {% else %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ i }}{% if busca %}&busca={{ busca }}{% endif %}{% if status %}&status={{ status }}{% endif %}">{{ i }}</a>
+                </li>
+                {% endif %}
+            {% endfor %}
+
+            {% if editoras.has_next %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ editoras.next_page_number }}{% if busca %}&busca={{ busca }}{% endif %}{% if status %}&status={{ status }}{% endif %}">Próxima</a>
+            </li>
+            {% endif %}
+        </ul>
+    </nav>
+    {% endif %}
+</div>
+{% endblock %}

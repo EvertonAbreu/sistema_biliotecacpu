@@ -1,0 +1,76 @@
+<div class="col-md-3">
+  <div class="card mb-4 filter-card">
+    <div class="card-header bg-white">
+      <h6 class="card-title mb-0">
+        <i class="bi bi-funnel me-2"></i>Filtros
+      </h6>
+    </div>
+    <div class="card-body">
+      <form method="get" id="filtro-form">
+        <div class="mb-3">
+          <label for="periodo" class="form-label">Período</label>
+          <select name="periodo" id="periodo" class="form-select">
+            <option value="30" {% if request.GET.periodo == '30' %}selected{% endif %}>Últimos 30 dias</option>
+            <option value="90" {% if request.GET.periodo == '90' %}selected{% endif %}>Últimos 90 dias</option>
+            <option value="180" {% if request.GET.periodo == '180' %}selected{% endif %}>Últimos 6 meses</option>
+            <option value="365" {% if request.GET.periodo == '365' %}selected{% endif %}>Último ano</option>
+            <option value="tudo" {% if request.GET.periodo == 'tudo' %}selected{% endif %}>Todo o período</option>
+          </select>
+        </div>
+
+        <div class="mb-3">
+          <label for="categoria" class="form-label">Categoria de Livros</label>
+          <select name="categoria" id="categoria" class="form-select">
+            <option value="">Todas</option>
+            <option value="ficcao" {% if request.GET.categoria == 'ficcao' %}selected{% endif %}>Ficção</option>
+            <option value="nao_ficcao" {% if request.GET.categoria == 'nao_ficcao' %}selected{% endif %}>Não-Ficção</option>
+            <option value="tecnico" {% if request.GET.categoria == 'tecnico' %}selected{% endif %}>Técnico</option>
+            <option value="didatico" {% if request.GET.categoria == 'didatico' %}selected{% endif %}>Didático</option>
+            <option value="biografia" {% if request.GET.categoria == 'biografia' %}selected{% endif %}>Biografia</option>
+            <option value="historia" {% if request.GET.categoria == 'historia' %}selected{% endif %}>História</option>
+            <option value="poesia" {% if request.GET.categoria == 'poesia' %}selected{% endif %}>Poesia</option>
+          </select>
+        </div>
+
+        <div class="mb-3">
+          <label for="tipo" class="form-label">Tipo de Relatório</label>
+          <select name="tipo" id="tipo" class="form-select">
+            <option value="emprestimos" {% if request.GET.tipo == 'emprestimos' %}selected{% endif %}>Empréstimos</option>
+            <option value="livros" {% if request.GET.tipo == 'livros' %}selected{% endif %}>Livros</option>
+            <option value="usuarios" {% if request.GET.tipo == 'usuarios' %}selected{% endif %}>Usuários</option>
+          </select>
+        </div>
+
+        <button type="submit" class="btn btn-primary w-100">
+          <i class="bi bi-filter"></i> Aplicar Filtros
+        </button>
+
+        <a href="/sistema/relatorios/" class="btn btn-outline-secondary w-100 mt-2">
+          <i class="bi bi-x-circle"></i> Limpar Filtros
+        </a>
+      </form>
+    </div>
+  </div>
+
+  <!-- Exportar -->
+  <div class="card export-card">
+    <div class="card-header bg-white">
+      <h6 class="card-title mb-0">
+        <i class="bi bi-download me-2"></i>Exportar
+      </h6>
+    </div>
+    <div class="card-body export-buttons">
+      <div class="d-grid gap-2">
+        <button class="btn btn-outline-success export-btn" data-action="excel">
+          <i class="bi bi-file-excel"></i> Excel
+        </button>
+        <button class="btn btn-outline-danger export-btn" data-action="pdf">
+          <i class="bi bi-file-pdf"></i> PDF
+        </button>
+        <button class="btn btn-outline-primary" id="print-btn">
+          <i class="bi bi-printer"></i> Imprimir
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,335 @@
+{% extends 'base/base_admin.html' %}
+{% load static %}
+
+{% block title %}Lista de Livros - Admin{% endblock %}
+{% block icon %}list-task{% endblock %}
+{% block page_title %}Lista de Livros{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/lista_livros.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Cards de Estatísticas -->
+    <div class="row stats-cards mb-4">
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card stat-card stat-primary">
+                <div class="card-body">
+                    <div class="stat-content">
+                        <div class="stat-icon">
+                            <i class="fas fa-book"></i>
+                        </div>
+                        <div class="stat-info">
+                            <div class="stat-label">Total de Livros</div>
+                            <div class="stat-number">{{ total_livros }}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card stat-card stat-success">
+                <div class="card-body">
+                    <div class="stat-content">
+                        <div class="stat-icon">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <div class="stat-info">
+                            <div class="stat-label">Disponíveis</div>
+                            <div class="stat-number">{{ total_disponiveis }}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card stat-card stat-warning">
+                <div class="card-body">
+                    <div class="stat-content">
+                        <div class="stat-icon">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <div class="stat-info">
+                            <div class="stat-label">Emprestados</div>
+                            <div class="stat-number">{{ total_emprestados }}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card stat-card stat-info">
+                <div class="card-body">
+                    <div class="stat-content">
+                        <div class="stat-icon">
+                            <i class="fas fa-layer-group"></i>
+                        </div>
+                        <div class="stat-info">
+                            <div class="stat-label">Prateleiras</div>
+                            <div class="stat-number">{{ total_prateleiras }}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Barra de Ações -->
+    <div class="card mb-4 action-bar">
+        <div class="card-body">
+            <div class="d-flex justify-content-between align-items-center flex-wrap">
+                <div>
+                    <a href="{% url 'cadastro_livro' %}" class="btn btn-success">
+                        <i class="fas fa-plus-circle me-2"></i>Novo Livro
+                    </a>
+                </div>
+                
+                <div class="d-flex gap-3 align-items-center flex-wrap">
+                    <!-- Filtro por Categoria -->
+                    <div class="filter-group">
+                        <label class="form-label small mb-1">Categoria</label>
+                        <select class="form-select form-select-sm" id="filtroCategoria">
+                            <option value="">Todas</option>
+                            {% for cat_value, cat_label in categorias %}
+                            <option value="{{ cat_value }}">{{ cat_label }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <!-- Filtro por Status -->
+                    <div class="filter-group">
+                        <label class="form-label small mb-1">Status</label>
+                        <select class="form-select form-select-sm" id="filtroStatus">
+                            <option value="">Todos</option>
+                            <option value="ativo">Ativos</option>
+                            <option value="inativo">Inativos</option>
+                            <option value="disponivel">Disponíveis</option>
+                            <option value="indisponivel">Indisponíveis</option>
+                        </select>
+                    </div>
+
+                    <!-- Busca -->
+                    <div class="filter-group">
+                        <label class="form-label small mb-1">Buscar</label>
+                        <div class="input-group input-group-sm">
+                            <input type="text" id="buscaLivros" class="form-control" 
+                                   placeholder="Título, autor...">
+                            <button class="btn btn-outline-secondary" type="button">
+                                <i class="fas fa-search"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tabela de Livros -->
+    <div class="card">
+        <div class="card-header">
+            <h6 class="card-title mb-0">
+                <i class="fas fa-list me-2"></i>Livros Cadastrados
+                <span class="badge bg-info ms-2">{{ livros|length }} livro{{ livros|length|pluralize:"s" }}</span>
+            </h6>
+        </div>
+        
+        <div class="card-body">
+            <div class="table-responsive">
+                {% if livros %}
+                <table class="table table-hover" id="tabelaLivros">
+                    <thead>
+                        <tr>
+                            <th width="30%">Título</th>
+                            <th width="15%">Autor</th>
+                            <th width="12%">Categoria</th>
+                            <th width="10%">Prateleira</th>
+                            <th width="18%">Quantidades</th>
+                            <th width="10%">Status</th>
+                            <th width="5%" class="text-end">Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for livro in livros %}
+                        <tr class="livro-row" 
+                            data-categoria="{{ livro.categoria }}"
+                            data-status="{% if livro.ativo %}ativo{% else %}inativo{% endif %}"
+                            data-disponivel="{% if livro.quantidade_disponivel > 0 %}disponivel{% else %}indisponivel{% endif %}"
+                            data-titulo="{{ livro.titulo|lower }}"
+                            data-autor="{{ livro.autor|lower }}">
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <div class="book-icon me-3">
+                                        <i class="fas fa-book text-primary"></i>
+                                    </div>
+                                    <div>
+                                        <strong class="d-block">{{ livro.titulo|truncatechars:35 }}</strong>
+                                        <small class="text-muted">
+                                            {{ livro.editora }} • {{ livro.ano_publicacao }}
+                                        </small>
+                                        {% if livro.quantidade_disponivel == 0 %}
+                                        <span class="badge bg-danger ms-2 small">Esgotado</span>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </td>
+                            <td>{{ livro.autor|truncatechars:20 }}</td>
+                            <td>
+                                <span class="badge bg-secondary">{{ livro.get_categoria_display }}</span>
+                            </td>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <i class="fas fa-layer-group text-info me-2"></i>
+                                    <span class="fw-medium">{{ livro.prateleira }}</span>
+                                </div>
+                            </td>
+                            <td>
+                                <!-- Barra de Progresso -->
+                                <div class="progress mb-2" style="height: 6px">
+                                    <div class="progress-bar bg-success" role="progressbar" 
+                                         style="width: {% widthratio livro.quantidade_disponivel livro.quantidade_total 100 %}%"></div>
+                                </div>
+                                
+                                <!-- Detalhes das Quantidades -->
+                                <div class="d-flex justify-content-between small">
+                                    <span class="text-success">
+                                        <i class="fas fa-check-circle me-1"></i>
+                                        {{ livro.quantidade_disponivel }}
+                                    </span>
+                                    <span class="text-muted">•</span>
+                                    <span class="text-warning">
+                                        <i class="fas fa-clock me-1"></i>
+                                        {{ livro.quantidade_emprestada }}
+                                    </span>
+                                    <span class="text-muted">•</span>
+                                    <span class="text-secondary">
+                                        <i class="fas fa-box me-1"></i>
+                                        {{ livro.quantidade_total }}
+                                    </span>
+                                </div>
+                            </td>
+                            <td>
+                                {% if livro.ativo %}
+                                <span class="badge bg-success">
+                                    <i class="fas fa-check me-1"></i>Ativo
+                                </span>
+                                {% else %}
+                                <span class="badge bg-danger">
+                                    <i class="fas fa-times me-1"></i>Inativo
+                                </span>
+                                {% endif %}
+                            </td>
+                            <td class="text-end">
+                                <div class="btn-group btn-group-sm">
+                                    <a href="{% url 'editar_livro' livro.id %}" 
+                                       class="btn btn-outline-primary" 
+                                       title="Editar">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <button type="button" 
+                                            class="btn btn-outline-info ver-detalhes" 
+                                            title="Detalhes"
+                                            data-livro-id="{{ livro.id }}">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                    <button type="button" 
+                                            class="btn btn-outline-secondary ver-historico" 
+                                            title="Histórico"
+                                            data-livro-id="{{ livro.id }}">
+                                        <i class="fas fa-history"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+
+                <!-- Paginação -->
+                {% if livros.has_other_pages %}
+                <nav aria-label="Paginação" class="mt-4">
+                    <ul class="pagination justify-content-center">
+                        {% if livros.has_previous %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ livros.previous_page_number }}">Anterior</a>
+                        </li>
+                        {% else %}
+                        <li class="page-item disabled">
+                            <span class="page-link">Anterior</span>
+                        </li>
+                        {% endif %}
+
+                        {% for i in livros.paginator.page_range %}
+                            {% if livros.number == i %}
+                            <li class="page-item active">
+                                <span class="page-link">{{ i }}</span>
+                            </li>
+                            {% else %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ i }}">{{ i }}</a>
+                            </li>
+                            {% endif %}
+                        {% endfor %}
+
+                        {% if livros.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ livros.next_page_number }}">Próxima</a>
+                        </li>
+                        {% else %}
+                        <li class="page-item disabled">
+                            <span class="page-link">Próxima</span>
+                        </li>
+                        {% endif %}
+                    </ul>
+                </nav>
+                {% endif %}
+
+                {% else %}
+                <!-- Mensagem quando não há livros -->
+                <div class="text-center py-5 empty-state">
+                    <i class="fas fa-book-open fa-4x text-muted mb-3"></i>
+                    <h4 class="text-muted">Nenhum livro encontrado</h4>
+                    <p class="text-muted mb-4">Cadastre seu primeiro livro para começar</p>
+                    <a href="{% url 'cadastro_livro' %}" class="btn btn-primary">
+                        <i class="fas fa-plus-circle me-2"></i>Cadastrar Livro
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para Detalhes do Livro -->
+<div class="modal fade" id="modalDetalhesLivro" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="fas fa-book me-2"></i>Detalhes do Livro
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" id="conteudoDetalhesLivro">
+                <!-- Conteúdo carregado via AJAX -->
+                <div class="text-center py-4">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Carregando...</span>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                <button type="button" class="btn btn-primary" id="btnEditarLivro">Editar</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/lista_livros.js' %}"></script>
+{% endblock %}

@@ -1,0 +1,147 @@
+/* Estilos personalizados para a página de história */
+
+/* Animação de virar página */
+@keyframes pageTurn {
+    0% {
+        transform: rotateY(0deg);
+    }
+    50% {
+        transform: rotateY(-10deg);
+    }
+    100% {
+        transform: rotateY(0deg);
+    }
+}
+
+.book-page {
+    animation: pageTurn 0.6s ease-out;
+}
+
+/* Estilos para modo noturno */
+.book-page.dark-mode {
+    background-color: #1a1a1a !important;
+    color: #ffffff !important;
+    border-color: #333 !important;
+}
+
+.book-page.dark-mode .page-header {
+    border-bottom-color: #764ba2;
+}
+
+/* Efeito de papel envelhecido */
+.book-page::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: 
+        linear-gradient(
+            rgba(255, 255, 255, 0.8) 0%,
+            rgba(255, 255, 255, 0.2) 2%,
+            rgba(255, 255, 255, 0) 3%
+        ),
+        repeating-linear-gradient(
+            0deg,
+            transparent,
+            transparent 20px,
+            rgba(0, 0, 0, 0.05) 20px,
+            rgba(0, 0, 0, 0.05) 21px
+        );
+    pointer-events: none;
+    border-radius: 10px;
+}
+
+/* Estilo para citações */
+blockquote {
+    border-left: 4px solid #764ba2;
+    padding-left: 20px;
+    margin: 20px 0;
+    font-style: italic;
+    color: #555;
+}
+
+.book-page.dark-mode blockquote {
+    color: #ccc;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+    .book-page {
+        padding: 20px;
+        min-height: 400px;
+    }
+    
+    .navigation-buttons .btn {
+        margin-bottom: 10px;
+    }
+    
+    .btn-group {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+    
+    .btn-group .btn {
+        margin: 2px;
+        padding: 5px 10px;
+    }
+}
+
+/* Estilo para títulos */
+.page-title {
+    font-family: 'Times New Roman', serif;
+    font-weight: bold;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+/* Estilo para o número da página */
+.page-number {
+    font-family: 'Courier New', monospace;
+    font-size: 0.9rem;
+}
+
+/* Transição suave para mudanças de página */
+#page-title, #text-content {
+    transition: opacity 0.3s ease-in-out;
+}
+
+/* Efeito de hover nos botões de navegação */
+.navigation-buttons .btn:hover {
+    transform: translateY(-2px);
+    transition: transform 0.2s;
+}
+
+/* Estilo para a linha do tempo */
+.timeline-item h6 {
+    color: #764ba2;
+    font-weight: bold;
+}
+
+.timeline-item p {
+    color: #666;
+    font-size: 0.95rem;
+}
+
+.book-page.dark-mode .timeline-item p {
+    color: #ccc;
+}
+
+/* Estilo para cards de informação */
+.info-card h5 {
+    color: #667eea;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 8px;
+    margin-bottom: 15px;
+}
+
+.book-page.dark-mode .info-card {
+    background-color: #2a2a2a;
+    color: #ffffff;
+}
+
+.book-page.dark-mode .info-card h5 {
+    color: #a78bfa;
+    border-bottom-color: #444;
+}

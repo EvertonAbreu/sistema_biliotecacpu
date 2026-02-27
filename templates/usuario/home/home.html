@@ -1,0 +1,235 @@
+{% extends 'base/base_usuario.html' %}
+{% load static %}
+
+{% block title %}Biblioteca Pública Municipal - Portal do Conhecimento{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/home.css' %}">
+{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero-section">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-8">
+                <div class="hero-content">
+                    <h1 class="hero-title animate-on-scroll">
+                        Portal do Conhecimento e Cultura
+                    </h1>
+                    <p class="hero-subtitle animate-on-scroll">
+                        Descubra um universo de conhecimento, explore nossa vasta coleção de livros, 
+                        participe de eventos culturais e conecte-se com a comunidade através da leitura.
+                    </p>
+                    <div class="animate-on-scroll">
+                        <a href="{% url 'acervo' %}" class="btn btn-hero me-3">
+                            <i class="fas fa-book-open me-2"></i> Explorar Acervo
+                        </a>
+                        <a href="{% url 'acervo_pdf' %}" class="btn btn-hero btn-digital">
+                            <i class="fas fa-file-pdf me-2"></i> Livros Digitais
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Statistics -->
+<section class="stats-section">
+    <div class="container">
+        <div class="row g-4">
+            <div class="col-md-3 col-6">
+                <div class="stat-card animate-on-scroll">
+                    <div class="stat-icon">
+                        <i class="fas fa-book"></i>
+                    </div>
+                    <div class="stat-number">
+                        {% if livros_destaque %}
+                            {{ livros_destaque|length }}+
+                        {% else %}
+                            500+
+                        {% endif %}
+                    </div>
+                    <div class="stat-label">Livros Disponíveis</div>
+                </div>
+            </div>
+            <div class="col-md-3 col-6">
+                <div class="stat-card animate-on-scroll">
+                    <div class="stat-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <div class="stat-number">1000+</div>
+                    <div class="stat-label">Leitores Ativos</div>
+                </div>
+            </div>
+            <div class="col-md-3 col-6">
+                <div class="stat-card animate-on-scroll">
+                    <div class="stat-icon">
+                        <i class="fas fa-calendar-check"></i>
+                    </div>
+                    <div class="stat-number">50+</div>
+                    <div class="stat-label">Eventos Anuais</div>
+                </div>
+            </div>
+            <div class="col-md-3 col-6">
+                <div class="stat-card animate-on-scroll">
+                    <div class="stat-icon">
+                        <i class="fas fa-file-pdf"></i>
+                    </div>
+                    <div class="stat-number">100+</div>
+                    <div class="stat-label">E-books Gratuitos</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Features -->
+<section class="features-section">
+    <div class="container">
+        <div class="section-title">
+            <h2 class="animate-on-scroll">Nossos Serviços</h2>
+            <p class="animate-on-scroll">Oferecemos uma variedade de serviços para atender todas as suas necessidades de leitura e aprendizado</p>
+        </div>
+        
+        <div class="row g-4">
+            <div class="col-lg-4 col-md-6">
+                <div class="feature-card animate-on-scroll">
+                    <div class="feature-icon">
+                        <i class="fas fa-book-reader"></i>
+                    </div>
+                    <h3 class="feature-title">Empréstimo de Livros</h3>
+                    <p>Faça empréstimos de livros físicos por até 15 dias. Renovações disponíveis online.</p>
+                </div>
+            </div>
+            
+            <div class="col-lg-4 col-md-6">
+                <div class="feature-card animate-on-scroll">
+                    <div class="feature-icon">
+                        <i class="fas fa-laptop"></i>
+                    </div>
+                    <h3 class="feature-title">Biblioteca Digital</h3>
+                    <p>Acesso a milhares de livros digitais, revistas científicas e artigos acadêmicos.</p>
+                </div>
+            </div>
+            
+            <div class="col-lg-4 col-md-6">
+                <div class="feature-card animate-on-scroll">
+                    <div class="feature-icon">
+                        <i class="fas fa-chalkboard-teacher"></i>
+                    </div>
+                    <h3 class="feature-title">Clube de Leitura</h3>
+                    <p>Participe de nossos clubes de leitura e discussões literárias mensais.</p>
+                </div>
+            </div>
+            
+            <div class="col-lg-4 col-md-6">
+                <div class="feature-card animate-on-scroll">
+                    <div class="feature-icon">
+                        <i class="fas fa-child"></i>
+                    </div>
+                    <h3 class="feature-title">Programas Infantis</h3>
+                    <p>Contação de histórias, atividades lúdicas e incentivo à leitura para crianças.</p>
+                </div>
+            </div>
+            
+            <div class="col-lg-4 col-md-6">
+                <div class="feature-card animate-on-scroll">
+                    <div class="feature-icon">
+                        <i class="fas fa-search"></i>
+                    </div>
+                    <h3 class="feature-title">Pesquisa Acadêmica</h3>
+                    <p>Suporte para pesquisas acadêmicas com acesso a bases de dados especializadas.</p>
+                </div>
+            </div>
+            
+            <div class="col-lg-4 col-md-6">
+                <div class="feature-card animate-on-scroll">
+                    <div class="feature-icon">
+                        <i class="fas fa-desktop"></i>
+                    </div>
+                    <h3 class="feature-title">Espaço Tecnológico</h3>
+                    <p>Computadores com internet, impressoras e scanners disponíveis para uso público.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Featured Books -->
+<section class="books-section">
+    <div class="container">
+        <div class="section-title">
+            <h2 class="animate-on-scroll">Livros em Destaque</h2>
+            <p class="animate-on-scroll">Confira alguns dos livros mais populares de nosso acervo</p>
+        </div>
+        
+        <div class="row g-4">
+            {% if livros_destaque %}
+                {% for livro in livros_destaque %}
+                <div class="col-lg-3 col-md-4 col-sm-6">
+                    <div class="book-card animate-on-scroll">
+                        <div class="book-image">
+                            <div class="book-image-placeholder">
+                                <i class="fas fa-book"></i>
+                            </div>
+                            {% if livro.quantidade_disponivel == 0 %}
+                            <div class="book-badge unavailable">Indisponível</div>
+                            {% else %}
+                            <div class="book-badge available">Disponível</div>
+                            {% endif %}
+                        </div>
+                        <div class="book-content">
+                            <h4 class="book-title">{{ livro.titulo }}</h4>
+                            <p class="book-author"><i class="fas fa-user-edit me-2"></i>{{ livro.autor }}</p>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="book-category">{{ livro.categoria }}</span>
+                                <span class="book-year">{{ livro.ano_publicacao }}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}
+                <div class="col-12 text-center">
+                    <p class="text-muted">Nenhum livro em destaque no momento.</p>
+                </div>
+            {% endif %}
+        </div>
+        
+        <div class="text-center mt-5 animate-on-scroll">
+            <a href="{% url 'acervo' %}" class="btn btn-primary btn-lg">
+                <i class="fas fa-book-open me-2"></i> Ver Todos os Livros
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- CTA Section -->
+<section class="cta-section">
+    <div class="container">
+        <h2 class="cta-title animate-on-scroll">Junte-se à Nossa Comunidade</h2>
+        <p class="cta-text animate-on-scroll">
+            Faça parte da nossa comunidade de leitores. Cadastre-se gratuitamente e tenha acesso a todos os recursos 
+            da biblioteca, incluindo empréstimos de livros, eventos exclusivos e muito mais.
+        </p>
+        
+        <div class="animate-on-scroll">
+            {% if user.is_authenticated %}
+            <a href="{% url 'perfil_usuario' %}" class="btn btn-cta">
+                <i class="fas fa-user me-2"></i> Acessar Minha Conta
+            </a>
+            {% else %}
+            <a href="{% url 'login' %}" class="btn btn-cta">
+                <i class="fas fa-sign-in-alt me-2"></i> Fazer Login / Cadastrar
+            </a>
+            {% endif %}
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/home.js' %}"></script>
+{% endblock %}

@@ -1,0 +1,40 @@
+/* Estilos específicos para a página de eventos admin */
+
+/* Cards de eventos na lista */
+.evento-miniatura {
+    width: 60px;
+    height: 60px;
+    object-fit: cover;
+    border-radius: 5px;
+}
+
+/* Preview de imagem no formulário */
+#image-preview {
+    max-width: 100%;
+    max-height: 300px;
+    object-fit: contain;
+}
+
+/* Status badges */
+.badge-ativo {
+    background-color: #28a745;
+    color: white;
+}
+
+.badge-inativo {
+    background-color: #6c757d;
+    color: white;
+}
+
+/* Responsividade para tabelas */
+@media (max-width: 768px) {
+    .evento-miniatura {
+        width: 40px;
+        height: 40px;
+    }
+    
+    .btn-group .btn-sm {
+        padding: 0.25rem 0.5rem;
+        font-size: 0.875rem;
+    }
+}

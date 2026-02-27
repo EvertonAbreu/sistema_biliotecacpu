@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="pt-br" data-bs-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Biblioteca Pública Municipal - Acesso ao conhecimento e cultura.">
+    <title>{% block title %}Biblioteca Pública Municipal{% endblock %}</title>
+    
+    <!-- Bootstrap 5.3 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Merriweather:wght@400;700&display=swap" rel="stylesheet">
+    
+    <!-- CSS Principal -->
+    <link rel="stylesheet" href="{% static 'css/usuario.css' %}">
+    
+    {% block extra_css %}{% endblock %}
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="{% static 'images/favicon.ico' %}">
+
+    <style>
+        /* Estilos personalizados para a navbar de ícones */
+        .navbar-custom {
+            background: linear-gradient(135deg, #2c3e50 0%, #1a252f 100%);
+            padding: 0.5rem 1rem;
+        }
+
+        .navbar-brand {
+            font-size: 1.25rem;
+            letter-spacing: 0.5px;
+        }
+
+        .small-brand {
+            font-size: 1.1rem;
+        }
+
+        /* Estilo para os itens da navbar com ícones e texto oculto */
+        .nav-item-icon {
+            position: relative;
+            margin: 0 0.2rem;
+        }
+
+        .nav-link-icon {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 1.3rem;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .nav-link-icon:hover {
+            color: #fff;
+            background-color: rgba(255, 255, 255, 0.15);
+            transform: translateY(-2px);
+        }
+
+        .nav-link-icon.active {
+            color: #ffc107;
+            background-color: rgba(255, 193, 7, 0.15);
+        }
+
+        /* Tooltip personalizado que aparece no hover */
+        .nav-link-icon::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            bottom: -35px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: rgba(0, 0, 0, 0.8);
+            color: #fff;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+            white-space: nowrap;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.2s ease;
+            pointer-events: none;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .nav-link-icon:hover::after {
+            opacity: 1;
+            visibility: visible;
+            bottom: -40px;
+        }
+
+        /* Dropdown especial */
+        .dropdown-icon {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 1.3rem;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .dropdown-icon:hover {
+            color: #fff;
+            background-color: rgba(255, 255, 255, 0.15);
+        }
+
+        .dropdown-menu-icon {
+            background: #2c3e50;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 0.5rem;
+            min-width: 200px;
+            margin-top: 10px;
+        }
+
+        .dropdown-menu-icon .dropdown-item {
+            color: rgba(255, 255, 255, 0.8);
+            border-radius: 5px;
+            padding: 0.5rem 1rem;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .dropdown-menu-icon .dropdown-item:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: #fff;
+        }
+
+        .dropdown-menu-icon .dropdown-item i {
+            width: 20px;
+            font-size: 1rem;
+        }
+
+        /* Separador */
+        .nav-separator {
+            width: 1px;
+            height: 30px;
+            background-color: rgba(255, 255, 255, 0.2);
+            margin: 0 0.5rem;
+        }
+
+        /* Footer estilizado */
+        .footer {
+            background: linear-gradient(135deg, #2c3e50 0%, #1a252f 100%);
+            color: #f8f9fa;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .footer::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #ffc107, #fd7e14, #ffc107);
+        }
+
+        .footer h5, .footer h6 {
+            color: #ffc107;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        .footer a {
+            color: #adb5bd;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            font-size: 0.95rem;
+        }
+
+        .footer a:hover {
+            color: #ffc107;
+            padding-left: 5px;
+        }
+
+        .social-hover {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .social-hover:hover {
+            background-color: #ffc107;
+            color: #1a252f !important;
+            transform: translateY(-3px);
+        }
+
+        .footer hr {
+            opacity: 0.2;
+            margin: 2rem 0;
+        }
+
+        /* Preloader */
+        .preloader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #2c3e50;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            transition: opacity 0.5s;
+        }
+
+        .preloader.fade-out {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .preloader-content {
+            color: white;
+        }
+
+        .preloader .fa-spin {
+            animation: fa-spin 2s infinite linear;
+        }
+
+        @keyframes fa-spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Responsividade */
+        @media (max-width: 991px) {
+            .navbar-collapse {
+                background: #2c3e50;
+                padding: 1rem;
+                border-radius: 10px;
+                margin-top: 1rem;
+            }
+
+            .nav-item-icon {
+                margin: 0.5rem 0;
+            }
+
+            .nav-link-icon {
+                width: auto;
+                height: auto;
+                border-radius: 5px;
+                padding: 0.5rem 1rem;
+                justify-content: flex-start;
+                gap: 10px;
+            }
+
+            .nav-link-icon::after {
+                display: none;
+            }
+
+            .nav-link-icon i {
+                font-size: 1.1rem;
+                width: 25px;
+            }
+
+            .nav-separator {
+                width: 100%;
+                height: 1px;
+                margin: 1rem 0;
+            }
+
+            .dropdown-icon {
+                width: auto;
+                height: auto;
+                border-radius: 5px;
+                padding: 0.5rem 1rem;
+                justify-content: flex-start;
+                gap: 10px;
+            }
+
+            .dropdown-menu-icon {
+                margin-left: 35px;
+                width: calc(100% - 35px);
+            }
+        }
+    </style>
+</head>
+
+<body class="d-flex flex-column min-vh-100">
+
+    <!-- PRELOADER -->
+    <div class="preloader" id="preloader">
+        <div class="preloader-content text-center">
+            <i class="fas fa-book-open fa-spin fa-3x text-primary mb-3"></i>
+            <p class="fw-semibold">Carregando biblioteca...</p>
+        </div>
+    </div>
+
+    <!-- NAVBAR REFINADA COM ÍCONES SEM TEXTO -->
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top shadow-sm navbar-custom">
+        <div class="container">
+            
+            <!-- Logo -->
+            <a class="navbar-brand fw-semibold small-brand" href="{% url 'home' %}">
+                <i class="bi bi-book-half me-2"></i> Biblioteca Pública
+            </a>
+
+            <!-- Botão Mobile -->
+            <button class="navbar-toggler border-0 shadow-none" 
+                    type="button" 
+                    data-bs-toggle="collapse" 
+                    data-bs-target="#navbarMain">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarMain">
+                <ul class="navbar-nav ms-auto align-items-lg-center">
+
+                    <!-- Início -->
+                    <li class="nav-item nav-item-icon">
+                        <a class="nav-link-icon {% if request.resolver_match.url_name == 'home' %}active{% endif %}" 
+                           href="{% url 'home' %}"
+                           data-tooltip="Início">
+                            <i class="fas fa-home"></i>
+                        </a>
+                    </li>
+
+                    <!-- Acervo Físico -->
+                    <li class="nav-item nav-item-icon">
+                        <a class="nav-link-icon {% if request.resolver_match.url_name == 'acervo' %}active{% endif %}" 
+                           href="{% url 'acervo' %}"
+                           data-tooltip="Acervo Físico">
+                            <i class="fas fa-book-open"></i>
+                        </a>
+                    </li>
+
+                    <!-- Acervo Digital -->
+                    <li class="nav-item nav-item-icon">
+                        <a class="nav-link-icon {% if request.resolver_match.url_name == 'acervo_pdf' %}active{% endif %}" 
+                           href="{% url 'acervo_pdf' %}"
+                           data-tooltip="Acervo Digital">
+                            <i class="fas fa-file-pdf"></i>
+                        </a>
+                    </li>
+
+                    <!-- Eventos -->
+                    <li class="nav-item nav-item-icon">
+                        <a class="nav-link-icon {% if request.resolver_match.url_name == 'eventos' %}active{% endif %}" 
+                           href="{% url 'eventos' %}"
+                           data-tooltip="Eventos">
+                            <i class="fas fa-calendar-alt"></i>
+                        </a>
+                    </li>
+
+                    <!-- História -->
+                    <li class="nav-item nav-item-icon">
+                        <a class="nav-link-icon {% if request.resolver_match.url_name == 'historia_cidade' %}active{% endif %}" 
+                           href="{% url 'historia_cidade' %}"
+                           data-tooltip="História">
+                            <i class="fas fa-landmark"></i>
+                        </a>
+                    </li>
+
+                    <!-- Informações -->
+                    <li class="nav-item nav-item-icon">
+                        <a class="nav-link-icon {% if request.resolver_match.url_name == 'informacoes' %}active{% endif %}" 
+                           href="{% url 'informacoes' %}"
+                           data-tooltip="Informações">
+                            <i class="fas fa-info-circle"></i>
+                        </a>
+                    </li>
+
+                    <!-- Separador -->
+                    <li class="nav-separator d-none d-lg-block"></li>
+
+                    <!-- Usuário -->
+                    {% if user.is_authenticated %}
+                        {% if user.is_staff or user.is_superuser %}
+                        <li class="nav-item nav-item-icon">
+                            <a class="nav-link-icon {% if 'dashboard' in request.path %}active{% endif %}" 
+                               href="{% url 'dashboard' %}"
+                               data-tooltip="Dashboard">
+                                <i class="fas fa-chart-line"></i>
+                            </a>
+                        </li>
+                        {% else %}
+                        <li class="nav-item nav-item-icon">
+                            <a class="nav-link-icon {% if request.resolver_match.url_name == 'perfil_usuario' %}active{% endif %}" 
+                               href="{% url 'perfil_usuario' %}"
+                               data-tooltip="Minha Conta">
+                                <i class="fas fa-user"></i>
+                            </a>
+                        </li>
+                        {% endif %}
+                        <li class="nav-item nav-item-icon">
+                            <a class="nav-link-icon text-warning" 
+                               href="{% url 'logout' %}"
+                               data-tooltip="Sair">
+                                <i class="fas fa-sign-out-alt"></i>
+                            </a>
+                        </li>
+                    {% else %}
+                        <li class="nav-item nav-item-icon">
+                            <a class="nav-link-icon {% if request.resolver_match.url_name == 'login' %}active{% endif %}" 
+                               href="{% url 'login' %}"
+                               data-tooltip="Login">
+                                <i class="fas fa-sign-in-alt"></i>
+                            </a>
+                        </li>
+                    {% endif %}
+
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- CONTEÚDO -->
+    <main class="flex-fill" style="margin-top:90px;">
+        {% block content %}{% endblock %}
+
+        {% if messages %}
+        <div class="container mt-3">
+            {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} alert-dismissible fade show shadow-sm" role="alert">
+                <i class="fas 
+                    {% if message.tags == 'success' %}fa-check-circle
+                    {% elif message.tags == 'error' or message.tags == 'danger' %}fa-exclamation-circle
+                    {% elif message.tags == 'warning' %}fa-exclamation-triangle
+                    {% else %}fa-info-circle{% endif %} me-2">
+                </i>
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+    </main>
+
+    <!-- FOOTER PADRONIZADO -->
+    <footer class="footer bg-dark text-light pt-5 mt-auto">
+        <div class="container">
+            <div class="row gy-4">
+                
+                <!-- Sobre -->
+                <div class="col-lg-3 col-md-6">
+                    <h5 class="fw-bold mb-3">
+                        <i class="bi bi-book-half me-2"></i> Biblioteca Pública
+                    </h5>
+                    <p class="text-secondary">
+                        Promovendo conhecimento e cultura para toda a comunidade.
+                        Um espaço de aprendizado, leitura e transformação social.
+                    </p>
+
+                    <!-- Redes Sociais -->
+                    <div class="d-flex gap-3 mt-3">
+                        <a href="#" class="text-light fs-5 social-hover">
+                            <i class="fab fa-facebook-f"></i>
+                        </a>
+                        <a href="#" class="text-light fs-5 social-hover">
+                            <i class="fab fa-instagram"></i>
+                        </a>
+                        <a href="#" class="text-light fs-5 social-hover">
+                            <i class="fab fa-youtube"></i>
+                        </a>
+                        <a href="#" class="text-light fs-5 social-hover">
+                            <i class="fab fa-whatsapp"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Links -->
+                <div class="col-lg-3 col-md-6">
+                    <h6 class="fw-semibold mb-3">Links Rápidos</h6>
+                    <ul class="list-unstyled">
+                        <li class="mb-2"><a href="{% url 'home' %}" class="text-decoration-none text-secondary"><i class="fas fa-chevron-right me-2 small"></i>Início</a></li>
+                        <li class="mb-2"><a href="{% url 'acervo' %}" class="text-decoration-none text-secondary"><i class="fas fa-chevron-right me-2 small"></i>Acervo Físico</a></li>
+                        <li class="mb-2"><a href="{% url 'acervo_pdf' %}" class="text-decoration-none text-secondary"><i class="fas fa-chevron-right me-2 small"></i>Acervo Digital</a></li>
+                        <li class="mb-2"><a href="{% url 'eventos' %}" class="text-decoration-none text-secondary"><i class="fas fa-chevron-right me-2 small"></i>Eventos</a></li>
+                        <li class="mb-2"><a href="{% url 'informacoes' %}" class="text-decoration-none text-secondary"><i class="fas fa-chevron-right me-2 small"></i>Informações</a></li>
+                    </ul>
+                </div>
+
+                <!-- Horário -->
+                <div class="col-lg-3 col-md-6">
+                    <h6 class="fw-semibold mb-3">Horário de Funcionamento</h6>
+                    <ul class="list-unstyled text-secondary">
+                        <li class="mb-2"><i class="far fa-clock me-2"></i> Segunda a Sexta: 8h às 18h</li>
+                        <li class="mb-2"><i class="far fa-clock me-2"></i> Sábado: 9h às 13h</li>
+                        <li class="mb-2"><i class="far fa-clock me-2"></i> Domingo: Fechado</li>
+                        <li class="mt-3 mb-2"><i class="fas fa-phone me-2"></i> (11) 99999-9999</li>
+                        <li class="mb-2"><i class="fas fa-envelope me-2"></i> contato@biblioteca.gov.br</li>
+                    </ul>
+                </div>
+
+                <!-- Localização -->
+                <div class="col-lg-3 col-md-6">
+                    <h6 class="fw-semibold mb-3">Localização</h6>
+                    <ul class="list-unstyled text-secondary">
+                        <li class="mb-2"><i class="fas fa-map-marker-alt me-2"></i> Rua das Bibliotecas, 123</li>
+                        <li class="mb-2"><i class="fas fa-city me-2"></i> Centro - Sua Cidade/UF</li>
+                        <li class="mb-2"><i class="fas fa-map-pin me-2"></i> CEP: 00000-000</li>
+                    </ul>
+
+                    <div class="mt-3">
+                        <a href="#" class="btn btn-outline-light btn-sm rounded-pill">
+                            <i class="fas fa-directions me-2"></i> Como Chegar
+                        </a>
+                    </div>
+                </div>
+
+            </div>
+
+            <hr class="border-secondary mt-4">
+
+            <div class="text-center small text-secondary pb-3">
+                &copy; {% now "Y" %} Biblioteca Pública Municipal — Todos os direitos reservados. Desenvolvido com <i class="fas fa-heart text-danger"></i> para a comunidade.
+            </div>
+        </div>
+    </footer>
+
+    <!-- JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        // Preloader
+        window.addEventListener('load', function() {
+            const preloader = document.getElementById('preloader');
+            preloader.classList.add('fade-out');
+            setTimeout(() => {
+                preloader.style.display = 'none';
+            }, 500);
+        });
+
+        // Fechar dropdowns ao clicar fora
+        document.addEventListener('click', function(event) {
+            const dropdowns = document.querySelectorAll('.dropdown-menu');
+            const toggles = document.querySelectorAll('[data-bs-toggle="dropdown"]');
+            
+            let clickedInside = false;
+            toggles.forEach(toggle => {
+                if (toggle.contains(event.target)) clickedInside = true;
+            });
+            
+            if (!clickedInside) {
+                dropdowns.forEach(dropdown => {
+                    dropdown.classList.remove('show');
+                });
+            }
+        });
+    </script>
+
+    <script src="{% static 'js/usuario.js' %}"></script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

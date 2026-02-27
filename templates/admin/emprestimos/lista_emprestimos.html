@@ -1,0 +1,658 @@
+{% extends 'base/base_admin.html' %}
+{% load static %}
+
+{% block title %}Empréstimos Ativos - Admin{% endblock %}
+{% block icon %}clock-history{% endblock %}
+{% block page_title %}Empréstimos Ativos{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css">
+<link rel="stylesheet" href="{% static 'css/lista_emprestimos.css' %}">
+<style>
+   .acoes-container {
+    display: flex;
+    gap: 4px;
+    justify-content: center;
+}
+
+.btn-acao {
+    width: 20px;
+    height: 12px;
+    padding: 0;
+    font-size: 12px;
+    border-radius: 6px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: 0.15s ease-in-out;
+}
+
+.btn-acao i {
+    font-size: 12px;
+}
+
+.btn-acao:hover {
+    transform: scale(1.05);
+}
+    .btn-acao i {
+        font-size: 14px;
+    }
+    /* Deixar tabela mais compacta */
+#emprestimosTable {
+    font-size: 0.85rem;
+}
+
+#emprestimosTable thead th {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-weight: 600;
+    color: #6c757d;
+    padding: 8px 6px;
+}
+
+#emprestimosTable tbody td {
+    padding: 8px 6px;
+    vertical-align: middle;
+}
+.badge-status {
+    font-size: 0.70rem;
+    padding: 4px 6px;
+    border-radius: 6px;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Cards de Estatísticas -->
+    <div class="row stats-cards mb-4">
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card stat-card stat-primary">
+                <div class="card-body">
+                    <div class="stat-content">
+                        <div class="stat-icon">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <div class="stat-info">
+                            <div class="stat-label">Total Ativos</div>
+                            <div class="stat-number">{{ emprestimos|length }}</div>
+                            <div class="stat-subtext">Empréstimos em aberto</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card stat-card stat-success">
+                <div class="card-body">
+                    <div class="stat-content">
+                        <div class="stat-icon">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <div class="stat-info">
+                            <div class="stat-label">No Prazo</div>
+                            <div class="stat-number" id="count-prazo">
+                                {{ emprestimos_no_prazo|default:"0" }}
+                            </div>
+                            <div class="stat-subtext">Dentro do prazo</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card stat-card stat-warning">
+                <div class="card-body">
+                    <div class="stat-content">
+                        <div class="stat-icon">
+                            <i class="fas fa-exclamation-triangle"></i>
+                        </div>
+                        <div class="stat-info">
+                            <div class="stat-label">Vencendo Hoje</div>
+                            <div class="stat-number" id="count-hoje">{{ emprestimos_vencendo_hoje|default:"0" }}</div>
+                            <div class="stat-subtext">Vencem hoje</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card stat-card stat-danger">
+                <div class="card-body">
+                    <div class="stat-content">
+                        <div class="stat-icon">
+                            <i class="fas fa-exclamation-circle"></i>
+                        </div>
+                        <div class="stat-info">
+                            <div class="stat-label">Em Atraso</div>
+                            <div class="stat-number" id="count-atrasado">{{ emprestimos_atrasados|default:"0" }}</div>
+                            <div class="stat-subtext">Fora do prazo</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filtros e Ações -->
+    <div class="card filter-card mb-4">
+        <div class="card-body">
+            <div class="row align-items-center">
+                <div class="col-md-4 mb-3 mb-md-0">
+                    <div class="input-group">
+                        <span class="input-group-text">
+                            <i class="fas fa-search"></i>
+                        </span>
+                        <input type="text" id="searchInput" class="form-control" 
+                               placeholder="Buscar livro, usuário...">
+                    </div>
+                </div>
+                <div class="col-md-8">
+                    <div class="d-flex flex-wrap gap-2 justify-content-md-end">
+                        <span class="fw-medium me-2 align-self-center">Filtrar por:</span>
+                        <button class="btn btn-filter active" data-filter="all">
+                            <i class="fas fa-list me-1"></i>Todos
+                        </button>
+                        <button class="btn btn-filter" data-filter="prazo">
+                            <i class="fas fa-check-circle me-1"></i>No Prazo
+                        </button>
+                        <button class="btn btn-filter" data-filter="atrasado">
+                            <i class="fas fa-exclamation-circle me-1"></i>Atrasados
+                        </button>
+                        <button class="btn btn-filter" data-filter="hoje">
+                            <i class="fas fa-clock me-1"></i>Vence Hoje
+                        </button>
+                        <button class="btn btn-filter" data-filter="amanha">
+                            <i class="fas fa-calendar-day me-1"></i>Vence Amanhã
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tabela de Empréstimos -->
+    <div class="card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h6 class="card-title mb-0">
+                <i class="fas fa-list-task me-2"></i>Lista de Empréstimos Ativos
+                <span class="badge bg-info ms-2">{{ emprestimos|length }} empréstimo{{ emprestimos|length|pluralize:"s" }}</span>
+            </h6>
+            <div>
+                <button class="btn btn-sm btn-outline-primary me-2" onclick="refreshTable()">
+                    <i class="fas fa-sync-alt"></i> Atualizar
+                </button>
+                <button class="btn btn-sm btn-outline-success" onclick="exportToExcel()">
+                    <i class="fas fa-download"></i> Exportar
+                </button>
+            </div>
+        </div>
+        
+        <div class="card-body">
+            {% if emprestimos %}
+            <div class="table-responsive">
+                <table class="table table-hover" id="emprestimosTable">
+                    <thead>
+                        <tr>
+                            <th width="5%">ID</th>
+                            <th width="22%">Livro</th>
+                            <th width="18%">Usuário</th>
+                            <th width="10%">Data Empréstimo</th>
+                            <th width="10%">Previsão</th>
+                            <th width="10%">Status</th>
+                            <th width="7%">Dias</th>
+                            <th width="18%" class="text-center">Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for emprestimo in emprestimos %}
+                        <tr class="emprestimo-row" 
+                            data-status="{% if emprestimo.status_exibicao == 'Atrasado' %}atrasado{% else %}prazo{% endif %}" 
+                            data-devolucao="{{ emprestimo.data_devolucao_prevista|date:'Y-m-d' }}"
+                            data-search="{{ emprestimo.livro.titulo|lower }} {{ emprestimo.livro.autor|lower }} {{ emprestimo.usuario.get_full_name|default:emprestimo.usuario.username|lower }}">
+                            <td>
+                                <span class="badge bg-light text-dark border small">
+                                    #{{ emprestimo.id }}
+                                </span>                            </td>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <div class="book-icon me-3">
+                                        <i class="fas fa-book text-primary"></i>
+                                    </div>
+                                    <div>
+                                        <strong class="d-block small">{{ emprestimo.livro.titulo|truncatechars:30 }}</strong>
+                                        <small class="text-muted d-block" style="font-size: 0.75rem;">
+                                            {{ emprestimo.livro.autor|truncatechars:20 }}
+                                        </small>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <div class="user-avatar me-3">
+                                        <i class="fas fa-user text-secondary"></i>
+                                    </div>
+                                    <div>
+                                        <strong class="d-block small">{{ emprestimo.usuario.get_full_name|default:emprestimo.usuario.username }}</strong>
+                                        <small class="text-muted d-block" style="font-size: 0.75rem;">
+                                            {{ emprestimo.usuario.email|truncatechars:20 }}
+                                        </small>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="text-center">
+                                    <div class="fw-bold">{{ emprestimo.data_emprestimo|date:"d/m/Y" }}</div>
+                                    <small class="text-muted">{{ emprestimo.data_emprestimo|date:"H:i" }}</small>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="text-center">
+                                    <div class="fw-bold">
+                                        {% if emprestimo.data_devolucao_prevista %}
+                                            {{ emprestimo.data_devolucao_prevista|date:"d/m/Y" }}
+                                        {% else %}
+                                            <span class="text-muted">Não definida</span>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                {% if emprestimo.status_exibicao == 'Atrasado' %}
+                                <span class="badge-status atrasado">
+                                    <i class="fas fa-exclamation-triangle me-1"></i>Atrasado
+                                </span>
+                                {% elif emprestimo.dias_restantes == 0 %}
+                                <span class="badge-status alerta">
+                                    <i class="fas fa-exclamation-circle me-1"></i>Vence Hoje
+                                </span>
+                                {% elif emprestimo.dias_restantes <= 3 and emprestimo.dias_restantes > 0 %}
+                                <span class="badge-status alerta">
+                                    <i class="fas fa-exclamation-circle me-1"></i>Vencendo
+                                </span>
+                                {% else %}
+                                <span class="badge-status prazo">
+                                    <i class="fas fa-check-circle me-1"></i>No Prazo
+                                </span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if emprestimo.dias_atraso > 0 %}
+                                <span class="text-danger fw-bold">
+                                    <i class="fas fa-clock me-1"></i>
+                                    {{ emprestimo.dias_atraso }}d
+                                </span>
+                                {% elif emprestimo.dias_restantes is not None %}
+                                <span class="text-success">
+                                    <i class="fas fa-calendar-check me-1"></i>
+                                    {{ emprestimo.dias_restantes }}d
+                                </span>
+                                {% else %}
+                                <span class="text-muted">-</span>
+                                {% endif %}
+                            </td>
+                            <td class="text-center">
+                                <div class="acoes-container">
+                                    <!-- Botão Devolver -->
+                                    <button type="button" class="btn btn-success btn-acao btn-devolver" 
+                                            title="Registrar devolução"
+                                            onclick="registrarDevolucao({{ emprestimo.id }}, '{{ emprestimo.livro.titulo|escapejs }}')">
+                                        <i class="fas fa-box-arrow-in-down"></i>
+                                    </button>
+                                    
+                                    <!-- Botão Detalhes -->
+                                    <button type="button" class="btn btn-info btn-acao btn-detalhes" 
+                                            title="Ver detalhes"
+                                            onclick="verDetalhes({{ emprestimo.id }})">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                    
+                                    <!-- Botão WhatsApp (se tiver) -->
+                                    {% if emprestimo.usuario.perfilusuario.whatsapp %}
+                                    <button type="button" class="btn btn-warning btn-acao btn-whatsapp" 
+                                            title="Notificar via WhatsApp"
+                                            onclick="enviarNotificacao({{ emprestimo.id }})">
+                                        <i class="fab fa-whatsapp"></i>
+                                    </button>
+                                    {% endif %}
+                                    
+                                    <!-- Botão Renovar -->
+                                    <button type="button" class="btn btn-primary btn-acao btn-renovar" 
+                                            title="Renovar empréstimo"
+                                            onclick="renovarEmprestimo({{ emprestimo.id }})">
+                                        <i class="fas fa-sync-alt"></i>
+                                    </button>
+                                    
+                                   
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Paginação -->
+            {% if emprestimos.has_other_pages %}
+            <nav aria-label="Paginação" class="mt-4">
+                <ul class="pagination justify-content-center">
+                    {% if emprestimos.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ emprestimos.previous_page_number }}">
+                            <i class="fas fa-chevron-left"></i>
+                        </a>
+                    </li>
+                    {% else %}
+                    <li class="page-item disabled">
+                        <span class="page-link"><i class="fas fa-chevron-left"></i></span>
+                    </li>
+                    {% endif %}
+
+                    {% for i in emprestimos.paginator.page_range %}
+                        {% if emprestimos.number == i %}
+                        <li class="page-item active">
+                            <span class="page-link">{{ i }}</span>
+                        </li>
+                        {% else %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ i }}">{{ i }}</a>
+                        </li>
+                        {% endif %}
+                    {% endfor %}
+
+                    {% if emprestimos.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ emprestimos.next_page_number }}">
+                            <i class="fas fa-chevron-right"></i>
+                        </a>
+                    </li>
+                    {% else %}
+                    <li class="page-item disabled">
+                        <span class="page-link"><i class="fas fa-chevron-right"></i></span>
+                    </li>
+                    {% endif %}
+                </ul>
+            </nav>
+            {% endif %}
+
+            {% else %}
+            <!-- Mensagem quando não há empréstimos -->
+            <div class="text-center py-5 empty-state">
+                <i class="fas fa-clock fa-4x text-muted mb-3"></i>
+                <h4 class="text-muted">Nenhum empréstimo ativo</h4>
+                <p class="text-muted mb-4">Não há livros emprestados no momento.</p>
+                <a href="{% url 'realizar_emprestimo' %}" class="btn btn-primary">
+                    <i class="fas fa-plus-circle me-2"></i>Realizar Primeiro Empréstimo
+                </a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Modal para Detalhes do Empréstimo -->
+    <div class="modal fade" id="modalDetalhesEmprestimo" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="fas fa-info-circle me-2"></i>Detalhes do Empréstimo
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body" id="conteudoDetalhesEmprestimo">
+                    <div class="text-center py-4">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Carregando...</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para Confirmar Devolução -->
+    <div class="modal fade" id="modalDevolucao" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-success text-white">
+                    <h5 class="modal-title">
+                        <i class="fas fa-box-arrow-in-down me-2"></i>Confirmar Devolução
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <form id="formDevolucao" method="post" action="">
+                    {% csrf_token %}
+                    <div class="modal-body">
+                        <p id="devolucaoMensagem"></p>
+                        <div class="mb-3">
+                            <label class="form-label">Observações da devolução</label>
+                            <textarea name="observacoes" class="form-control" rows="3" 
+                                    placeholder="Estado do livro, multas, etc."></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-success">
+                            <i class="fas fa-check"></i> Confirmar Devolução
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Inicializar DataTable
+    const table = $('#emprestimosTable').DataTable({
+        paging: false,
+        searching: true,
+        info: false,
+        ordering: true,
+        language: {
+            search: "",
+            searchPlaceholder: "Buscar...",
+            lengthMenu: "Mostrar _MENU_ registros",
+            zeroRecords: "Nenhum registro encontrado",
+            info: "Mostrando _START_ a _END_ de _TOTAL_ registros",
+            infoEmpty: "Mostrando 0 a 0 de 0 registros",
+            infoFiltered: "(filtrado de _MAX_ registros totais)"
+        },
+        columnDefs: [
+            { orderable: false, targets: 7 } // Ações não ordenáveis
+        ]
+    });
+
+    // Conectar busca personalizada ao DataTable
+    $('#searchInput').on('keyup', function() {
+        table.search(this.value).draw();
+    });
+
+    // Filtros
+    $('.btn-filter').click(function() {
+        $('.btn-filter').removeClass('active');
+        $(this).addClass('active');
+        
+        const filter = $(this).data('filter');
+        
+        if (filter === 'all') {
+            table.search('').columns().search('').draw();
+        } else if (filter === 'prazo') {
+            table.search('').columns().search('').draw();
+            $('.emprestimo-row').hide();
+            $(`.emprestimo-row[data-status="prazo"]`).show();
+        } else if (filter === 'atrasado') {
+            table.search('').columns().search('').draw();
+            $('.emprestimo-row').hide();
+            $(`.emprestimo-row[data-status="atrasado"]`).show();
+        } else if (filter === 'hoje') {
+            const hoje = new Date().toISOString().split('T')[0];
+            table.search('').columns().search('').draw();
+            $('.emprestimo-row').hide();
+            $(`.emprestimo-row[data-devolucao="${hoje}"]`).show();
+        } else if (filter === 'amanha') {
+            const amanha = new Date();
+            amanha.setDate(amanha.getDate() + 1);
+            const amanhaStr = amanha.toISOString().split('T')[0];
+            table.search('').columns().search('').draw();
+            $('.emprestimo-row').hide();
+            $(`.emprestimo-row[data-devolucao="${amanhaStr}"]`).show();
+        }
+    });
+});
+
+// Função para registrar devolução
+function registrarDevolucao(emprestimoId, livroTitulo) {
+    $('#devolucaoMensagem').html(`Confirmar devolução do livro <strong>"${livroTitulo}"</strong>?`);
+    $('#formDevolucao').attr('action', `/sistema/emprestimos/devolver/${emprestimoId}/`);
+    new bootstrap.Modal(document.getElementById('modalDevolucao')).show();
+}
+
+// Função para ver detalhes do empréstimo
+function verDetalhes(emprestimoId) {
+    $('#conteudoDetalhesEmprestimo').html(`
+        <div class="text-center py-4">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Carregando...</span>
+            </div>
+        </div>
+    `);
+    
+    fetch(`/api/emprestimo/${emprestimoId}/`)
+        .then(response => response.json())
+        .then(data => {
+            let html = `
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6><i class="fas fa-book me-2"></i>Livro</h6>
+                        <p><strong>Título:</strong> ${data.livro.titulo}</p>
+                        <p><strong>Autor:</strong> ${data.livro.autor}</p>
+                        <p><strong>Editora:</strong> ${data.livro.editora}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <h6><i class="fas fa-user me-2"></i>Usuário</h6>
+                        <p><strong>Nome:</strong> ${data.usuario.nome}</p>
+                        <p><strong>Email:</strong> ${data.usuario.email}</p>
+                        <p><strong>Telefone:</strong> ${data.usuario.telefone || 'Não informado'}</p>
+                    </div>
+                </div>
+                <hr>
+                <div class="row">
+                    <div class="col-md-6">
+                        <p><strong>Data Empréstimo:</strong> ${data.data_emprestimo}</p>
+                        <p><strong>Previsão Devolução:</strong> ${data.data_prevista}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <p><strong>Dias restantes:</strong> ${data.dias_restantes}</p>
+                        <p><strong>Status:</strong> <span class="badge bg-${data.status_cor}">${data.status}</span></p>
+                    </div>
+                </div>
+                ${data.observacoes ? `<p><strong>Observações:</strong> ${data.observacoes}</p>` : ''}
+            `;
+            $('#conteudoDetalhesEmprestimo').html(html);
+        })
+        .catch(error => {
+            $('#conteudoDetalhesEmprestimo').html(`
+                <div class="alert alert-danger">
+                    Erro ao carregar detalhes do empréstimo.
+                </div>
+            `);
+        });
+    
+    new bootstrap.Modal(document.getElementById('modalDetalhesEmprestimo')).show();
+}
+
+// Função para enviar notificação WhatsApp
+function enviarNotificacao(emprestimoId) {
+    if (confirm('Enviar lembrete de devolução via WhatsApp?')) {
+        fetch(`/api/whatsapp/notificar/`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': '{{ csrf_token }}'
+            },
+            body: JSON.stringify({ emprestimo_id: emprestimoId })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                alert('Notificação enviada com sucesso!');
+            } else {
+                alert('Erro ao enviar notificação: ' + data.message);
+            }
+        });
+    }
+}
+
+// Função para renovar empréstimo
+function renovarEmprestimo(emprestimoId) {
+    if (confirm('Deseja renovar este empréstimo por mais 15 dias?')) {
+        fetch(`/sistema/emprestimos/renovar/${emprestimoId}/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                alert('Empréstimo renovado com sucesso!');
+                location.reload();
+            } else {
+                alert('Erro ao renovar: ' + data.message);
+            }
+        });
+    }
+}
+
+// Função para calcular multa
+function calcularMulta(emprestimoId) {
+    fetch(`/api/emprestimo/multa/${emprestimoId}/`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.dias_atraso > 0) {
+                alert(`Multa por atraso:\nDias: ${data.dias_atraso}\nValor: R$ ${data.valor_multa}`);
+            } else {
+                alert('Empréstimo dentro do prazo. Nenhuma multa calculada.');
+            }
+        });
+}
+
+// Função para atualizar tabela
+function refreshTable() {
+    location.reload();
+}
+
+// Função para exportar para Excel
+function exportToExcel() {
+    const tabela = document.getElementById('emprestimosTable');
+    const wb = XLSX.utils.table_to_book(tabela, { sheet: "Empréstimos" });
+    XLSX.writeFile(wb, "emprestimos_ativos.xlsx");
+}
+
+// Função para confirmar devolução via formulário
+function confirmDevolucao(form) {
+    return confirm('Confirmar devolução deste livro?');
+}
+
+function registrarDevolucao(emprestimoId, livroTitulo) {
+    $('#devolucaoMensagem').html(`Confirmar devolução do livro <strong>"${livroTitulo}"</strong>?`);
+    $('#formDevolucao').attr('action', `/sistema/emprestimos/devolver/${emprestimoId}/`);
+    new bootstrap.Modal(document.getElementById('modalDevolucao')).show();
+}
+</script>
+<script src="{% static 'js/lista_emprestimos.js' %}"></script>
+{% endblock %}

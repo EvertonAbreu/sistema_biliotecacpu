@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="pt-br" data-bs-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Admin - Biblioteca{% endblock %}</title>
+    
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <!-- CSS Personalizado -->
+    <link rel="stylesheet" href="{% static 'css/admin_base.css' %}">
+    
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <!-- Toggle Mobile -->
+    <button class="mobile-toggle" id="mobileToggle">
+        <i class="bi bi-list"></i>
+    </button>
+
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+        <!-- Logo -->
+        <div class="sidebar-logo">
+            <h5>
+                <i class="bi bi-book-half"></i>
+                <span id="logoText">Biblioteca Admin</span>
+            </h5>
+            <small>Sistema de Gestão</small>
+        </div>
+
+        <!-- Menu com Scroll -->
+        <div class="sidebar-scroll">
+            <nav class="sidebar-menu">
+                <!-- Dashboard -->
+                <a href="{% url 'dashboard' %}" class="menu-item {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}">
+                    <i class="bi bi-speedometer2"></i>
+                    <span>Dashboard</span>
+                </a>
+
+                <!-- Livros -->
+                <div class="menu-section">
+                    <h6 class="menu-section-title">Livros</h6>
+                    <a href="{% url 'cadastro_livro' %}" class="menu-item {% if request.resolver_match.url_name == 'cadastro_livro' %}active{% endif %}">
+                        <i class="bi bi-bookmark-plus"></i>
+                        <span>Cadastrar Livro</span>
+                    </a>
+                    <a href="{% url 'lista_livros' %}" class="menu-item {% if request.resolver_match.url_name == 'lista_livros' %}active{% endif %}">
+                        <i class="bi bi-list-task"></i>
+                        <span>Lista de Livros</span>
+                    </a>
+                    <a href="/admin/core/livropdf/" class="menu-item" target="_blank">
+                        <i class="bi bi-file-earmark-pdf"></i>
+                        <span>Livros PDF</span>
+                    </a>
+                    <a href="{% url 'acervo_pdf' %}" class="menu-item" target="_blank">
+                        <i class="bi bi-eye"></i>
+                        <span>Ver Acervo Digital</span>
+                    </a>
+                </div>
+
+                <!-- Usuários -->
+                <div class="menu-section">
+                    <h6 class="menu-section-title">Usuários</h6>
+                    <a href="{% url 'cadastro_usuario_admin' %}" class="menu-item {% if request.resolver_match.url_name == 'cadastro_usuario_admin' %}active{% endif %}">
+                        <i class="bi bi-person-plus"></i>
+                        <span>Cadastrar Usuário</span>
+                    </a>
+                    <a href="{% url 'lista_usuarios' %}" class="menu-item {% if request.resolver_match.url_name == 'lista_usuarios' %}active{% endif %}">
+                        <i class="bi bi-people"></i>
+                        <span>Lista de Usuários</span>
+                    </a>
+                </div>
+
+                <!-- Empréstimos -->
+               
+                <div class="menu-section">
+                    <h6 class="menu-section-title">Empréstimos</h6>
+
+                    <a href="{% url 'realizar_emprestimo' %}" 
+                    class="menu-item {% if request.resolver_match.url_name == 'realizar_emprestimo' %}active{% endif %}">
+                        <i class="bi bi-cart-plus"></i>
+                        <span>Novo Empréstimo</span>
+                    </a>
+
+                    <a href="{% url 'lista_emprestimos' %}" 
+                    class="menu-item {% if request.resolver_match.url_name == 'lista_emprestimos' %}active{% endif %}">
+                        <i class="bi bi-clock-history"></i>
+                        <span>Empréstimos Ativos</span>
+                    </a>
+
+                    <a href="{% url 'lista_solicitacoes' %}" 
+                    class="menu-item {% if request.resolver_match.url_name == 'lista_solicitacoes' %}active{% endif %}">
+                        <i class="bi bi-bell"></i>
+                        <span>
+                            Solicitações
+                            {% with pendentes_count=solicitacoes_pendentes_count %}
+                                {% if pendentes_count > 0 %}
+                                    <span class="badge bg-danger ms-2">
+                                        {{ pendentes_count }}
+                                    </span>
+                                {% endif %}
+                            {% endwith %}
+                        </span>
+                    </a>
+                </div>
+
+                <!-- Eventos -->
+                <div class="menu-section">
+                    <h6 class="menu-section-title">Eventos</h6>
+                    <a href="{% url 'cadastro_evento' %}" class="menu-item {% if request.resolver_match.url_name == 'cadastro_evento' %}active{% endif %}">
+                        <i class="bi bi-calendar-plus"></i>
+                        <span>Cadastrar Evento</span>
+                    </a>
+                    <a href="{% url 'lista_eventos_admin' %}" class="menu-item {% if request.resolver_match.url_name == 'lista_eventos_admin' %}active{% endif %}">
+                        <i class="bi bi-calendar-event"></i>
+                        <span>Lista de Eventos</span>
+                    </a>
+                </div>
+
+                <!-- Relatórios -->
+                <div class="menu-section">
+                    <h6 class="menu-section-title">Relatórios</h6>
+                    <a href="{% url 'relatorios' %}" class="menu-item {% if request.resolver_match.url_name == 'relatorios' %}active{% endif %}">
+                        <i class="bi bi-bar-chart"></i>
+                        <span>Relatórios</span>
+                    </a>
+                </div>
+
+                <!-- Configurações -->
+                <div class="menu-section">
+                    <h6 class="menu-section-title">Sistema</h6>
+                    <a href="{% url 'configurar_biblioteca' %}" class="menu-item {% if request.resolver_match.url_name == 'configurar_biblioteca' %}active{% endif %}">
+                        <i class="bi bi-gear"></i>
+                        <span>Configurações</span>
+                    </a>
+                </div>
+            </nav>
+        </div>
+
+        <!-- Usuário -->
+        <div class="sidebar-user">
+            <div class="user-info">
+                <div class="user-avatar">
+                    <i class="bi bi-person-circle"></i>
+                </div>
+                <div class="user-details">
+                    <p class="user-name">{{ user.email|default:user.username|truncatechars:15 }}</p>
+                    <p class="user-role">
+                        {% if user.perfilusuario.categoria %}
+                            {{ user.perfilusuario.get_categoria_display|truncatechars:15 }}
+                        {% else %}
+                            Administrador
+                        {% endif %}
+                    </p>
+                </div>
+            </div>
+            
+            <div class="mt-3 d-grid gap-2 user-actions">
+                <a href="{% url 'perfil_usuario' %}" class="btn btn-outline-light btn-sm">
+                    <i class="bi bi-person"></i> <span>Meu Perfil</span>
+                </a>
+                <a href="{% url 'home' %}" class="btn btn-outline-light btn-sm">
+                    <i class="bi bi-house-door"></i> <span>Site Público</span>
+                </a>
+                <a href="{% url 'logout' %}" class="btn btn-danger btn-sm">
+                    <i class="bi bi-box-arrow-right"></i> <span>Sair</span>
+                </a>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Conteúdo Principal -->
+    <div class="main-content" id="mainContent">
+        <!-- Header -->
+        <header class="main-header">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h1 class="page-title h4 mb-0">
+                        <i class="bi bi-{% block icon %}speedometer2{% endblock %}"></i>
+                        {% block page_title %}Dashboard{% endblock %}
+                    </h1>
+                </div>
+                <div class="d-flex align-items-center gap-2">
+                    <button class="btn btn-sm btn-outline-primary" id="headerToggle">
+                        <i class="bi bi-chevron-left" id="toggleIcon"></i>
+                    </button>
+                    <span class="badge bg-secondary">
+                        <i class="bi bi-calendar3"></i> {% now "d/m/Y" %}
+                    </span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Mensagens -->
+        <div class="container-fluid mt-3 px-4">
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                        <div class="d-flex align-items-center">
+                            <i class="bi bi-{% if message.tags == 'success' %}check-circle{% elif message.tags == 'error' or message.tags == 'danger' %}exclamation-circle{% else %}info-circle{% endif %} me-2"></i>
+                            <div>{{ message }}</div>
+                        </div>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        </div>
+
+        <!-- Conteúdo da Página -->
+        <main class="container-fluid px-4 py-4">
+            {% block content %}{% endblock %}
+        </main>
+
+        <!-- Footer -->
+        <footer class="main-footer">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <span>
+                        <i class="bi bi-c-circle"></i> {% now "Y" %} Biblioteca Pública
+                    </span>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <span class="text-muted">
+                        Sistema de Gestão de Biblioteca
+                    </span>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{% static 'js/admin_base.js' %}"></script>
+    
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

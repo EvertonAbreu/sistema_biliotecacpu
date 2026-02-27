@@ -1,0 +1,785 @@
+{% extends 'base/base_usuario.html' %}
+{% load static %}
+
+{% block title %}Acervo da Biblioteca - Explorar Livros{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+<style>
+    :root {
+        --primary: #4361ee;
+        --primary-dark: #3f37c9;
+        --secondary: #4cc9f0;
+        --success: #4caf50;
+        --warning: #ff9800;
+        --danger: #f44336;
+        --light: #f8f9fa;
+        --dark: #2b2d42;
+        --gray: #6c757d;
+        --border-radius: 12px;
+        --box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+        --box-shadow-hover: 0 10px 30px rgba(0, 0, 0, 0.1);
+    }
+
+    body {
+        background-color: var(--light);
+    }
+
+    /* HERO SECTION */
+    .hero-section {
+        background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+        color: white;
+        padding: 3rem 0;
+        margin-bottom: 2rem;
+        border-radius: 0 0 30px 30px;
+        box-shadow: 0 10px 30px rgba(67, 97, 238, 0.2);
+    }
+
+    .hero-title {
+        font-size: 2.2rem;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+    }
+
+    .hero-subtitle {
+        font-size: 1rem;
+        opacity: 0.9;
+    }
+
+    .hero-stats {
+        display: inline-block;
+        background: rgba(255, 255, 255, 0.15);
+        padding: 0.5rem 1.5rem;
+        border-radius: 50px;
+        backdrop-filter: blur(5px);
+        margin-top: 1rem;
+    }
+
+    /* SEÇÃO DE BUSCA */
+    .search-section {
+        margin-bottom: 2rem;
+    }
+
+    .search-container {
+        background: white;
+        border-radius: 50px;
+        padding: 0.5rem;
+        box-shadow: var(--box-shadow);
+        display: flex;
+        align-items: center;
+    }
+
+    .search-container input {
+        border: none;
+        padding: 0.8rem 1.5rem;
+        font-size: 1rem;
+        background: transparent;
+        flex: 1;
+    }
+
+    .search-container input:focus {
+        outline: none;
+        box-shadow: none;
+    }
+
+    .search-container button {
+        background: var(--primary);
+        color: white;
+        border: none;
+        border-radius: 50px;
+        padding: 0.8rem 2rem;
+        font-weight: 500;
+        transition: all 0.3s;
+        cursor: pointer;
+    }
+
+    .search-container button:hover {
+        background: var(--primary-dark);
+        transform: translateY(-2px);
+    }
+
+    .search-container i {
+        margin-left: 1rem;
+        color: var(--gray);
+    }
+
+    /* FILTROS RÁPIDOS */
+    .filters-container {
+        background: white;
+        border-radius: 15px;
+        padding: 1rem 1.5rem;
+        margin-bottom: 2rem;
+        box-shadow: var(--box-shadow);
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+
+    .filter-label {
+        font-weight: 600;
+        color: var(--dark);
+        margin-right: 0.5rem;
+    }
+
+    .filter-badge {
+        background: var(--light);
+        color: var(--dark);
+        padding: 0.5rem 1rem;
+        border-radius: 30px;
+        font-size: 0.9rem;
+        cursor: pointer;
+        transition: all 0.2s;
+        border: 1px solid #e9ecef;
+    }
+
+    .filter-badge:hover {
+        background: var(--primary);
+        color: white;
+        border-color: var(--primary);
+    }
+
+    .filter-badge.active {
+        background: var(--primary);
+        color: white;
+        border-color: var(--primary);
+    }
+
+    /* PRATELEIRAS */
+    .shelf {
+        margin-bottom: 3rem;
+    }
+
+    .shelf-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 1.5rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 2px solid #e9ecef;
+    }
+
+    .shelf-title {
+        font-weight: 600;
+        font-size: 1.3rem;
+        color: var(--dark);
+    }
+
+    .shelf-title i {
+        color: var(--primary);
+        margin-right: 0.5rem;
+    }
+
+    .shelf-stats {
+        font-size: 0.9rem;
+        color: var(--gray);
+    }
+
+    .shelf-stats span {
+        background: #e9ecef;
+        padding: 0.3rem 0.8rem;
+        border-radius: 20px;
+        margin-left: 0.5rem;
+    }
+
+    /* CARD DO LIVRO - COMPACTO E INFORMATIVO */
+    .book-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 1.2rem;
+    }
+
+    .book-card {
+        background: white;
+        border-radius: 15px;
+        padding: 1rem;
+        transition: all 0.3s;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        border: 1px solid #e9ecef;
+        box-shadow: var(--box-shadow);
+    }
+
+    .book-card:hover {
+        transform: translateY(-5px);
+        box-shadow: var(--box-shadow-hover);
+        border-color: var(--primary);
+    }
+
+    .book-cover {
+        width: 100%;
+        height: 160px;
+        border-radius: 10px;
+        overflow: hidden;
+        margin-bottom: 1rem;
+        background: #f0f0f0;
+        position: relative;
+    }
+
+    .book-cover img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.3s;
+    }
+
+    .book-card:hover .book-cover img {
+        transform: scale(1.05);
+    }
+
+    .book-cover-placeholder {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        color: white;
+        font-size: 2rem;
+    }
+
+    .book-info {
+        flex: 1;
+    }
+
+    .book-title {
+        font-size: 1rem;
+        font-weight: 600;
+        color: var(--dark);
+        margin-bottom: 0.25rem;
+        line-height: 1.4;
+    }
+
+    .book-author {
+        font-size: 0.8rem;
+        color: var(--gray);
+        margin-bottom: 0.5rem;
+    }
+
+    .book-meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.3rem;
+        margin-bottom: 0.8rem;
+    }
+
+    .book-meta-item {
+        font-size: 0.7rem;
+        padding: 0.2rem 0.5rem;
+        border-radius: 12px;
+        background: #f0f0f0;
+        color: var(--gray);
+        display: inline-flex;
+        align-items: center;
+        gap: 0.2rem;
+    }
+
+    .book-meta-item i {
+        font-size: 0.6rem;
+    }
+
+    .book-status {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-top: auto;
+        padding-top: 0.5rem;
+        border-top: 1px solid #e9ecef;
+    }
+
+    .status-badge {
+        font-size: 0.7rem;
+        font-weight: 600;
+        padding: 0.25rem 0.8rem;
+        border-radius: 20px;
+    }
+
+    .status-badge.available {
+        background: #d4edda;
+        color: #155724;
+    }
+
+    .status-badge.unavailable {
+        background: #f8d7da;
+        color: #721c24;
+    }
+
+    .status-badge.low {
+        background: #fff3cd;
+        color: #856404;
+    }
+
+    .book-action {
+        font-size: 0.75rem;
+        font-weight: 600;
+        padding: 0.3rem 1rem;
+        border-radius: 20px;
+        text-decoration: none;
+        transition: all 0.2s;
+    }
+
+    .book-action.primary {
+        background: var(--primary);
+        color: white;
+    }
+
+    .book-action.primary:hover {
+        background: var(--primary-dark);
+        color: white;
+    }
+
+    .book-action.secondary {
+        background: #e9ecef;
+        color: var(--gray);
+        cursor: not-allowed;
+    }
+
+    .book-action.login {
+        background: #e9ecef;
+        color: var(--primary);
+    }
+
+    /* SEM RESULTADOS */
+    .no-results {
+        text-align: center;
+        padding: 4rem 2rem;
+        background: white;
+        border-radius: 20px;
+        box-shadow: var(--box-shadow);
+    }
+
+    .no-results i {
+        font-size: 4rem;
+        color: #dee2e6;
+        margin-bottom: 1rem;
+    }
+
+    .no-results h3 {
+        color: var(--dark);
+        margin-bottom: 0.5rem;
+    }
+
+    .no-results p {
+        color: var(--gray);
+    }
+
+    /* RESPONSIVIDADE */
+    @media (max-width: 768px) {
+        .hero-title {
+            font-size: 1.8rem;
+        }
+
+        .search-container {
+            flex-direction: column;
+            border-radius: 20px;
+        }
+
+        .search-container input {
+            width: 100%;
+            margin-bottom: 0.5rem;
+        }
+
+        .search-container button {
+            width: 100%;
+        }
+
+        .filters-container {
+            justify-content: center;
+        }
+
+        .book-grid {
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0.8rem;
+        }
+
+        .book-cover {
+            height: 130px;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .book-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- HERO SECTION -->
+<section class="hero-section">
+    <div class="container text-center">
+        <h1 class="hero-title">
+            <i class="bi bi-grid-3x3-gap-fill me-2"></i>
+            Explorar Acervo
+        </h1>
+        <p class="hero-subtitle">Descubra livros organizados por prateleiras</p>
+        <div class="hero-stats">
+            <i class="bi bi-book me-2"></i>
+            <strong>{{ total_geral }}</strong> livros disponíveis em 
+            <strong>{{ total_prateleiras }}</strong> prateleiras
+        </div>
+    </div>
+</section>
+
+<div class="container">
+    <!-- SEÇÃO DE BUSCA -->
+    <div class="search-section">
+        <div class="search-container">
+            <input type="text" 
+                   id="searchInput" 
+                   placeholder="Buscar por título, autor ou categoria..."
+                   autocomplete="off">
+            <button onclick="searchBooks()">
+                <i class="bi bi-search me-2"></i>Buscar
+            </button>
+            <i class="bi bi-arrow-return-left d-none d-md-block"></i>
+        </div>
+    </div>
+
+    <!-- FILTROS RÁPIDOS -->
+    <div class="filters-container">
+        <span class="filter-label">
+            <i class="bi bi-funnel me-1"></i>Filtrar:
+        </span>
+        <span class="filter-badge active" onclick="filterAll()">Todos</span>
+        <span class="filter-badge" onclick="filterAvailable()">Disponíveis</span>
+        <span class="filter-badge" onclick="filterUnavailable()">Indisponíveis</span>
+        <span class="filter-badge" onclick="filterRecent()">Mais recentes</span>
+    </div>
+
+    <!-- LIVROS POR PRATELEIRA -->
+    {% for prateleira, dados in livros_por_prateleira.items %}
+    <div class="shelf" data-shelf="{{ prateleira }}">
+        <div class="shelf-header">
+            <div class="shelf-title">
+                <i class="bi bi-box-seam"></i>
+                {{ prateleira }}
+            </div>
+            <div class="shelf-stats">
+                <i class="bi bi-book me-1"></i>{{ dados.total_livros }} livros
+                <span class="d-none d-sm-inline-block">{{ dados.disponiveis }} disponíveis</span>
+            </div>
+        </div>
+
+        <div class="book-grid">
+            {% for livro in dados.livros %}
+            <div class="book-item" 
+                 data-title="{{ livro.titulo|lower }}"
+                 data-author="{{ livro.autor|lower }}"
+                 data-category="{{ livro.get_categoria_display|lower }}"
+                 data-available="{{ livro.quantidade_disponivel }}"
+                 data-date="{{ livro.data_cadastro|date:'Y-m-d' }}">
+
+                <div class="book-card">
+                    <!-- CAPA DO LIVRO -->
+                    <div class="book-cover">
+                        {% if livro.capa %}
+                        <img src="{{ livro.capa.url }}" alt="{{ livro.titulo }}">
+                        {% else %}
+                        <div class="book-cover-placeholder">
+                            <i class="bi bi-book"></i>
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- INFORMAÇÕES DO LIVRO -->
+                    <div class="book-info">
+                        <div class="book-title">{{ livro.titulo|truncatechars:40 }}</div>
+                        <div class="book-author">{{ livro.autor|truncatechars:25 }}</div>
+                        
+                        <!-- META DADOS -->
+                        <div class="book-meta">
+                            <span class="book-meta-item">
+                                <i class="bi bi-calendar3"></i> {{ livro.ano_publicacao }}
+                            </span>
+                            <span class="book-meta-item">
+                                <i class="bi bi-tag"></i> {{ livro.get_categoria_display|truncatechars:10 }}
+                            </span>
+                            <span class="book-meta-item">
+                                <i class="bi bi-layers"></i> {{ livro.quantidade_paginas }}p
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- STATUS E AÇÃO -->
+                    <div class="book-status">
+                        {% if livro.quantidade_disponivel > 3 %}
+                        <span class="status-badge available">
+                            <i class="bi bi-check-circle-fill me-1"></i>{{ livro.quantidade_disponivel }} disp.
+                        </span>
+                        {% elif livro.quantidade_disponivel > 0 %}
+                        <span class="status-badge low">
+                            <i class="bi bi-exclamation-circle-fill me-1"></i>{{ livro.quantidade_disponivel }} disp.
+                        </span>
+                        {% else %}
+                        <span class="status-badge unavailable">
+                            <i class="bi bi-x-circle-fill me-1"></i>Indisponível
+                        </span>
+                        {% endif %}
+
+                        {% if user.is_authenticated %}
+                            {% if livro.quantidade_disponivel > 0 %}
+                            <a href="{% url 'solicitar_emprestimo' livro.id %}" 
+                               class="book-action primary"
+                               onclick="showLoading()">
+                                <i class="bi bi-hand-thumbs-up me-1"></i>Solicitar
+                            </a>
+                            {% else %}
+                            <span class="book-action secondary">
+                                <i class="bi bi-x-circle me-1"></i>Indisponível
+                            </span>
+                            {% endif %}
+                        {% else %}
+                            <a href="{% url 'login' %}?next={{ request.path }}" 
+                               class="book-action login">
+                                <i class="bi bi-box-arrow-in-right me-1"></i>Login
+                            </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% empty %}
+    <div class="no-results">
+        <i class="bi bi-emoji-frown"></i>
+        <h3>Nenhum livro disponível</h3>
+        <p>No momento não há livros cadastrados no acervo.</p>
+    </div>
+    {% endfor %}
+
+    <!-- MENSAGEM DE NENHUM RESULTADO NA BUSCA -->
+    <div class="no-results" id="noResults" style="display: none;">
+        <i class="bi bi-search"></i>
+        <h3>Nenhum livro encontrado</h3>
+        <p id="noResultsMessage">Tente buscar por outros termos.</p>
+        <button class="btn btn-primary mt-3" onclick="clearSearch()">
+            <i class="bi bi-x-circle me-2"></i>Limpar busca
+        </button>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Loading spinner (função herdada do base)
+    function showLoading() {
+        const spinner = document.getElementById('loadingSpinner');
+        if (spinner) {
+            spinner.style.display = 'flex';
+            setTimeout(() => {
+                spinner.style.display = 'none';
+            }, 500);
+        }
+    }
+
+    // Função de busca
+    function searchBooks() {
+        const term = document.getElementById('searchInput').value.toLowerCase().trim();
+        const books = document.querySelectorAll('.book-item');
+        const shelves = document.querySelectorAll('.shelf');
+        let visibleCount = 0;
+
+        books.forEach(book => {
+            const title = book.dataset.title || '';
+            const author = book.dataset.author || '';
+            const category = book.dataset.category || '';
+            
+            const matches = title.includes(term) || 
+                           author.includes(term) || 
+                           category.includes(term);
+            
+            if (matches || term === '') {
+                book.style.display = '';
+                visibleCount++;
+            } else {
+                book.style.display = 'none';
+            }
+        });
+
+        // Mostrar/esconder prateleiras baseado em livros visíveis
+        shelves.forEach(shelf => {
+            const shelfBooks = shelf.querySelectorAll('.book-item');
+            let hasVisibleBooks = false;
+            
+            shelfBooks.forEach(book => {
+                if (book.style.display !== 'none') {
+                    hasVisibleBooks = true;
+                }
+            });
+            
+            shelf.style.display = hasVisibleBooks ? '' : 'none';
+        });
+
+        // Mostrar mensagem de nenhum resultado
+        const noResults = document.getElementById('noResults');
+        if (visibleCount === 0 && term !== '') {
+            document.getElementById('noResultsMessage').textContent = 
+                `Nenhum livro encontrado para "${term}".`;
+            noResults.style.display = 'block';
+        } else {
+            noResults.style.display = 'none';
+        }
+    }
+
+    // Filtro: todos os livros
+    function filterAll() {
+        const books = document.querySelectorAll('.book-item');
+        const shelves = document.querySelectorAll('.shelf');
+        
+        books.forEach(book => book.style.display = '');
+        shelves.forEach(shelf => shelf.style.display = '');
+        
+        document.getElementById('searchInput').value = '';
+        document.getElementById('noResults').style.display = 'none';
+        
+        updateFilterActive('Todos');
+    }
+
+    // Filtro: apenas disponíveis
+    function filterAvailable() {
+        const books = document.querySelectorAll('.book-item');
+        const shelves = document.querySelectorAll('.shelf');
+        let visibleCount = 0;
+
+        books.forEach(book => {
+            const available = parseInt(book.dataset.available || '0');
+            if (available > 0) {
+                book.style.display = '';
+                visibleCount++;
+            } else {
+                book.style.display = 'none';
+            }
+        });
+
+        shelves.forEach(shelf => {
+            const shelfBooks = shelf.querySelectorAll('.book-item');
+            let hasVisibleBooks = false;
+            
+            shelfBooks.forEach(book => {
+                if (book.style.display !== 'none') {
+                    hasVisibleBooks = true;
+                }
+            });
+            
+            shelf.style.display = hasVisibleBooks ? '' : 'none';
+        });
+
+        if (visibleCount === 0) {
+            document.getElementById('noResultsMessage').textContent = 
+                'Nenhum livro disponível no momento.';
+            document.getElementById('noResults').style.display = 'block';
+        } else {
+            document.getElementById('noResults').style.display = 'none';
+        }
+        
+        updateFilterActive('Disponíveis');
+    }
+
+    // Filtro: indisponíveis
+    function filterUnavailable() {
+        const books = document.querySelectorAll('.book-item');
+        const shelves = document.querySelectorAll('.shelf');
+        let visibleCount = 0;
+
+        books.forEach(book => {
+            const available = parseInt(book.dataset.available || '0');
+            if (available === 0) {
+                book.style.display = '';
+                visibleCount++;
+            } else {
+                book.style.display = 'none';
+            }
+        });
+
+        shelves.forEach(shelf => {
+            const shelfBooks = shelf.querySelectorAll('.book-item');
+            let hasVisibleBooks = false;
+            
+            shelfBooks.forEach(book => {
+                if (book.style.display !== 'none') {
+                    hasVisibleBooks = true;
+                }
+            });
+            
+            shelf.style.display = hasVisibleBooks ? '' : 'none';
+        });
+
+        if (visibleCount === 0) {
+            document.getElementById('noResultsMessage').textContent = 
+                'Nenhum livro indisponível encontrado.';
+            document.getElementById('noResults').style.display = 'block';
+        } else {
+            document.getElementById('noResults').style.display = 'none';
+        }
+        
+        updateFilterActive('Indisponíveis');
+    }
+
+    // Filtro: mais recentes
+    function filterRecent() {
+        const books = Array.from(document.querySelectorAll('.book-item'));
+        const shelves = document.querySelectorAll('.shelf');
+        
+        // Ordenar por data (mais recentes primeiro)
+        books.sort((a, b) => {
+            const dateA = a.dataset.date || '0000-00-00';
+            const dateB = b.dataset.date || '0000-00-00';
+            return dateB.localeCompare(dateA);
+        });
+
+        // Reorganizar no DOM (manter estrutura, mas mostrar em ordem)
+        const shelfMap = new Map();
+        
+        shelves.forEach(shelf => {
+            const shelfName = shelf.dataset.shelf;
+            const shelfBooks = books.filter(book => 
+                book.closest('.shelf')?.dataset.shelf === shelfName
+            );
+            shelfMap.set(shelf, shelfBooks);
+        });
+
+        // Apenas mostrar todos (a ordenação é visual na busca)
+        books.forEach(book => book.style.display = '');
+        shelves.forEach(shelf => shelf.style.display = '');
+        document.getElementById('noResults').style.display = 'none';
+        
+        updateFilterActive('Mais recentes');
+        alert('Os livros serão exibidos dos mais recentes para os mais antigos.');
+    }
+
+    // Limpar busca
+    function clearSearch() {
+        document.getElementById('searchInput').value = '';
+        filterAll();
+    }
+
+    // Atualizar filtro ativo
+    function updateFilterActive(filterName) {
+        const filters = document.querySelectorAll('.filter-badge');
+        filters.forEach(filter => {
+            if (filter.textContent.trim() === filterName) {
+                filter.classList.add('active');
+            } else {
+                filter.classList.remove('active');
+            }
+        });
+    }
+
+    // Enter no campo de busca
+    document.getElementById('searchInput')?.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            searchBooks();
+        }
+    });
+
+    // Inicializar
+    document.addEventListener('DOMContentLoaded', function() {
+        // Qualquer inicialização necessária
+    });
+</script>
+{% endblock %}

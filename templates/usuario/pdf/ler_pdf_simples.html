@@ -1,0 +1,52 @@
+{% extends 'base/base_usuario.html' %}
+{% load static %}
+
+{% block title %}{{ livro.titulo }} - Leitor PDF{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="card">
+        <div class="card-header bg-primary text-white">
+            <h2>{{ livro.titulo }}</h2>
+        </div>
+        <div class="card-body">
+            <p><strong>Autor:</strong> {{ livro.autor }}</p>
+            <p><strong>Categoria:</strong> {{ livro.get_categoria_display }}</p>
+            <p><strong>Páginas:</strong> {{ livro.paginas }}</p>
+            
+            <hr>
+            
+            <h4>Visualização do PDF</h4>
+            
+            {% if pdf_disponivel and pdf_url %}
+                <div class="alert alert-success">
+                    PDF disponível! URL: {{ pdf_url }}
+                </div>
+                
+                <div class="mb-3">
+                    <a href="{{ pdf_url }}" class="btn btn-primary" target="_blank">
+                        <i class="fas fa-external-link-alt"></i> Abrir PDF em nova aba
+                    </a>
+                    <a href="{% url 'download_livro_pdf' livro.id %}" class="btn btn-success">
+                        <i class="fas fa-download"></i> Download PDF
+                    </a>
+                </div>
+                
+                <div class="border p-2" style="background: #f5f5f5;">
+                    <iframe src="{{ pdf_url }}" 
+                            width="100%" 
+                            height="600px" 
+                            style="border: 1px solid #ccc; background: white;">
+                        Seu navegador não suporta iframes.
+                    </iframe>
+                </div>
+            {% else %}
+                <div class="alert alert-warning">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    PDF não disponível para este livro.
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

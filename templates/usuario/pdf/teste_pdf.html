@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Teste PDF</title>
+</head>
+<body>
+    <h1>Teste de PDF</h1>
+    
+    <p><strong>PDF Disponível:</strong> {{ pdf_disponivel }}</p>
+    <p><strong>PDF URL:</strong> {{ pdf_url }}</p>
+    <p><strong>Arquivo:</strong> {{ arquivo }}</p>
+    
+    <hr>
+    
+    <h2>Links de teste:</h2>
+    <ul>
+        <li><a href="{{ pdf_url }}" target="_blank">Abrir PDF diretamente</a></li>
+        <li><a href="/media/{{ arquivo }}" target="_blank">Abrir via /media/</a></li>
+        <li><a href="/download-direto/{{ livro_id }}/">Download direto</a></li>
+    </ul>
+    
+    <hr>
+    
+    <h2>Informações do servidor:</h2>
+    <pre>
+    MEDIA_URL: {{ media_url }}
+    MEDIA_ROOT: {{ media_root }}
+    </pre>
+</body>
+</html>

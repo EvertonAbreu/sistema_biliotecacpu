@@ -1,0 +1,465 @@
+{% extends 'base/base_usuario.html' %}
+{% load static %}
+
+{% block title %}Informações - Biblioteca Pública{% endblock %}
+
+{% block extra_css %}
+<!-- Leaflet CSS (mapa) -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<style>
+    /* Hero Section */
+    .hero {
+        background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)),
+                    url('https://images.unsplash.com/photo-1481627834876-b7833e8f5570?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80');
+        background-size: cover;
+        background-position: center;
+        background-attachment: fixed;
+        color: white;
+        padding: 100px 0;
+        margin-bottom: 3rem;
+        position: relative;
+        border-bottom: 5px solid #ffc107;
+    }
+
+    .hero h1 {
+        font-size: 3.5rem;
+        font-weight: 700;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        margin-bottom: 1rem;
+    }
+
+    .hero p {
+        font-size: 1.3rem;
+        opacity: 0.95;
+        text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+    }
+
+    /* Cards de Informação */
+    .info-card {
+        border: none;
+        border-radius: 15px;
+        overflow: hidden;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s ease;
+        height: 100%;
+        background: white;
+    }
+
+    .info-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+    }
+
+    .info-card .card-header {
+        background: linear-gradient(135deg, #2c3e50, #1a252f);
+        color: white;
+        font-weight: 600;
+        padding: 1.2rem 1.5rem;
+        border-bottom: 3px solid #ffc107;
+    }
+
+    .info-card .card-header i {
+        margin-right: 10px;
+        color: #ffc107;
+    }
+
+    .info-card .card-body {
+        padding: 2rem 1.5rem;
+    }
+
+    .info-card .card-body i {
+        color: #ffc107;
+        width: 25px;
+        margin-right: 10px;
+    }
+
+    .info-card .card-body p {
+        margin-bottom: 1rem;
+        font-size: 1.1rem;
+        color: #2c3e50;
+    }
+
+    .info-card .card-body strong {
+        color: #1a252f;
+        font-weight: 600;
+    }
+
+    /* Card Sobre Nós */
+    .about-card {
+        border: none;
+        border-radius: 15px;
+        overflow: hidden;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        background: white;
+        margin-top: 2rem;
+    }
+
+    .about-card .card-header {
+        background: linear-gradient(135deg, #2c3e50, #1a252f);
+        color: white;
+        font-weight: 600;
+        padding: 1.2rem 1.5rem;
+        border-bottom: 3px solid #ffc107;
+    }
+
+    .about-card .card-header i {
+        margin-right: 10px;
+        color: #ffc107;
+    }
+
+    .about-card .card-body {
+        padding: 2rem;
+        font-size: 1.1rem;
+        line-height: 1.8;
+        color: #2c3e50;
+    }
+
+    /* Informações Adicionais */
+    .info-item {
+        display: flex;
+        align-items: center;
+        margin-bottom: 1rem;
+        padding: 0.5rem;
+        border-radius: 8px;
+        transition: all 0.3s ease;
+    }
+
+    .info-item:hover {
+        background-color: rgba(255, 193, 7, 0.1);
+        padding-left: 1rem;
+    }
+
+    .info-item i {
+        font-size: 1.3rem;
+        color: #ffc107;
+        width: 35px;
+    }
+
+    .info-item-content {
+        flex: 1;
+    }
+
+    .info-item-title {
+        font-weight: 600;
+        color: #1a252f;
+        margin-bottom: 0.2rem;
+    }
+
+    .info-item-text {
+        color: #5e6e7e;
+        margin-bottom: 0;
+    }
+
+    /* Container do Mapa */
+    .map-container {
+        margin-top: 3rem;
+        border-radius: 15px;
+        overflow: hidden;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+        border: 1px solid #e9ecef;
+    }
+
+    #map {
+        height: 400px;
+        width: 100%;
+        z-index: 1;
+    }
+
+    .map-info-window {
+        padding: 10px;
+        font-family: 'Poppins', sans-serif;
+    }
+
+    .map-info-window h6 {
+        color: #2c3e50;
+        font-weight: 600;
+        margin-bottom: 5px;
+    }
+
+    .map-info-window p {
+        color: #5e6e7e;
+        margin-bottom: 3px;
+        font-size: 0.9rem;
+    }
+
+    .map-info-window i {
+        color: #ffc107;
+        margin-right: 5px;
+    }
+
+    /* Botão de rota */
+    .btn-route {
+        display: inline-block;
+        background: #ffc107;
+        color: #2c3e50;
+        padding: 0.5rem 1.5rem;
+        border-radius: 25px;
+        text-decoration: none;
+        font-weight: 500;
+        margin-top: 1rem;
+        transition: all 0.3s;
+        border: none;
+        cursor: pointer;
+    }
+
+    .btn-route:hover {
+        background: #e0a800;
+        transform: translateY(-2px);
+        color: #2c3e50;
+    }
+
+    /* Responsividade */
+    @media (max-width: 768px) {
+        .hero {
+            padding: 60px 0;
+        }
+
+        .hero h1 {
+            font-size: 2.5rem;
+        }
+
+        .hero p {
+            font-size: 1.1rem;
+        }
+
+        .info-card .card-body {
+            padding: 1.5rem;
+        }
+
+        .info-card .card-body p {
+            font-size: 1rem;
+        }
+
+        #map {
+            height: 300px;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero">
+    <div class="container text-center">
+        <h1 class="display-4">
+            <i class="fas fa-info-circle me-3"></i>Informações da Biblioteca
+        </h1>
+        <p class="lead">Conheça nossos serviços, horários e como fazer parte desse espaço de conhecimento</p>
+    </div>
+</section>
+
+<div class="container mt-5">
+    <div class="row g-4">
+        <!-- Horário de Funcionamento -->
+        <div class="col-md-6 col-lg-4">
+            <div class="info-card card">
+                <div class="card-header">
+                    <i class="fas fa-clock"></i> Horário de Funcionamento
+                </div>
+                <div class="card-body">
+                    <div class="info-item">
+                        <i class="fas fa-calendar-check"></i>
+                        <div class="info-item-content">
+                            <div class="info-item-title">Segunda a Sexta</div>
+                            <div class="info-item-text">8h às 17:30h</div>
+                        </div>
+                    </div>
+                    <div class="info-item">
+                        <i class="fas fa-calendar-day"></i>
+                        <div class="info-item-content">
+                            <div class="info-item-title">Sábado</div>
+                            <div class="info-item-text">Fechado</div>
+                        </div>
+                    </div>
+                    <div class="info-item">
+                        <i class="fas fa-calendar-times"></i>
+                        <div class="info-item-content">
+                            <div class="info-item-title">Domingo</div>
+                            <div class="info-item-text">Fechado</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Contato -->
+        <div class="col-md-6 col-lg-4">
+            <div class="info-card card">
+                <div class="card-header">
+                    <i class="fas fa-phone-alt"></i> Contato
+                </div>
+                <div class="card-body">
+                    <div class="info-item">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <div class="info-item-content">
+                            <div class="info-item-title">Endereço</div>
+                            <div class="info-item-text">Rua do Rosario, 123 - Três Corações</div>
+                        </div>
+                    </div>
+                    <div class="info-item">
+                        <i class="fas fa-phone"></i>
+                        <div class="info-item-content">
+                            <div class="info-item-title">Telefone</div>
+                            <div class="info-item-text">(98) 99999-9999</div>
+                        </div>
+                    </div>
+                    <div class="info-item">
+                        <i class="fas fa-envelope"></i>
+                        <div class="info-item-content">
+                            <div class="info-item-title">E-mail</div>
+                            <div class="info-item-text">biblioteca@exemplo.com</div>
+                        </div>
+                    </div>
+                    <div class="info-item">
+                        <i class="fab fa-whatsapp"></i>
+                        <div class="info-item-content">
+                            <div class="info-item-title">WhatsApp</div>
+                            <div class="info-item-text">(98) 98888-8888</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Serviços -->
+        <div class="col-md-6 col-lg-4">
+            <div class="info-card card">
+                <div class="card-header">
+                    <i class="fas fa-concierge-bell"></i> Serviços Oferecidos
+                </div>
+                <div class="card-body">
+                    <div class="info-item">
+                        <i class="fas fa-book"></i>
+                        <div class="info-item-content">
+                            <div class="info-item-title">Empréstimo de Livros</div>
+                            <div class="info-item-text">Acervo físico e digital</div>
+                        </div>
+                    </div>
+                    <div class="info-item">
+                        <i class="fas fa-desktop"></i>
+                        <div class="info-item-content">
+                            <div class="info-item-title">Acesso à Internet</div>
+                            <div class="info-item-text">Computadores e Wi-Fi gratuito</div>
+                        </div>
+                    </div>
+                    <div class="info-item">
+                        <i class="fas fa-users"></i>
+                        <div class="info-item-content">
+                            <div class="info-item-title">Espaço de Estudo</div>
+                            <div class="info-item-text">Individual e em grupo</div>
+                        </div>
+                    </div>
+                    <div class="info-item">
+                        <i class="fas fa-calendar-alt"></i>
+                        <div class="info-item-content">
+                            <div class="info-item-title">Atividades Culturais</div>
+                            <div class="info-item-text">Oficinas, palestras e eventos</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sobre Nós -->
+    <div class="about-card card">
+        <div class="card-header">
+            <i class="fas fa-info-circle"></i> Sobre Nós
+        </div>
+        <div class="card-body">
+            <p>
+                A Biblioteca Pública Municipal é um espaço dedicado ao conhecimento e cultura, 
+                localizada no coração da cidade há mais de 50 anos. Nossa missão é promover 
+                o acesso à informação, incentivar a leitura e oferecer atividades culturais 
+                que enriqueçam a vida da comunidade.
+            </p>
+            <p class="mb-0">
+                Contamos com um acervo diversificado de mais de 10.000 livros, incluindo obras 
+                literárias, técnicas, didáticas e infantis. Além disso, oferecemos espaços 
+                confortáveis para estudo, acesso gratuito à internet e uma programação cultural 
+                variada ao longo do ano.
+            </p>
+        </div>
+    </div>
+
+    <!-- Mapa de Localização -->
+    <div class="map-container">
+        <div id="map"></div>
+        <div class="text-center py-3 bg-white">
+            <a href="https://www.google.com/maps/search/?api=1&query=Rua+Principal+123+Centro+Cururupu" 
+               target="_blank" 
+               class="btn-route">
+                <i class="fas fa-directions me-2"></i>Abrir no Google Maps
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<!-- Leaflet JS -->
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Coordenadas da cidade (ajuste conforme necessário)
+        // Cururupu - MA (coordenadas aproximadas)
+        const latitude = -1.8283;
+        const longitude = -44.8683;
+        
+        // Criar o mapa
+        const map = L.map('map').setView([latitude, longitude], 15);
+        
+        // Adicionar camada do OpenStreetMap
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
+        
+        // Ícone personalizado para o marcador
+        const libraryIcon = L.divIcon({
+            className: 'custom-marker',
+            html: '<i class="fas fa-book" style="font-size: 1.5rem; color: #ffc107;"></i>',
+            iconSize: [30, 30],
+            iconAnchor: [15, 15],
+            popupAnchor: [0, -15]
+        });
+        
+        // Criar marcador da biblioteca
+        const marker = L.marker([latitude, longitude], { 
+            icon: libraryIcon,
+            riseOnHover: true
+        }).addTo(map);
+        
+        // Conteúdo do popup
+        const popupContent = `
+            <div class="map-info-window">
+                <h6><i class="fas fa-book"></i> Biblioteca Pública Municipal</h6>
+                <p><i class="fas fa-map-pin"></i> Rua do Rosario, 123 - Três Corações</p>
+                <p><i class="fas fa-clock"></i> Segunda a Sexta: 8h às 17:30h</p>
+                <p><i class="fas fa-phone"></i> (98) 99999-9999</p>
+            </div>
+        `;
+        
+        // Adicionar popup ao marcador
+        marker.bindPopup(popupContent).openPopup();
+        
+        // Adicionar círculo de alcance (opcional)
+        L.circle([latitude, longitude], {
+            color: '#ffc107',
+            fillColor: '#ffc107',
+            fillOpacity: 0.1,
+            radius: 500
+        }).addTo(map);
+        
+        // Adicionar controle de zoom
+        map.zoomControl.setPosition('topright');
+        
+        // Atualizar tamanho do mapa quando a janela for redimensionada
+        window.addEventListener('resize', function() {
+            setTimeout(function() {
+                map.invalidateSize();
+            }, 100);
+        });
+    });
+</script>
+{% endblock %}

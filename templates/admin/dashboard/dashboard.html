@@ -1,0 +1,362 @@
+{% extends 'base/base_admin.html' %}
+{% load static %}
+
+{% block title %}Dashboard - Admin{% endblock %}
+{% block icon %}speedometer2{% endblock %}
+{% block page_title %}Dashboard{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/admin_dashboard.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+    <!-- Cards de Estatísticas -->
+    <div class="row stats-cards">
+        <!-- Livros Físicos -->
+        <div class="col-xl-2 col-md-4 col-sm-6 mb-4">
+            <div class="card stat-card stat-primary">
+                <div class="card-body">
+                    <div class="stat-content">
+                        <div class="stat-icon">
+                            <i class="fas fa-book"></i>
+                        </div>
+                        <div class="stat-info">
+                            <div class="stat-label">Livros Físicos</div>
+                            <div class="stat-number">{{ total_livros }}</div>
+                            <div class="stat-subtext">
+                                <i class="fas fa-check text-success"></i> {{ livros_disponiveis }} disponíveis
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Livros Digitais -->
+        <div class="col-xl-2 col-md-4 col-sm-6 mb-4">
+            <div class="card stat-card stat-info">
+                <div class="card-body">
+                    <div class="stat-content">
+                        <div class="stat-icon">
+                            <i class="fas fa-file-pdf"></i>
+                        </div>
+                        <div class="stat-info">
+                            <div class="stat-label">Livros Digitais</div>
+                            <div class="stat-number">{{ total_pdf }}</div>
+                            <div class="stat-subtext">
+                                <i class="fas fa-check text-success"></i> {{ pdf_ativos }} ativos
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Usuários -->
+        <div class="col-xl-2 col-md-4 col-sm-6 mb-4">
+            <div class="card stat-card stat-success">
+                <div class="card-body">
+                    <div class="stat-content">
+                        <div class="stat-icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div class="stat-info">
+                            <div class="stat-label">Usuários</div>
+                            <div class="stat-number">{{ total_usuarios }}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Empréstimos Ativos -->
+        <div class="col-xl-2 col-md-4 col-sm-6 mb-4">
+            <div class="card stat-card stat-warning">
+                <div class="card-body">
+                    <div class="stat-content">
+                        <div class="stat-icon">
+                            <i class="fas fa-book-reader"></i>
+                        </div>
+                        <div class="stat-info">
+                            <div class="stat-label">Empréstimos Ativos</div>
+                            <div class="stat-number">{{ emprestimos_ativos }}</div>
+                            {% if emprestimos_atrasados > 0 %}
+                            <div class="stat-subtext text-danger">
+                                <i class="fas fa-exclamation-triangle"></i> {{ emprestimos_atrasados }} atrasados
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Eventos -->
+        <div class="col-xl-2 col-md-4 col-sm-6 mb-4">
+            <div class="card stat-card stat-secondary">
+                <div class="card-body">
+                    <div class="stat-content">
+                        <div class="stat-icon">
+                            <i class="fas fa-calendar-alt"></i>
+                        </div>
+                        <div class="stat-info">
+                            <div class="stat-label">Eventos</div>
+                            <div class="stat-number">{{ total_eventos }}</div>
+                            <div class="stat-subtext">
+                                <i class="fas fa-check text-success"></i> {{ eventos_ativos }} ativos
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Próximo Evento -->
+        <div class="col-xl-2 col-md-4 col-sm-6 mb-4">
+            <div class="card stat-card stat-danger">
+                <div class="card-body">
+                    <div class="stat-content">
+                        <div class="stat-icon">
+                            <i class="fas fa-calendar-check"></i>
+                        </div>
+                        <div class="stat-info">
+                            <div class="stat-label">Próximo Evento</div>
+                            {% if proximo_evento %}
+                            <div class="stat-number-sm">{{ proximo_evento.titulo|truncatechars:15 }}</div>
+                            <div class="stat-subtext">
+                                <i class="fas fa-calendar-day"></i> {{ proximo_evento.data_evento|date:"d/m/Y" }}
+                            </div>
+                            {% else %}
+                            <div class="stat-number">Não há</div>
+                            <div class="stat-subtext">Nenhum evento agendado</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Menu Rápido de Ações -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card quick-actions-card">
+                <div class="card-header">
+                    <h6 class="card-title">
+                        <i class="fas fa-bolt me-2"></i>Ações Rápidas
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="quick-actions-grid">
+                        <a href="{% url 'cadastro_livro' %}" class="quick-action-btn btn-primary">
+                            <i class="fas fa-book"></i>
+                            <span>Novo Livro</span>
+                        </a>
+                        <a href="{% url 'cadastro_usuario_admin' %}" class="quick-action-btn btn-success">
+                            <i class="fas fa-user-plus"></i>
+                            <span>Novo Usuário</span>
+                        </a>
+                        <a href="{% url 'realizar_emprestimo' %}" class="quick-action-btn btn-warning">
+                            <i class="fas fa-exchange-alt"></i>
+                            <span>Novo Empréstimo</span>
+                        </a>
+                        <a href="{% url 'cadastro_evento' %}" class="quick-action-btn btn-info">
+                            <i class="fas fa-calendar-plus"></i>
+                            <span>Novo Evento</span>
+                        </a>
+                        <a href="{% url 'lista_emprestimos' %}" class="quick-action-btn btn-secondary">
+                            <i class="fas fa-history"></i>
+                            <span>Ver Empréstimos</span>
+                        </a>
+                        <a href="{% url 'lista_eventos_admin' %}" class="quick-action-btn btn-secondary">
+                            <i class="fas fa-calendar-alt"></i>
+                            <span>Ver Eventos</span>
+                        </a>
+                        <a href="{% url 'lista_livros' %}" class="quick-action-btn btn-secondary">
+                            <i class="fas fa-list"></i>
+                            <span>Ver Livros</span>
+                        </a>
+                        <a href="{% url 'lista_usuarios' %}" class="quick-action-btn btn-secondary">
+                            <i class="fas fa-users"></i>
+                            <span>Ver Usuários</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Seção Inferior com Gráficos -->
+    <div class="row dashboard-content">
+        <!-- Últimos Empréstimos -->
+        <div class="col-xl-6 col-lg-6 mb-4">
+            <div class="card dashboard-card">
+                <div class="card-header">
+                    <h6 class="card-title">
+                        <i class="fas fa-history me-2"></i>Últimos Empréstimos
+                    </h6>
+                    <a href="{% url 'lista_emprestimos' %}" class="btn btn-sm btn-primary">
+                        Ver Todos
+                    </a>
+                </div>
+                <div class="card-body">
+                    {% if ultimos_emprestimos %}
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Livro</th>
+                                    <th>Usuário</th>
+                                    <th>Data</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for emprestimo in ultimos_emprestimos %}
+                                <tr>
+                                    <td>
+                                        <strong>{{ emprestimo.livro.titulo|truncatechars:25 }}</strong>
+                                    </td>
+                                    <td>{{ emprestimo.usuario.get_full_name|default:emprestimo.usuario.username }}</td>
+                                    <td>{{ emprestimo.data_emprestimo|date:"d/m" }}</td>
+                                    <td>
+                                        {% if emprestimo.data_devolucao_prevista %}
+                                            {% if emprestimo.data_devolucao_prevista < hoje %}
+                                            <span class="badge bg-danger">Atrasado</span>
+                                            {% else %}
+                                            <span class="badge bg-success">No prazo</span>
+                                            {% endif %}
+                                        {% else %}
+                                            <span class="badge bg-secondary">Sem data</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="text-center py-4 no-data">
+                        <i class="fas fa-book-open"></i>
+                        <p>Nenhum empréstimo recente</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Livros Mais Emprestados -->
+        <div class="col-xl-6 col-lg-6 mb-4">
+            <div class="card dashboard-card">
+                <div class="card-header">
+                    <h6 class="card-title">
+                        <i class="fas fa-chart-line me-2"></i>Livros Mais Emprestados
+                    </h6>
+                    <a href="{% url 'lista_livros' %}" class="btn btn-sm btn-primary">
+                        Ver Todos
+                    </a>
+                </div>
+                <div class="card-body">
+                    {% if livros_populares %}
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Livro</th>
+                                    <th>Autor</th>
+                                    <th>Empréstimos</th>
+                                    <th>Disponível</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for livro in livros_populares %}
+                                <tr>
+                                    <td>
+                                        <strong>{{ livro.titulo|truncatechars:25 }}</strong>
+                                    </td>
+                                    <td>{{ livro.autor|truncatechars:20 }}</td>
+                                    <td>
+                                        <span class="badge bg-primary">{{ livro.num_emprestimos }}</span>
+                                    </td>
+                                    <td>
+                                        {% if livro.quantidade_disponivel > 0 %}
+                                        <span class="badge bg-success">Sim</span>
+                                        {% else %}
+                                        <span class="badge bg-danger">Não</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="text-center py-4 no-data">
+                        <i class="fas fa-book"></i>
+                        <p>Nenhum empréstimo registrado</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Top Usuários -->
+        <div class="col-xl-12 col-lg-12 mb-4">
+            <div class="card dashboard-card">
+                <div class="card-header">
+                    <h6 class="card-title">
+                        <i class="fas fa-crown me-2"></i>Top Usuários
+                    </h6>
+                    <a href="{% url 'lista_usuarios' %}" class="btn btn-sm btn-primary">
+                        Ver Todos
+                    </a>
+                </div>
+                <div class="card-body">
+                    {% if usuarios_top %}
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Usuário</th>
+                                    <th>Nome</th>
+                                    <th>Empréstimos</th>
+                                    <th>Categoria</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for usuario in usuarios_top %}
+                                <tr>
+                                    <td>{{ usuario.username }}</td>
+                                    <td>{{ usuario.get_full_name|default:"-" }}</td>
+                                    <td>
+                                        <span class="badge bg-primary">{{ usuario.num_emprestimos }}</span>
+                                    </td>
+                                    <td>
+                                        {% if usuario.perfilusuario %}
+                                            <span class="badge bg-info">{{ usuario.perfilusuario.get_categoria_display }}</span>
+                                        {% else %}
+                                            <span class="badge bg-secondary">Usuário</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="text-center py-4 no-data">
+                        <i class="fas fa-user"></i>
+                        <p>Nenhum empréstimo registrado</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/admin_dashboard.js' %}"></script>
+{% endblock %}

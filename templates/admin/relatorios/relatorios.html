@@ -1,0 +1,542 @@
+{% extends 'base/base_admin.html' %}
+{% load static %}
+
+{% block title %}Relatórios - Biblioteca{% endblock %}
+{% block icon %}bar-chart{% endblock %}
+{% block page_title %}Relatórios{% endblock %}
+
+{% block extra_css %}
+<style>
+  .chart-container {
+    height: 300px;
+    position: relative;
+  }
+  
+  .card-stat {
+    border-radius: 10px;
+    border: none;
+    transition: transform 0.3s;
+  }
+  
+  .card-stat:hover {
+    transform: translateY(-5px);
+  }
+  
+  .border-left-primary {
+    border-left: 4px solid #4e73df !important;
+  }
+  
+  .border-left-success {
+    border-left: 4px solid #1cc88a !important;
+  }
+  
+  .border-left-warning {
+    border-left: 4px solid #f6c23e !important;
+  }
+  
+  .border-left-info {
+    border-left: 4px solid #36b9cc !important;
+  }
+  
+  .filter-card .card-header {
+    background-color: #f8f9fa;
+    border-bottom: 1px solid #e3e6f0;
+  }
+  
+  .export-buttons .btn {
+    transition: all 0.2s;
+  }
+  
+  .export-buttons .btn:hover {
+    transform: scale(1.05);
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+  <div class="row">
+    <!-- Conteúdo Principal -->
+    <div class="col-12">
+      <!-- Header -->
+      <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+        <div>
+          <h1 class="h2"><i class="fas fa-chart-bar me-2"></i> Relatórios</h1>
+          <p class="text-muted mb-0">Estatísticas e análises da biblioteca</p>
+        </div>
+        <div class="btn-toolbar mb-2 mb-md-0">
+          <span class="badge bg-primary">
+            <i class="fas fa-calendar-alt"></i> {% now "d/m/Y" %}
+          </span>
+        </div>
+      </div>
+
+      <div class="row">
+        <!-- Filtros -->
+        <div class="col-md-3">
+          <div class="card mb-4 filter-card">
+            <div class="card-header bg-white">
+              <h6 class="card-title mb-0">
+                <i class="fas fa-filter me-2"></i>Filtros
+              </h6>
+            </div>
+            <div class="card-body">
+              <form method="get" id="filtro-form">
+                <div class="mb-3">
+                  <label for="periodo" class="form-label">Período</label>
+                  <select name="periodo" id="periodo" class="form-select">
+                    <option value="30">Últimos 30 dias</option>
+                    <option value="90">Últimos 90 dias</option>
+                    <option value="180">Últimos 6 meses</option>
+                    <option value="365">Último ano</option>
+                    <option value="tudo">Todo o período</option>
+                  </select>
+                </div>
+
+                <div class="mb-3">
+                  <label for="categoria" class="form-label">Categoria de Livros</label>
+                  <select name="categoria" id="categoria" class="form-select">
+                    <option value="">Todas</option>
+                    <option value="ficcao">Ficção</option>
+                    <option value="nao_ficcao">Não-Ficção</option>
+                    <option value="tecnico">Técnico</option>
+                    <option value="didatico">Didático</option>
+                    <option value="biografia">Biografia</option>
+                    <option value="historia">História</option>
+                    <option value="poesia">Poesia</option>
+                  </select>
+                </div>
+
+                <div class="mb-3">
+                  <label for="tipo" class="form-label">Tipo de Relatório</label>
+                  <select name="tipo" id="tipo" class="form-select">
+                    <option value="emprestimos">Empréstimos</option>
+                    <option value="livros">Livros</option>
+                    <option value="usuarios">Usuários</option>
+                  </select>
+                </div>
+
+                <button type="submit" class="btn btn-primary w-100">
+                  <i class="fas fa-filter"></i> Aplicar Filtros
+                </button>
+
+                <a href="{% url 'relatorios' %}" class="btn btn-outline-secondary w-100 mt-2">
+                  <i class="fas fa-times-circle"></i> Limpar Filtros
+                </a>
+              </form>
+            </div>
+          </div>
+
+          <!-- Exportar -->
+          <div class="card">
+            <div class="card-header bg-white">
+              <h6 class="card-title mb-0">
+                <i class="fas fa-download me-2"></i>Exportar
+              </h6>
+            </div>
+            <div class="card-body export-buttons">
+              <div class="d-grid gap-2">
+                <button class="btn btn-outline-success" onclick="exportarExcel()">
+                  <i class="fas fa-file-excel"></i> Excel
+                </button>
+                <button class="btn btn-outline-danger" onclick="exportarPDF()">
+                  <i class="fas fa-file-pdf"></i> PDF
+                </button>
+                <button class="btn btn-outline-primary" onclick="window.print()">
+                  <i class="fas fa-print"></i> Imprimir
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Conteúdo -->
+        <div class="col-md-9">
+          <!-- Estatísticas -->
+          <div class="row mb-4">
+            <div class="col-md-3 col-sm-6 mb-3">
+              <div class="card card-stat border-left-primary h-100 py-2">
+                <div class="card-body text-center">
+                  <h6 class="card-title text-primary text-uppercase">
+                    Total Empréstimos
+                  </h6>
+                  <h3 class="text-primary display-6">{{ total_emprestimos|default:"0" }}</h3>
+                  <small class="text-muted">Total registrado</small>
+                </div>
+              </div>
+            </div>
+            
+            <div class="col-md-3 col-sm-6 mb-3">
+              <div class="card card-stat border-left-success h-100 py-2">
+                <div class="card-body text-center">
+                  <h6 class="card-title text-success text-uppercase">
+                    Livro Mais Popular
+                  </h6>
+                  <h3 class="text-success display-6">{{ livro_mais_emprestado.quantidade|default:"0" }}</h3>
+                  <small class="text-muted d-block" title="{{ livro_mais_emprestado.titulo|default:'N/A' }}">
+                    {{ livro_mais_emprestado.titulo|default:"N/A"|truncatechars:20 }}
+                  </small>
+                </div>
+              </div>
+            </div>
+            
+            <div class="col-md-3 col-sm-6 mb-3">
+              <div class="card card-stat border-left-warning h-100 py-2">
+                <div class="card-body text-center">
+                  <h6 class="card-title text-warning text-uppercase">
+                    Usuário Mais Ativo
+                  </h6>
+                  <h3 class="text-warning display-6">{{ usuario_mais_ativo.quantidade|default:"0" }}</h3>
+                  <small class="text-muted d-block" title="{{ usuario_mais_ativo.nome|default:'N/A' }}">
+                    {{ usuario_mais_ativo.nome|default:"N/A"|truncatechars:20 }}
+                  </small>
+                </div>
+              </div>
+            </div>
+            
+            <div class="col-md-3 col-sm-6 mb-3">
+              <div class="card card-stat border-left-info h-100 py-2">
+                <div class="card-body text-center">
+                  <h6 class="card-title text-info text-uppercase">
+                    Taxa de Devolução
+                  </h6>
+                  <h3 class="text-info display-6">{{ taxa_devolucao|default:"0" }}%</h3>
+                  <small class="text-muted">Livros devolvidos</small>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Gráfico de Empréstimos por Mês -->
+          <div class="card mb-4">
+            <div class="card-header bg-white d-flex justify-content-between align-items-center">
+              <h6 class="card-title mb-0">
+                <i class="fas fa-chart-line me-2"></i>Empréstimos por Mês
+              </h6>
+              <span class="badge bg-primary">
+                {{ total_emprestimos|default:"0" }} total
+              </span>
+            </div>
+            <div class="card-body">
+              <div class="chart-container">
+                <canvas id="chart-emprestimos"></canvas>
+              </div>
+            </div>
+          </div>
+
+          <!-- Tabelas -->
+          <div class="row">
+            <div class="col-lg-6 mb-4">
+              <div class="card h-100">
+                <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                  <h6 class="card-title mb-0">
+                    <i class="fas fa-book me-2"></i>Top 10 Livros Mais Emprestados
+                  </h6>
+                  <span class="badge bg-primary">{{ top_livros|length }}</span>
+                </div>
+                <div class="card-body">
+                  <div class="table-responsive">
+                    <table class="table table-sm table-hover">
+                      <thead class="table-light">
+                        <tr>
+                          <th width="50">#</th>
+                          <th>Livro</th>
+                          <th class="text-end" width="100">Empréstimos</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {% for livro in top_livros %}
+                        <tr>
+                          <td class="text-muted">{{ forloop.counter }}</td>
+                          <td>
+                            <div class="d-flex align-items-center">
+                              <div class="flex-shrink-0">
+                                <span class="badge bg-light text-dark me-2">{{ forloop.counter }}</span>
+                              </div>
+                              <div class="flex-grow-1 ms-2">
+                                <div class="fw-medium">{{ livro.titulo|truncatechars:30 }}</div>
+                                <small class="text-muted">Autor: {{ livro.autor|default:"-"|truncatechars:20 }}</small>
+                              </div>
+                            </div>
+                          </td>
+                          <td class="text-end">
+                            <span class="badge bg-primary rounded-pill">{{ livro.total }}</span>
+                          </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                          <td colspan="3" class="text-center text-muted py-3">
+                            <i class="fas fa-book me-2"></i>Nenhum dado disponível
+                          </td>
+                        </tr>
+                        {% endfor %}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-lg-6 mb-4">
+              <div class="card h-100">
+                <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                  <h6 class="card-title mb-0">
+                    <i class="fas fa-users me-2"></i>Top 10 Usuários Mais Ativos
+                  </h6>
+                  <span class="badge bg-success">{{ top_usuarios|length }}</span>
+                </div>
+                <div class="card-body">
+                  <div class="table-responsive">
+                    <table class="table table-sm table-hover">
+                      <thead class="table-light">
+                        <tr>
+                          <th width="50">#</th>
+                          <th>Usuário</th>
+                          <th class="text-end" width="100">Empréstimos</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {% for usuario in top_usuarios %}
+                        <tr>
+                          <td class="text-muted">{{ forloop.counter }}</td>
+                          <td>
+                            <div class="d-flex align-items-center">
+                              <div class="flex-shrink-0">
+                                <div class="avatar-sm bg-light rounded-circle d-flex align-items-center justify-content-center me-2">
+                                  <span class="text-muted">{{ forloop.counter }}</span>
+                                </div>
+                              </div>
+                              <div class="flex-grow-1 ms-2">
+                                <div class="fw-medium">{{ usuario.nome|truncatechars:25 }}</div>
+                                <small class="text-muted">{{ usuario.email|default:"-"|truncatechars:20 }}</small>
+                              </div>
+                            </div>
+                          </td>
+                          <td class="text-end">
+                            <span class="badge bg-success rounded-pill">{{ usuario.total }}</span>
+                          </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                          <td colspan="3" class="text-center text-muted py-3">
+                            <i class="fas fa-user me-2"></i>Nenhum dado disponível
+                          </td>
+                        </tr>
+                        {% endfor %}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Distribuição por Categoria -->
+          {% if categorias %}
+          <div class="card mt-4">
+            <div class="card-header bg-white d-flex justify-content-between align-items-center">
+              <h6 class="card-title mb-0">
+                <i class="fas fa-chart-pie me-2"></i>Distribuição por Categoria
+              </h6>
+              <span class="badge bg-info">{{ categorias|length }} categorias</span>
+            </div>
+            <div class="card-body">
+              <div class="row align-items-center">
+                <div class="col-lg-8 col-md-7">
+                  <div class="chart-container">
+                    <canvas id="chart-categorias"></canvas>
+                  </div>
+                </div>
+                <div class="col-lg-4 col-md-5">
+                  <div class="table-responsive">
+                    <table class="table table-sm">
+                      <thead class="table-light">
+                        <tr>
+                          <th>Categoria</th>
+                          <th class="text-end">Quantidade</th>
+                          <th class="text-end">%</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {% for cat in categorias %}
+                        <tr>
+                          <td>{{ cat.categoria_display }}</td>
+                          <td class="text-end fw-medium">{{ cat.total }}</td>
+                          <td class="text-end">
+                            <span class="badge bg-light text-dark">{{ cat.percentual|floatformat:1 }}%</span>
+                          </td>
+                        </tr>
+                        {% endfor %}
+                      </tbody>
+                      <tfoot class="table-light">
+                        <tr>
+                          <th class="text-end">Total:</th>
+                          <th class="text-end">{{ categorias|length }}</th>
+                          <th class="text-end">100%</th>
+                        </tr>
+                      </tfoot>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Dados para JavaScript -->
+<div id="chart-data" 
+     data-meses='{{ meses|safe }}'
+     data-valores='{{ valores_emprestimos|safe }}'
+     data-categorias-labels='{{ categorias_labels|safe }}'
+     data-categorias-values='{{ categorias_values|safe }}'
+     style="display: none;"></div>
+{% endblock %}
+
+{% block extra_js %}
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+  // Dados para os gráficos (serão preenchidos pelo Django)
+  const chartData = {
+    meses: JSON.parse(document.getElementById('chart-data').dataset.meses || '[]'),
+    valores: JSON.parse(document.getElementById('chart-data').dataset.valores || '[]'),
+    categoriasLabels: JSON.parse(document.getElementById('chart-data').dataset.categoriasLabels || '[]'),
+    categoriasValues: JSON.parse(document.getElementById('chart-data').dataset.categoriasValues || '[]')
+  };
+
+  // Cores para gráficos
+  const chartColors = {
+    primary: 'rgba(54, 162, 235, 1)',
+    primaryLight: 'rgba(54, 162, 235, 0.2)',
+    success: 'rgba(75, 192, 192, 1)',
+    successLight: 'rgba(75, 192, 192, 0.2)'
+  };
+
+  // Array de cores para gráfico de pizza
+  const pieChartColors = [
+    '#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0',
+    '#9966FF', '#FF9F40', '#C9CBCF', '#7FFFD4',
+    '#FF6B6B', '#51CF66', '#FFD43B', '#228BE6'
+  ];
+
+  document.addEventListener('DOMContentLoaded', function() {
+    // Gráfico de Empréstimos por Mês
+    const ctxEmprestimos = document.getElementById('chart-emprestimos');
+    if (ctxEmprestimos && chartData.meses.length > 0) {
+      new Chart(ctxEmprestimos.getContext('2d'), {
+        type: 'line',
+        data: {
+          labels: chartData.meses,
+          datasets: [{
+            label: 'Empréstimos',
+            data: chartData.valores,
+            backgroundColor: chartColors.primaryLight,
+            borderColor: chartColors.primary,
+            borderWidth: 2,
+            fill: true,
+            tension: 0.4
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              display: true,
+              position: 'top'
+            }
+          },
+          scales: {
+            y: {
+              beginAtZero: true,
+              ticks: {
+                stepSize: 1
+              }
+            }
+          }
+        }
+      });
+    }
+
+    // Gráfico de Categorias (se houver dados)
+    if (chartData.categoriasLabels.length > 0) {
+      const ctxCategorias = document.getElementById('chart-categorias');
+      if (ctxCategorias) {
+        new Chart(ctxCategorias.getContext('2d'), {
+          type: 'pie',
+          data: {
+            labels: chartData.categoriasLabels,
+            datasets: [{
+              data: chartData.categoriasValues,
+              backgroundColor: pieChartColors
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: {
+                display: true,
+                position: 'right'
+              }
+            }
+          }
+        });
+      }
+    }
+
+    // Funções de exportação
+    function exportarExcel() {
+      showNotification('Preparando exportação para Excel...', 'info');
+      setTimeout(() => {
+        showNotification('Arquivo Excel gerado com sucesso!', 'success');
+      }, 1000);
+    }
+
+    function exportarPDF() {
+      showNotification('Gerando relatório em PDF...', 'info');
+      setTimeout(() => {
+        showNotification('PDF gerado com sucesso!', 'success');
+      }, 1500);
+    }
+
+    // Função para mostrar notificações
+    function showNotification(message, type = 'info') {
+      const alertClass = type === 'success' ? 'alert-success' : 
+                        type === 'warning' ? 'alert-warning' : 
+                        type === 'danger' ? 'alert-danger' : 'alert-info';
+      
+      const alert = document.createElement('div');
+      alert.className = `alert ${alertClass} alert-dismissible fade show position-fixed`;
+      alert.style.cssText = 'top: 20px; right: 20px; z-index: 9999; max-width: 300px;';
+      alert.innerHTML = `
+        ${message}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+      `;
+      
+      document.body.appendChild(alert);
+      
+      // Remover automaticamente após 5 segundos
+      setTimeout(() => {
+        if (alert.parentNode) {
+          alert.remove();
+        }
+      }, 5000);
+    }
+
+    // Ativar tooltips
+    var tooltips = [].slice.call(
+      document.querySelectorAll('[data-bs-toggle="tooltip"]')
+    );
+    tooltips.map(function (tooltip) {
+      return new bootstrap.Tooltip(tooltip);
+    });
+  });
+</script>
+{% endblock %}

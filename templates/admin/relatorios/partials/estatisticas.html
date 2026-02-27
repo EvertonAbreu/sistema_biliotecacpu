@@ -1,0 +1,61 @@
+<div class="row mb-4">
+  <div class="col-md-3 col-sm-6 mb-3">
+    <div class="card card-stat border-left-primary h-100 py-2">
+      <div class="card-body text-center">
+        <h6 class="card-title text-primary text-uppercase">
+          Total Empréstimos
+        </h6>
+        <h3 class="text-primary display-6">
+          {{ total_emprestimos|default:"0" }}
+        </h3>
+        <small class="text-muted">Total registrado</small>
+      </div>
+    </div>
+  </div>
+  
+  <div class="col-md-3 col-sm-6 mb-3">
+    <div class="card card-stat border-left-success h-100 py-2">
+      <div class="card-body text-center">
+        <h6 class="card-title text-success text-uppercase">
+          Livro Mais Popular
+        </h6>
+        <h3 class="text-success display-6">
+          {{ livro_mais_emprestado.quantidade|default:"0" }}
+        </h3>
+        <small class="text-muted d-block" data-bs-toggle="tooltip" title="{{ livro_mais_emprestado.titulo|default:'N/A' }}">
+          {{ livro_mais_emprestado.titulo|default:"N/A"|truncatechars:20 }}
+        </small>
+      </div>
+    </div>
+  </div>
+  
+  <div class="col-md-3 col-sm-6 mb-3">
+    <div class="card card-stat border-left-warning h-100 py-2">
+      <div class="card-body text-center">
+        <h6 class="card-title text-warning text-uppercase">
+          Usuário Mais Ativo
+        </h6>
+        <h3 class="text-warning display-6">
+          {{ usuario_mais_ativo.quantidade|default:"0" }}
+        </h3>
+        <small class="text-muted d-block" data-bs-toggle="tooltip" title="{{ usuario_mais_ativo.nome|default:'N/A' }}">
+          {{ usuario_mais_ativo.nome|default:"N/A"|truncatechars:20 }}
+        </small>
+      </div>
+    </div>
+  </div>
+  
+  <div class="col-md-3 col-sm-6 mb-3">
+    <div class="card card-stat border-left-info h-100 py-2">
+      <div class="card-body text-center">
+        <h6 class="card-title text-info text-uppercase">
+          Taxa de Devolução
+        </h6>
+        <h3 class="text-info display-6">
+          {{ taxa_devolucao|default:"0" }}%
+        </h3>
+        <small class="text-muted">Livros devolvidos</small>
+      </div>
+    </div>
+  </div>
+</div>

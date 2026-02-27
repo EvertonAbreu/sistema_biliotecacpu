@@ -1,0 +1,54 @@
+{% extends 'base/base_admin.html' %}
+{% load static %}
+
+{% block title %}Excluir Evento - Admin{% endblock %}
+{% block icon %}trash{% endblock %}
+{% block page_title %}Confirmar Exclusão{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card shadow">
+            <div class="card-header bg-danger text-white">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-exclamation-triangle me-2"></i>Confirmar Exclusão
+                </h5>
+            </div>
+            <div class="card-body text-center">
+                {% if evento.foto %}
+                <img src="{{ evento.foto.url }}" alt="{{ evento.titulo }}" 
+                     class="img-fluid rounded mb-4" style="max-height: 200px;">
+                {% else %}
+                <div class="bg-light rounded p-5 mb-4">
+                    <i class="fas fa-calendar-times fa-3x text-muted"></i>
+                </div>
+                {% endif %}
+                
+                <h4 class="mb-3">Tem certeza que deseja excluir?</h4>
+                <p class="lead">{{ evento.titulo }}</p>
+                <p class="text-muted">
+                    <i class="fas fa-calendar-alt me-1"></i>
+                    Data: {{ evento.data_evento|date:"d/m/Y" }}
+                </p>
+                
+                <div class="alert alert-warning">
+                    <i class="fas fa-exclamation-circle me-2"></i>
+                    <strong>Atenção!</strong> Esta ação não pode ser desfeita. O evento será permanentemente excluído do sistema.
+                </div>
+                
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="d-flex justify-content-center gap-3">
+                        <a href="{% url 'lista_eventos_admin' %}" class="btn btn-secondary">
+                            <i class="fas fa-times me-2"></i>Cancelar
+                        </a>
+                        <button type="submit" class="btn btn-danger">
+                            <i class="fas fa-trash me-2"></i>Sim, Excluir Evento
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

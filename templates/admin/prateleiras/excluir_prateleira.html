@@ -1,0 +1,53 @@
+{% extends 'admin/base_admin.html' %}
+
+{% block title %}Excluir Prateleira - Admin{% endblock %}
+{% block icon %}trash{% endblock %}
+{% block page_title %}Excluir Prateleira{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card border-danger">
+                <div class="card-header bg-danger text-white">
+                    <h5 class="mb-0">
+                        <i class="bi bi-exclamation-triangle me-2"></i>Confirmar Exclusão
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="text-center mb-4">
+                        <i class="bi bi-box-seam display-1 text-danger"></i>
+                    </div>
+                    
+                    <h4 class="text-center mb-4">Tem certeza que deseja excluir a prateleira?</h4>
+                    
+                    <div class="alert alert-warning">
+                        <strong>Prateleira:</strong> {{ prateleira.nome }}<br>
+                        <strong>Categoria:</strong> {{ prateleira.get_categoria_associada_display }}<br>
+                        {% if prateleira.localizacao_fisica %}
+                        <strong>Localização:</strong> {{ prateleira.localizacao_fisica }}<br>
+                        {% endif %}
+                        <strong>Total de livros:</strong> {{ prateleira.total_livros }}
+                    </div>
+                    
+                    <p class="text-muted text-center mb-4">
+                        Esta ação não pode ser desfeita.
+                    </p>
+                    
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="d-flex justify-content-center gap-3">
+                            <a href="{% url 'lista_prateleiras' %}" class="btn btn-secondary">
+                                <i class="bi bi-x-circle"></i> Cancelar
+                            </a>
+                            <button type="submit" class="btn btn-danger">
+                                <i class="bi bi-trash"></i> Confirmar Exclusão
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

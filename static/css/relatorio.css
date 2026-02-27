@@ -1,0 +1,145 @@
+/* Estilos específicos para relatórios */
+
+body {
+  background-color: #f8f9fa;
+}
+
+.chart-container {
+  height: 300px;
+  position: relative;
+}
+
+/* Cards de estatísticas */
+.card-stat {
+  border-radius: 10px;
+  border: none;
+  transition: transform 0.3s;
+  box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+}
+
+.card-stat:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+}
+
+/* Bordas coloridas para cards de estatística */
+.border-left-primary {
+  border-left: 4px solid #4e73df !important;
+}
+
+.border-left-success {
+  border-left: 4px solid #1cc88a !important;
+}
+
+.border-left-warning {
+  border-left: 4px solid #f6c23e !important;
+}
+
+.border-left-info {
+  border-left: 4px solid #36b9cc !important;
+}
+
+/* Ajustes para tabelas */
+.table-sm th {
+  font-weight: 600;
+  font-size: 0.85rem;
+}
+
+.table-sm td {
+  font-size: 0.85rem;
+}
+
+/* Cards de filtro */
+.filter-card .card-header {
+  background-color: #f8f9fa;
+  border-bottom: 1px solid #e3e6f0;
+}
+
+/* Badges personalizados */
+.badge-chart {
+  font-size: 0.75em;
+  padding: 0.25em 0.6em;
+}
+
+/* Responsividade para gráficos */
+@media (max-width: 768px) {
+  .chart-container {
+    height: 250px;
+  }
+  
+  .col-md-4 .table-responsive {
+    margin-top: 1.5rem;
+  }
+}
+
+/* Animações */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.card {
+  animation: fadeIn 0.3s ease-out;
+}
+
+/* Estilos para exportação */
+.export-buttons .btn {
+  transition: all 0.2s;
+}
+
+.export-buttons .btn:hover {
+  transform: scale(1.05);
+}
+
+/* Tooltips personalizados */
+.tooltip-custom {
+  font-size: 0.875rem;
+}
+
+/* Scroll suave para tabelas */
+.table-responsive {
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.table-responsive::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.table-responsive::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 4px;
+}
+
+.table-responsive::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 4px;
+}
+
+.table-responsive::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+/* Estilos para badges de status */
+.badge-status {
+  font-size: 0.75em;
+  padding: 0.25em 0.75em;
+}
+
+/* Estilos para cards de gráfico */
+.chart-card .card-header {
+  background: linear-gradient(90deg, #4e73df 0%, #224abe 100%);
+  color: white;
+}
+
+.chart-card .card-header h6 {
+  margin: 0;
+  font-weight: 600;
+}

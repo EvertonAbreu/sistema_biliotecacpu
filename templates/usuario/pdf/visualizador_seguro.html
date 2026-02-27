@@ -1,0 +1,270 @@
+{% extends 'base/base_usuario.html' %}
+{% load static %}
+
+{% block title %}{{ livro.titulo }} - Visualizador{% endblock %}
+
+{% block extra_css %}
+<style>
+    .visualizador-container {
+        padding: 2rem 0;
+        background: #f5f5f5;
+        min-height: 100vh;
+    }
+
+    .info-card {
+        background: white;
+        border-radius: 15px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+
+    .livro-info {
+        display: flex;
+        gap: 2rem;
+        align-items: flex-start;
+    }
+
+    .livro-capa {
+        width: 200px;
+        height: 280px;
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        flex-shrink: 0;
+    }
+
+    .livro-capa img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .livro-detalhes {
+        flex-grow: 1;
+    }
+
+    .livro-titulo {
+        color: #2c3e50;
+        font-size: 2rem;
+        font-weight: bold;
+        margin-bottom: 0.5rem;
+    }
+
+    .livro-autor {
+        color: #667eea;
+        font-size: 1.2rem;
+        margin-bottom: 1rem;
+    }
+
+    .livro-descricao {
+        color: #666;
+        line-height: 1.6;
+        margin-bottom: 1.5rem;
+    }
+
+    .meta-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .meta-item {
+        background: #f8f9fa;
+        padding: 1rem;
+        border-radius: 8px;
+        text-align: center;
+    }
+
+    .meta-label {
+        font-size: 0.9rem;
+        color: #888;
+        margin-bottom: 0.3rem;
+    }
+
+    .meta-value {
+        font-size: 1.2rem;
+        font-weight: bold;
+        color: #667eea;
+    }
+
+    .pdf-container {
+        background: white;
+        border-radius: 15px;
+        padding: 2rem;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        margin-top: 2rem;
+    }
+
+    .pdf-viewer {
+        width: 100%;
+        height: 700px;
+        border: 2px solid #e0e6ed;
+        border-radius: 10px;
+        overflow: hidden;
+        background: #f0f0f0;
+    }
+
+    .pdf-frame {
+        width: 100%;
+        height: 100%;
+        border: none;
+    }
+
+    .aviso-leitura {
+        background: #e3f2fd;
+        border-left: 4px solid #2196f3;
+        padding: 1rem;
+        border-radius: 5px;
+        margin-top: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .aviso-leitura i {
+        font-size: 2rem;
+        color: #2196f3;
+    }
+
+    .btn-voltar {
+        background: #6c757d;
+        color: white;
+        padding: 0.5rem 1.5rem;
+        border-radius: 5px;
+        text-decoration: none;
+        transition: all 0.3s;
+    }
+
+    .btn-voltar:hover {
+        background: #5a6268;
+        color: white;
+    }
+
+    @media (max-width: 768px) {
+        .livro-info {
+            flex-direction: column;
+        }
+
+        .livro-capa {
+            width: 100%;
+            height: 300px;
+        }
+
+        .pdf-viewer {
+            height: 500px;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="visualizador-container">
+    <div class="container">
+        <!-- Informações do Livro -->
+        <div class="info-card">
+            <div class="livro-info">
+                <div class="livro-capa">
+                    {% if livro.capa %}
+                    <img src="{{ livro.capa.url }}" alt="{{ livro.titulo }}">
+                    {% else %}
+                    <div style="width: 100%; height: 100%; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
+                               display: flex; align-items: center; justify-content: center;">
+                        <i class="fas fa-book" style="font-size: 4rem; color: white;"></i>
+                    </div>
+                    {% endif %}
+                </div>
+                
+                <div class="livro-detalhes">
+                    <h1 class="livro-titulo">{{ livro.titulo }}</h1>
+                    <div class="livro-autor">
+                        <i class="fas fa-user-edit"></i> {{ livro.autor }}
+                    </div>
+                    
+                    <p class="livro-descricao">{{ livro.descricao }}</p>
+                    
+                    <div class="meta-grid">
+                        <div class="meta-item">
+                            <div class="meta-label">Categoria</div>
+                            <div class="meta-value">{{ livro.get_categoria_display }}</div>
+                        </div>
+                        <div class="meta-item">
+                            <div class="meta-label">Páginas</div>
+                            <div class="meta-value">{{ livro.paginas }}</div>
+                        </div>
+                        <div class="meta-item">
+                            <div class="meta-label">Visualizações</div>
+                            <div class="meta-value">{{ livro.visualizacoes }}</div>
+                        </div>
+                    </div>
+                    
+                    <a href="{% url 'acervo_pdf' %}" class="btn-voltar">
+                        <i class="fas fa-arrow-left"></i> Voltar ao Acervo
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Visualizador do PDF -->
+        <div class="pdf-container">
+            <h3 class="mb-3">
+                <i class="fas fa-book-open text-primary"></i> 
+                Leitura Online
+            </h3>
+            
+            {% if pdf_disponivel %}
+                <div class="pdf-viewer">
+                    <embed src="{% url 'servir_pdf_seguro' livro.id %}#toolbar=1&navpanes=1&scrollbar=1&view=FitH" 
+                        type="application/pdf" 
+                        width="100%" 
+                        height="600px"
+                        style="border: none;">
+                    <p>Seu navegador não suporta a visualização de PDFs. 
+                    <a href="{% url 'servir_pdf_seguro' livro.id %}" target="_blank">Clique aqui para abrir</a>
+                    </p>
+                </div>
+                
+                <div class="aviso-leitura">
+                    <i class="fas fa-info-circle"></i>
+                    <div>
+                        <strong>📖 Modo de leitura apenas</strong><br>
+                        <small>Este livro está disponível apenas para leitura online. Não é permitido fazer download ou copiar o conteúdo.</small>
+                    </div>
+                </div>
+            {% else %}
+                <div class="alert alert-warning">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    PDF não disponível para este livro.
+                </div>
+            {% endif %}
+        </div>
+
+        <!-- Livros Relacionados -->
+        {% if livros_relacionados %}
+        <div class="mt-5">
+            <h3 class="mb-4">
+                <i class="fas fa-bookmark text-primary"></i> 
+                Você também pode gostar
+            </h3>
+            
+            <div class="row">
+                {% for rel in livros_relacionados %}
+                <div class="col-md-3 mb-4">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <h6 class="card-title">{{ rel.titulo|truncatechars:30 }}</h6>
+                            <p class="card-text small text-muted">{{ rel.autor|truncatechars:20 }}</p>
+                            <a href="{% url 'visualizar_pdf_seguro' rel.id %}" class="btn btn-sm btn-outline-primary">
+                                <i class="fas fa-book-open"></i> Ler
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

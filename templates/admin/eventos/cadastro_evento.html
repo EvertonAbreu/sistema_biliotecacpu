@@ -1,0 +1,172 @@
+{% extends 'base/base_admin.html' %}
+{% load static %}
+
+{% block title %}Cadastrar Evento - Admin{% endblock %}
+{% block icon %}calendar-plus{% endblock %}
+{% block page_title %}Cadastrar Novo Evento{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card shadow">
+            <div class="card-header bg-primary text-white">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-calendar-plus me-2"></i>Novo Evento
+                </h5>
+            </div>
+            <div class="card-body">
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    
+                    {% if form.errors %}
+                    <div class="alert alert-danger">
+                        <strong>Erro!</strong> Por favor, corrija os erros abaixo.
+                    </div>
+                    {% endif %}
+                    
+                    <!-- Título -->
+                    <div class="mb-3">
+                        <label for="{{ form.titulo.id_for_label }}" class="form-label">
+                            <i class="fas fa-heading me-2"></i>Título do Evento *
+                        </label>
+                        {{ form.titulo }}
+                        {% if form.titulo.errors %}
+                        <div class="text-danger">{{ form.titulo.errors }}</div>
+                        {% endif %}
+                    </div>
+                    
+                    <!-- Descrição -->
+                    <div class="mb-3">
+                        <label for="{{ form.descricao.id_for_label }}" class="form-label">
+                            <i class="fas fa-align-left me-2"></i>Descrição *
+                        </label>
+                        {{ form.descricao }}
+                        <small class="text-muted">Descreva o evento com detalhes (atividade, público-alvo, etc.)</small>
+                        {% if form.descricao.errors %}
+                        <div class="text-danger">{{ form.descricao.errors }}</div>
+                        {% endif %}
+                    </div>
+                    
+                    <!-- Data do Evento -->
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="{{ form.data_evento.id_for_label }}" class="form-label">
+                                <i class="fas fa-calendar-day me-2"></i>Data do Evento *
+                            </label>
+                            {{ form.data_evento }}
+                            {% if form.data_evento.errors %}
+                            <div class="text-danger">{{ form.data_evento.errors }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <!-- Foto -->
+                    <div class="mb-3">
+                        <label for="{{ form.foto.id_for_label }}" class="form-label">
+                            <i class="fas fa-image me-2"></i>Foto do Evento
+                        </label>
+                        <div class="input-group">
+                            {{ form.foto }}
+                        </div>
+                        <small class="text-muted">Formatos: JPG, PNG, GIF. Tamanho máximo: 5MB</small>
+                        {% if form.foto.errors %}
+                        <div class="text-danger">{{ form.foto.errors }}</div>
+                        {% endif %}
+                    </div>
+                    
+                    <!-- Status -->
+                    <div class="mb-4">
+                        <div class="form-check">
+                            {{ form.ativo }}
+                            <label class="form-check-label" for="{{ form.ativo.id_for_label }}">
+                                Evento Ativo (visível no site público)
+                            </label>
+                        </div>
+                        <small class="text-muted">Desmarque para ocultar o evento temporariamente</small>
+                    </div>
+                    
+                    <!-- Prévia da Foto -->
+                    <div class="mb-4" id="preview-container" style="display: none;">
+                        <label class="form-label">
+                            <i class="fas fa-eye me-2"></i>Prévia da Foto
+                        </label>
+                        <div class="border rounded p-3 text-center">
+                            <img id="image-preview" src="#" alt="Prévia" class="img-fluid rounded" style="max-height: 300px;">
+                        </div>
+                    </div>
+                    
+                    <!-- Botões -->
+                    <div class="d-flex justify-content-between mt-4">
+                        <a href="{% url 'lista_eventos_admin' %}" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left me-2"></i>Voltar
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save me-2"></i>Salvar Evento
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Preview de imagem
+    const fotoInput = document.getElementById('{{ form.foto.id_for_label }}');
+    const previewContainer = document.getElementById('preview-container');
+    const imagePreview = document.getElementById('image-preview');
+    
+    if (fotoInput) {
+        fotoInput.addEventListener('change', function() {
+            if (this.files && this.files[0]) {
+                const reader = new FileReader();
+                
+                reader.onload = function(e) {
+                    imagePreview.src = e.target.result;
+                    previewContainer.style.display = 'block';
+                }
+                
+                reader.readAsDataURL(this.files[0]);
+            } else {
+                previewContainer.style.display = 'none';
+            }
+        });
+    }
+    
+    // Validação do formulário
+    const form = document.querySelector('form');
+    form.addEventListener('submit', function(e) {
+        const titulo = document.getElementById('{{ form.titulo.id_for_label }}').value;
+        const dataEvento = document.getElementById('{{ form.data_evento.id_for_label }}').value;
+        
+        if (!titulo.trim()) {
+            e.preventDefault();
+            alert('Por favor, insira um título para o evento.');
+            return false;
+        }
+        
+        if (!dataEvento) {
+            e.preventDefault();
+            alert('Por favor, selecione uma data para o evento.');
+            return false;
+        }
+        
+        // Mostrar loading
+        const submitBtn = form.querySelector('button[type="submit"]');
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Salvando...';
+        submitBtn.disabled = true;
+    });
+    
+    // Formatação da data
+    const dataEventoInput = document.getElementById('{{ form.data_evento.id_for_label }}');
+    if (dataEventoInput) {
+        // Definir data mínima como hoje
+        const today = new Date().toISOString().split('T')[0];
+        dataEventoInput.min = today;
+    }
+});
+</script>
+{% endblock %}
