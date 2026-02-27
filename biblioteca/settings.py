@@ -133,9 +133,7 @@ static_dir = BASE_DIR / "static"
 if static_dir.exists():
     STATICFILES_DIRS.append(static_dir)
 
-STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
-
-# ==============================
+STATICFILES_STORAGE = "whitenoise.storage.CompressedStaticFilesStorage"# ==============================
 # ARQUIVOS DE MÍDIA
 # ==============================
 
