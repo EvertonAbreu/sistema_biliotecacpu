@@ -150,19 +150,9 @@
         position: relative;
         background: var(--paper-light);
         background-image: 
-            /* IMAGENS HISTÓRICAS DE FUNDO - MUITO SUTIS (OPACIDADE 0.03) */
             url('https://www.transparenttextures.com/patterns/old-map.png'),
             url('https://www.transparenttextures.com/patterns/aged-white.png'),
-            /* PRIMEIRA CAMADA DE IMAGENS - BARCOS ANTIGOS */
             linear-gradient(rgba(250, 243, 224, 0.97), rgba(250, 243, 224, 0.92)),
-            url('https://cdn.pixabay.com/photo/2017/01/31/17/52/ship-2026356_960_720.png'),
-            /* SEGUNDA CAMADA - ÍNDIOS */
-            linear-gradient(rgba(250, 243, 224, 0.97), rgba(250, 243, 224, 0.92)),
-            url('https://cdn.pixabay.com/photo/2016/11/22/19/25/indian-1850419_960_720.png'),
-            /* TERCEIRA CAMADA - COLÔNIAS/CASAS ANTIGAS */
-            linear-gradient(rgba(250, 243, 224, 0.97), rgba(250, 243, 224, 0.92)),
-            url('https://cdn.pixabay.com/photo/2014/09/11/18/23/venice-441843_960_720.jpg'),
-            /* TEXTURA DE PAPEL AMASSADO */
             repeating-linear-gradient(
                 45deg,
                 rgba(140, 100, 60, 0.02) 0px,
@@ -178,27 +168,10 @@
                 transparent 6px
             ),
             url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200' viewBox='0 0 200 200'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23noise)' opacity='0.06'/%3E%3C/svg%3E");
-        background-size: 
-            auto, auto,
-            auto, 200px auto,
-            auto, 250px auto,
-            auto, 300px auto,
-            auto, auto,
-            auto, auto,
-            auto;
-        background-position: 
-            0 0, 0 0,
-            0 0, 10% 20%,
-            0 0, 80% 70%,
-            0 0, 40% 60%;
-        background-repeat: repeat, repeat,
-            repeat, no-repeat,
-            repeat, no-repeat,
-            repeat, no-repeat,
-            repeat, repeat,
-            repeat, repeat,
-            repeat;
-        background-blend-mode: overlay, normal, normal, multiply, normal, multiply, normal, multiply, normal, normal, normal;
+        background-size: auto, auto, auto, auto, auto, auto;
+        background-position: 0 0;
+        background-repeat: repeat;
+        background-blend-mode: overlay, normal, normal, normal, normal;
         border-left: 3px solid #b89b7b;
         border-right: 3px solid #b89b7b;
         border-top: 2px solid #d4b48c;
@@ -211,36 +184,6 @@
         display: flex;
         flex-direction: column;
         padding: 2.5rem 3rem;
-    }
-
-    /* VERSÃO COM SVG PARA MAIOR CONTROLE (CASO AS IMAGENS EXTERNAS NÃO CARREGUEM) */
-    .manuscript::after {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        pointer-events: none;
-        background-image: 
-            /* ÍNDIO SILHUETA - CANOA */
-            url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 100' opacity='0.08'%3E%3Cpath d='M20,70 L40,40 L60,40 L80,70 L100,40 L120,40 L140,70 L160,40 L180,40 L190,70' stroke='%233a2c1b' fill='none' stroke-width='2' /%3E%3Ccircle cx='50' cy='30' r='8' fill='%233a2c1b' /%3E%3Ccircle cx='130' cy='30' r='8' fill='%233a2c1b' /%3E%3C/svg%3E"),
-            /* CARAVELA PORTUGUESA */
-            url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 300 150' opacity='0.07'%3E%3Cpath d='M50,100 L80,40 L150,20 L220,40 L250,100 L200,100 L180,70 L120,70 L100,100 L50,100' fill='%233a2c1b' /%3E%3Crect x='140' y='20' width='20' height='60' fill='%233a2c1b' /%3E%3C/svg%3E"),
-            /* CASAS COLONIAIS */
-            url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 300 150' opacity='0.06'%3E%3Crect x='30' y='60' width='40' height='40' fill='%233a2c1b' /%3E%3Cpolygon points='30,60 50,30 70,60' fill='%233a2c1b' /%3E%3Crect x='100' y='50' width='35' height='50' fill='%233a2c1b' /%3E%3Cpolygon points='100,50 117.5,20 135,50' fill='%233a2c1b' /%3E%3Crect x='180' y='40' width='30' height='60' fill='%233a2c1b' /%3E%3Cpolygon points='180,40 195,15 210,40' fill='%233a2c1b' /%3E%3C/svg%3E");
-        background-position: 
-            10% 30%,
-            70% 80%,
-            40% 50%;
-        background-repeat: no-repeat;
-        background-size: 
-            200px auto,
-            250px auto,
-            280px auto;
-        z-index: 0;
-        opacity: 0.7;
-        mix-blend-mode: multiply;
     }
 
     /* EFEITO DE DOBRAS E AMASSADOS */
@@ -261,6 +204,25 @@
         z-index: 1;
     }
 
+    .manuscript::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        background-image: 
+            url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 100' opacity='0.08'%3E%3Cpath d='M20,70 L40,40 L60,40 L80,70 L100,40 L120,40 L140,70 L160,40 L180,40 L190,70' stroke='%233a2c1b' fill='none' stroke-width='2' /%3E%3Ccircle cx='50' cy='30' r='8' fill='%233a2c1b' /%3E%3Ccircle cx='130' cy='30' r='8' fill='%233a2c1b' /%3E%3C/svg%3E"),
+            url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 300 150' opacity='0.07'%3E%3Cpath d='M50,100 L80,40 L150,20 L220,40 L250,100 L200,100 L180,70 L120,70 L100,100 L50,100' fill='%233a2c1b' /%3E%3Crect x='140' y='20' width='20' height='60' fill='%233a2c1b' /%3E%3C/svg%3E");
+        background-position: 10% 30%, 70% 80%;
+        background-repeat: no-repeat;
+        background-size: 200px auto, 250px auto;
+        z-index: 0;
+        opacity: 0.7;
+        mix-blend-mode: multiply;
+    }
+
     .manuscript-header {
         position: relative;
         z-index: 10;
@@ -272,7 +234,7 @@
 
     .chapter-title {
         font-family: 'Quintessential', cursive;
-        font-size: 3rem;
+        font-size: 2.5rem;
         color: var(--ink-old);
         line-height: 1.2;
         margin: 0;
@@ -294,8 +256,8 @@
         z-index: 10;
         flex-grow: 1;
         font-family: 'Cormorant Garamond', serif;
-        font-size: 1.5rem;
-        line-height: 2rem;
+        font-size: 1.3rem;
+        line-height: 1.8rem;
         color: var(--ink-old);
         text-align: justify;
         font-weight: 500;
@@ -306,9 +268,9 @@
     }
 
     .manuscript-body p {
-        margin: 0 0 2rem 0;
+        margin: 0 0 1.5rem 0;
         text-indent: 3rem;
-        line-height: 2rem;
+        line-height: 1.8rem;
         padding: 0;
         position: relative;
         z-index: 10;
@@ -320,6 +282,25 @@
 
     .manuscript-body p:last-of-type {
         margin-bottom: 0;
+    }
+
+    .manuscript-body h3 {
+        font-family: 'Quintessential', cursive;
+        font-size: 1.8rem;
+        margin: 2rem 0 1rem 0;
+        color: var(--ink-old);
+        text-indent: 0;
+        border-left: 3px solid var(--border-old);
+        padding-left: 1rem;
+    }
+
+    .manuscript-body .stat-box {
+        background: rgba(180, 140, 100, 0.1);
+        border: 1px dashed var(--border-old);
+        padding: 1rem;
+        margin: 1.5rem 0;
+        font-size: 1.1rem;
+        line-height: 1.6;
     }
 
     /* MARCA D'ÁGUA SUTIL */
@@ -490,17 +471,22 @@
         }
         
         .chapter-title {
-            font-size: 2.2rem;
+            font-size: 2rem;
         }
         
         .manuscript-body {
-            font-size: 1.2rem;
-            line-height: 1.8rem;
+            font-size: 1.1rem;
+            line-height: 1.6rem;
         }
         
         .manuscript-body p {
-            margin-bottom: 1.8rem;
-            line-height: 1.8rem;
+            margin-bottom: 1.5rem;
+            line-height: 1.6rem;
+            text-indent: 2rem;
+        }
+
+        .manuscript-body h3 {
+            font-size: 1.5rem;
         }
         
         .folio-indicator {
@@ -528,7 +514,7 @@
     <!-- CABEÇALHO ANTIGO -->
     <header class="page-header">
         <h1>Crônicas de Cururupu</h1>
-        <div class="subhead">MANUSCRITO ORIGINAL • SÉC. XIX</div>
+        <div class="subhead">MANUSCRITO ORIGINAL • COMPÊNDIO HISTÓRICO</div>
     </header>
 
     <div class="main-content">
@@ -537,16 +523,16 @@
             <aside class="col-lg-4">
                 <div class="archive-card">
                     <h5><i class="fas fa-scroll me-2"></i> Arquivo Histórico</h5>
-                    <p class="mb-4">Registros originais da fundação de Cururupu, transcritos dos documentos preservados pela Biblioteca Pública desde 1872.</p>
+                    <p class="mb-4">Compilação histórica do município de Cururupu, baseada nos registros oficiais da província do Maranhão e nos documentos originais da freguesia.</p>
                     <hr class="my-3" style="border-color: #b89b7b;">
-                    <p><i class="fas fa-feather-alt me-2"></i> <strong>Compilado por:</strong> Monsenhor Antônio da Silva</p>
-                    <p><i class="fas fa-calendar-alt me-2"></i> <strong>Ano:</strong> 1884</p>
-                    <p><i class="fas fa-map-pin me-2"></i> <strong>Local:</strong> Freguesia de São Benedito</p>
+                    <p><i class="fas fa-feather-alt me-2"></i> <strong>Compilado por:</strong> Instituto Histórico e Geográfico do Maranhão</p>
+                    <p><i class="fas fa-calendar-alt me-2"></i> <strong>Ano:</strong> 2024</p>
+                    <p><i class="fas fa-map-pin me-2"></i> <strong>Fonte:</strong> Wikipédia, a enciclopédia livre</p>
                 </div>
 
                 <div class="archive-card">
                     <h5><i class="fas fa-tools me-2"></i> Conservação</h5>
-                    <p>Este documento foi digitalizado para preservação. O original encontra-se no cofre da Biblioteca Pública Municipal.</p>
+                    <p>Este documento foi digitalizado para preservação da memória histórica de Cururupu, reunindo informações sobre sua geografia, demografia, economia e cultura.</p>
                     <button class="btn-old mt-3" onclick="window.print()">
                         <i class="fas fa-print me-2"></i> Imprimir Cópia
                     </button>
@@ -562,10 +548,10 @@
                     <div class="stain stain-3"></div>
                     
                     <!-- MARCA D'ÁGUA -->
-                    <div class="watermark">CRÔNICAS</div>
+                    <div class="watermark">MEMÓRIA</div>
 
                     <div class="manuscript-header">
-                        <span class="chapter-number" id="chapterNumber">CAPÍTULO I</span>
+                        <span class="chapter-number" id="chapterNumber">LIVRO I • CAPÍTULO I</span>
                         <h2 class="chapter-title" id="pageTitle">Carregando...</h2>
                     </div>
                     
@@ -616,26 +602,68 @@
 <script>
     const folios = [
         {
-            chapter: "I",
-            title: "O Despertar das Águas",
-            content: "Nos idos de 1750, quando o sol ainda beijava as matas virgens do litoral maranhense, os índios Tupinambás ali viviam em harmonia com a natureza. Foi à beira do rio que encontraram refúgio, e em suas margens ergueram suas ocas. O nome Cururupu, dizem os mais velhos, nasceu do coaxar dos sapos – 'cururu' – que anunciavam as chuvas bentas que fertilizavam a terra. Assim, entre lendas e cantos, floresceu a semente do povoado."
+            chapter: "LIVRO I • CAPÍTULO I",
+            title: "Dos Primórdios à Colonização",
+            content: `<p>O território de Cururupu era inicialmente habitado pelos índios Tupinambás, que viviam em harmonia com a natureza exuberante do litoral maranhense. Os primeiros europeus a explorarem a região foram os franceses, que, por volta de 1614, chegaram à então aldeia Cabelo de Velha, chefiada por um cacique de mesmo nome, também apelidado de Cururu. Os franceses estavam realizando viagens de reconhecimento até Zuarupi (Gurupi), explorando a costa do Maranhão durante a expedição de La Ravardière até o ano de 1614, quando da sua expulsão pelas tropas de Jerônimo de Albuquerque.</p>
+            <p>Em 1616, foi feito o reconhecimento da região por Pedro Teixeira. Com o domínio português, foram registrados conflitos e massacres contra os povos indígenas, em especial pelas expedições comandadas por Bento Maciel Parente, no começo do século XVII, que destruíram a aldeia Cabelo de Velha e mataram o cacique. Entre 1616 e 1635, os indígenas que ainda viviam na região abandonaram a terra, em razão da impossibilidade de convivência pacífica.</p>
+            <p>O topônimo "Cururupu" é um termo tupi que significa "o coaxar dos sapos", através da junção dos termos kururu ("sapo") e pu ("som que produzem os sapos"/"coaxar").</p>`
         },
         {
-            chapter: "II",
-            title: "A Chegada dos Forasteiros",
-            content: "Por volta de 1778, navegadores portugueses adentraram o rio com suas caravelas. Trouxeram no porão não apenas mantimentos, mas também a fé católica e o desejo de colonizar. Os nativos, hospitaleiros, compartilharam suas terras. Em pouco tempo, uma pequena capela foi erguida sob a invocação de São Benedito, que até hoje protege os cururupuenses. O vilarejo crescia, misturando sangues e culturas, formando a base do que seria a futura vila."
+            chapter: "LIVRO I • CAPÍTULO II",
+            title: "Formação Administrativa",
+            content: `<p>A freguesia de Cururupu foi criada por meio da Lei Provincial n.º 13, de 8 de maio de 1835. Foi elevada à vila através da Lei Provincial n.º 120, de 3 de outubro de 1841, tendo sido desmembrada do município de Guimarães, sendo conhecido anteriormente como 3.º distrito municipal de Guimarães ou 3º distrito municipal de Cabelo de Velha.</p>
+            <p>Por volta do século XVIII, havia grande número de fazendas de produção de farinha de mandioca e de engenhos de açúcar movidos a vapor na região, de propriedade de portugueses vindos de Guimarães. A economia da região utilizava mão-de-obra escravizada, com o tráfico sendo realizado diretamente da Costa do Ouro e Dahomey (Guiné). A cidade de Cururupu teria como embrião a fazenda Cururupu, pertencente ao capitão João Fernandes de Melo.</p>
+            <p>Em 1920, Cururupu foi elevado à cidade, com a Lei Estadual nº 893, de 9 de março de 1920.</p>`
         },
         {
-            chapter: "III",
-            title: "Tempos de Província",
-            content: "Em 1833, pela lei provincial nº 12, Cururupu foi elevada à categoria de vila, desmembrando-se de Guimarães. Instalou-se a Câmara Municipal, e a vida pública ganhou novo fôlego. O comércio prosperava às margens do rio, escoando a produção de algodão e farinha. As festas em louvor aos santos padroeiros atraíam romeiros de toda a região, consolidando a vocação religiosa do lugar. As ruas de pedra testemunharam a passagem de coronéis, escravos e homens livres que forjaram a identidade local."
+            chapter: "LIVRO II • CAPÍTULO I",
+            title: "Geografia e Território",
+            content: `<p>A área do município de Cururupu é de 1.255,667 quilômetros quadrados, o que o coloca na posição 78 dentre as 217 cidades do estado do Maranhão. O relevo do município é o do Litoral Ocidental maranhense, sendo suave e moderadamente ondulado, de baixa altitude, apresentando reentrâncias que exibem importantes manguezais e profundos estuários, típico das Reentrâncias Maranhenses.</p>
+            <p>Cururupu está inserido na Microbacia das Bacias Secundárias do Litoral Ocidental Maranhense e seus principais rios são: Cururupu, Liconde, Uru, São Lourenço, Cabelo da Velha. São rios perenes, embora não possuam grande piscosidade.</p>
+            <p>O clima é o tropical úmido, dividido em dois períodos: chuvoso de janeiro a junho e estiagem de julho a dezembro. A temperatura média anual é superior a 27 °C, com a umidade relativa do ar anual variando de 76% a 82% e os totais pluviométricos entre 1.600 e 2.000 mm.</p>
+            <p>A vegetação é caracterizada pela presença dos manguezais, restingas, dunas e resquícios da Floresta Amazônica maranhense. Entre as espécies vegetais do município estão: o mangue-vermelho (Rhizophora Mangle), o curiri (Allagoptera arenaria), os tucunzeiros (Astrocaryum vulgare), guajerú (Chrysobalanus icaco), cajueiro (Anacardium occidentale), murici (Byrsonima sericea) e o babaçu (Orbignya martiana).</p>`
         },
         {
-            chapter: "IV",
-            title: "A Pérola do Litoral",
-            content: "Hoje, Cururupu guarda com zelo as memórias de outrora. Suas ruas antigas contam histórias de um povo guerreiro e acolhedor. A Biblioteca Pública, depositária destes manuscritos, convida a todos para folhear as páginas do passado e descobrir as riquezas de nossa terra. Que estas crônicas jamais se percam no tempo, mas sirvam de farol para as futuras gerações."
+            chapter: "LIVRO II • CAPÍTULO II",
+            title: "Das Ilhas e Reentrâncias",
+            content: `<p>O município de Cururupu possui um rico arquipélago dividido em quatro grupos principais:</p>
+            <p><strong>Arquipélago Norte ou de Maiaú:</strong> Lençóis, Bate-Vento (ou Maiaú), Mirinzal, Porto do Meio, Retiro, Iguará, Beiradão, Urumaru, Aracajá, Mulata, Parida, Jabaroca, Cajualzinho.</p>
+            <p><strong>Arquipélago Centro-Norte:</strong> Guajerutiua, Valha-Me-Deus e Porto Alegre.</p>
+            <p><strong>Arquipélago Centro-Sul:</strong> Caçacueira, São Lucas e Peru.</p>
+            <p><strong>Arquipélago Sul ou de Mangunça:</strong> Mangunça e Taboa.</p>
+            <p>Nas ilhas de Cururupu, há 12 comunidades pesqueiras permanentemente ocupadas: Caçacueira, São Lucas, Peru, Guajerutiua, Valha-me-Deus, Porto Alegre, Lençóis, Bate Vento, Porto do Meio, Mirinzal, Retiro, Iguará. As ilhas estão separadas pelas Baías de Mangunça, Caçacueira, do Capim, dos Lençóis, Beiradão e uma série de canais, furos e cabeceiras, característica da região das Reentrâncias Maranhenses.</p>
+            <p>A Ilha dos Lençóis é o ponto de terra firme mais próximo do Parque Estadual Marinho do Parcel de Manoel Luís, distante 45 milhas náuticas (aproximadamente 80 km), criado para preservação da fauna e da flora marinhas e dos recifes de corais.</p>`
+        },
+        {
+            chapter: "LIVRO III • CAPÍTULO I",
+            title: "Demografia e Sociedade",
+            content: `<p>De acordo com o Censo Demográfico de 2022, a população de Cururupu era de 31.558 pessoas, com estimativa para 2024 de 32.608 habitantes. A densidade demográfica é de 25,09 habitantes por quilômetro quadrado.</p>
+            <p>Quanto à composição étnica, 57,9% da população é parda, 30,4% é preta e 11,5% é branca. Cerca de 71,4% da população vive na zona urbana e 28,6% na zona rural. O índice de analfabetismo é de 14,5%.</p>
+            <p>O Índice de Desenvolvimento Humano Municipal (IDHM) em 2010 era de 0,612. A mortalidade infantil em 2022 foi de 9,2 óbitos por mil nascidos vivos.</p>
+            <p>Na ocasião da publicação da Lei Áurea, Cururupu (cujo território abrangia o município de Apicum-Açu) tinha 155 fazendas, tendo passado por decadência econômica com o fim da escravidão.</p>`
+        },
+        {
+            chapter: "LIVRO III • CAPÍTULO II",
+            title: "Economia e Produção",
+            content: `<p>O PIB do município foi de R$ 264.587.570 em 2021 (o 79º maior PIB do estado). A distribuição setorial do PIB em 2021 ficou: agropecuária (15%); indústria (2,85%); serviços administrativos, defesa, educação e saúde públicas e seguridade social (49,88%); serviços (32,25%). O PIB per capita em 2021 era de R$ 8.126,40.</p>
+            <p>Na agricultura, tem destaque a produção de melancia (14ª maior produtora do estado), além de mandioca, banana, laranja, milho e feijão. No que se refere à pesca, Cururupu é o segundo maior produtor de pescados do Maranhão, atrás apenas de Raposa.</p>
+            <p>As transferências correntes representam 91,93% das receitas correntes brutas realizadas, evidenciando a dependência de recursos externos. O total de despesas brutas empenhadas em 2023 foi de R$ 124.466.378,80.</p>`
+        },
+        {
+            chapter: "LIVRO IV • CAPÍTULO I",
+            title: "Infraestrutura e Educação",
+            content: `<p>Cururupu está ligada a Mirinzal por meio da MA-006 e a Serrano do Maranhão pela MA-008. No município, existem 58 escolas, sendo seis instituições de ensino médio. O município conta ainda com um campus do Instituto Estadual do Maranhão (IEMA).</p>
+            <p>Em 2010, a taxa de escolarização de crianças entre 6 e 14 anos em Cururupu era de 96,8%, colocando o município na 105ª colocação entre os 217 do estado. Quanto ao Índice de Desenvolvimento da Educação Básica (IDEB) referente ao ano de 2023, os anos iniciais do ensino fundamental na rede pública apresentaram índice de 4,7 enquanto os anos finais atingiram 4,2.</p>
+            <p>Em 2023, registraram-se 4.525 matrículas no ensino fundamental e 1.297 matrículas no ensino médio, com 284 docentes no ensino fundamental e 96 no ensino médio. A principal unidade de saúde do município é a Santa Casa de Misericórdia de Cururupu.</p>`
+        },
+        {
+            chapter: "LIVRO V • CAPÍTULO I",
+            title: "Cultura e Tradições",
+            content: `<p>As principais manifestações culturais de Cururupu são: o bumba-meu-boi com os sotaques costa de mão (típico do município) e de zabumba, tambor de crioula, dança do coco, quadrilha, cacuriá, dança portuguesa, roda de São Benedito e outras.</p>
+            <p>O padroeiro do município é São João Batista, festejado em junho. A festa religiosa mais popular é a de São Benedito, em setembro, organizada pela Irmandade de São Benedito.</p>
+            <p>As principais atrações turísticas de Cururupu são o Parcel de Manoel Luís, o Farol de São João e a Ilha dos Lençóis. Outras praias-ilhas com destaque são: Bate-Vento, Mangunça, Guajerutíua, Valha-me Deus, Caçacueira, Peru, São Lucas, Maracujatíua, Caóca, Prainha, Praia do Farol, Porto Alegre, Iguará, Mucunã, Ilha das Moças, entre outras.</p>
+            <p>Parte do território de Cururupu está inserido na Área de Proteção Ambiental das Reentrâncias Maranhenses e sua região insular compõe a Reserva Extrativista de Cururupu, criada para proteger os manguezais e as comunidades tradicionais que deles dependem.</p>`
         }
-        
     ];
 
     let currentFolio = 0;
@@ -644,20 +672,13 @@
         currentFolio = index;
         const data = folios[index];
         
-        document.getElementById('chapterNumber').textContent = `CAPÍTULO ${data.chapter}`;
+        document.getElementById('chapterNumber').textContent = data.chapter;
         document.getElementById('pageTitle').textContent = data.title;
         
-        // Dividir o conteúdo em parágrafos para melhor formatação
-        const paragraphs = data.content.split('\n\n');
-        let htmlContent = '';
-        paragraphs.forEach(p => {
-            if (p.trim()) {
-                htmlContent += `<p>${p.trim()}</p>`;
-            }
-        });
-        document.getElementById('textContent').innerHTML = htmlContent;
+        // O conteúdo já está em parágrafos HTML
+        document.getElementById('textContent').innerHTML = data.content;
         
-        document.getElementById('pageIndicator').textContent = `FÓLIO ${index + 1}`;
+        document.getElementById('pageIndicator').textContent = `FÓLIO ${index + 1} DE ${folios.length}`;
         
         document.getElementById('prevBtn').disabled = index === 0;
         document.getElementById('nextBtn').disabled = index === folios.length - 1;
