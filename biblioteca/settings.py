@@ -177,7 +177,7 @@ if not DEBUG:
         CORS_ALLOWED_ORIGINS.append(f"https://{render_url}")
         CSRF_TRUSTED_ORIGINS.append(f"https://{render_url}")
 
-    SECURE_SSL_REDIRECT = True
+    SECURE_SSL_REDIRECT = False
     SESSION_COOKIE_SECURE = True
     CSRF_COOKIE_SECURE = True
 
