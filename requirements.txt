@@ -1,7 +1,5 @@
 asgiref==3.11.0
 blinker==1.6.3
-boltons==25.0.0
-Brotli @ file:///Users/runner/miniforge3/conda-bld/brotli-split_1695989838345/work
 certifi==2026.1.4
 cffi @ file:///Users/runner/miniforge3/conda-bld/cffi_1696001744638/work
 charset-normalizer==3.4.4
