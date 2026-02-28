@@ -1,10 +1,7 @@
 http://127.0.0.1:8000/admin/core/emprestimo/?status__exact=perdido
-Usuário: evertonabreu
+SuperUsuário: evertonabreu
 Senha: Riulla@#2023
 
-superusuario:evertonlima
-email:  everton.comshow@gmail.com
-senha: Riulla@#2023
 
 Usuário: admin
 Senha: Gomesdelima2023@
@@ -92,3 +89,11 @@ python manage.py runserver
 
 # Pressione Ctrl+C para parar o servidor se estiver rodando
 python manage.py runserver
+
+
+aqui o sistema esta rodando online qualquer modificacao aqui no vscode fazer
+git add biblioteca/settings.py
+git commit -m "fix: remove manifest static storage"
+git push
+
+o render atualizara automaticamente ou entao atualizar pelo render

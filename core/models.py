@@ -109,7 +109,138 @@ class Prateleira(models.Model):
         )['total_emprestados'] or 0
         return total
 
+from django.db import models
+import os
+
+from django.db import models
+
 class Livro(models.Model):
+    capa = models.ImageField(
+        upload_to='capas_livros/',
+        verbose_name="Capa do Livro",
+        blank=True,
+        null=True,
+        help_text="Imagem da capa do livro (formatos: JPG, PNG)"
+    )
+    titulo = models.CharField(max_length=300)
+    autor = models.CharField(max_length=200)
+    editora = models.ForeignKey(
+        'Editora', 
+        on_delete=models.PROTECT,
+        verbose_name="Editora",
+        related_name='livros',
+        null=True,
+        blank=True
+    )
+    ano_publicacao = models.IntegerField()
+    quantidade_paginas = models.IntegerField()
+    prateleira = models.ForeignKey(
+        'Prateleira', 
+        on_delete=models.PROTECT,
+        verbose_name="Prateleira",
+        related_name='livros'
+    )
+    
+    classificacao = models.CharField(max_length=20, choices=[
+        ('infantil', 'Infantil'),
+        ('juvenil', 'Juvenil'),
+        ('adulto', 'Adulto'),
+        ('academico', 'Acadêmico'),
+    ])
+    
+    categoria = models.CharField(max_length=20, choices=[
+        ('ficcao', 'Ficção'),
+        ('nao_ficcao', 'Não-Ficção'),
+        ('tecnico', 'Técnico'),
+        ('didatico', 'Didático'),
+        ('biografia', 'Biografia'),
+        ('historia', 'História'),
+        ('poesia', 'Poesia'),
+        ('outro', 'Outro'),
+    ])
+    
+    quantidade_total = models.IntegerField(default=1)
+    quantidade_disponivel = models.IntegerField(default=1)
+    sinopse = models.TextField(blank=True)
+    data_cadastro = models.DateTimeField(auto_now_add=True)
+    ativo = models.BooleanField(default=True)
+
+    # NOVOS CAMPOS PARA PDF
+    arquivo_pdf = models.FileField(upload_to="pdfs/", blank=True, null=True)
+    pdf_url = models.URLField(blank=True, null=True)
+
+    def __str__(self):
+        return self.titulo
+
+    # SALVAR PDF NO SUPABASE
+    def save(self, *args, **kwargs):
+        from .supabase_storage import upload_pdf
+
+        is_new = self.pk is None
+        super().save(*args, **kwargs)  # salva para gerar ID
+
+        # Se tiver PDF e ainda não tiver URL
+        if self.arquivo_pdf and not self.pdf_url:
+            filename = f"{self.id}_{self.arquivo_pdf.name}"
+            self.pdf_url = upload_pdf(self.arquivo_pdf, filename)
+            super().save(update_fields=["pdf_url"])
+    capa = models.ImageField(
+        upload_to='capas_livros/',
+        verbose_name="Capa do Livro",
+        blank=True,
+        null=True,
+        help_text="Imagem da capa do livro (formatos: JPG, PNG)"
+    )
+    titulo = models.CharField(max_length=300)
+    autor = models.CharField(max_length=200)
+    editora = models.ForeignKey(
+        'Editora', 
+        on_delete=models.PROTECT,
+        verbose_name="Editora",
+        related_name='livros',
+        null=True,
+        blank=True
+    )
+    ano_publicacao = models.IntegerField()
+    quantidade_paginas = models.IntegerField()
+    prateleira = models.ForeignKey(
+        'Prateleira', 
+        on_delete=models.PROTECT,
+        verbose_name="Prateleira",
+        related_name='livros'
+    )
+    
+    classificacao = models.CharField(max_length=20, choices=[
+        ('infantil', 'Infantil'),
+        ('juvenil', 'Juvenil'),
+        ('adulto', 'Adulto'),
+        ('academico', 'Acadêmico'),
+    ])
+    
+    categoria = models.CharField(max_length=20, choices=[
+        ('ficcao', 'Ficção'),
+        ('nao_ficcao', 'Não-Ficção'),
+        ('tecnico', 'Técnico'),
+        ('didatico', 'Didático'),
+        ('biografia', 'Biografia'),
+        ('historia', 'História'),
+        ('poesia', 'Poesia'),
+        ('outro', 'Outro'),
+    ])
+    
+    quantidade_total = models.IntegerField(default=1)
+    quantidade_disponivel = models.IntegerField(default=1)
+    sinopse = models.TextField(blank=True)
+    data_cadastro = models.DateTimeField(auto_now_add=True)
+    ativo = models.BooleanField(default=True)
+
+    # NOVOS CAMPOS PARA PDF
+    arquivo_pdf = models.FileField(upload_to="pdfs/", blank=True, null=True)
+    pdf_url = models.URLField(blank=True, null=True)  # Vai armazenar a URL do Supabase
+
+    def __str__(self):
+        return self.titulo
+
     capa = models.ImageField(
         upload_to='capas_livros/',
         verbose_name="Capa do Livro",

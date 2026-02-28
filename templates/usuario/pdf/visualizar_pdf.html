@@ -1,0 +1,26 @@
+{% extends 'base/base_usuario.html' %}
+{% load static %}
+
+{% block title %}{{ livro.titulo }} - Leitor PDF{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1>{{ livro.titulo }}</h1>
+    <p><strong>Autor:</strong> {{ livro.autor }}</p>
+
+    {% if livro.pdf_url %}
+        <iframe src="{{ livro.pdf_url }}#toolbar=1&navpanes=1&scrollbar=1&view=FitH"
+                style="width:100%; height:600px; border:none;">
+        </iframe>
+        <p class="mt-2">
+            <a href="{{ livro.pdf_url }}" target="_blank" class="btn btn-primary">
+                Abrir em nova aba
+            </a>
+        </p>
+    {% else %}
+        <div class="alert alert-warning">
+            PDF não disponível.
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
