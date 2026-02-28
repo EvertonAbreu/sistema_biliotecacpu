@@ -5,338 +5,414 @@
 
 {% block extra_css %}
 <style>
-    /* Estilos para a página de acervo */
+    /* Estilos profissionais e compactos para a página de acervo */
     .acervo-container {
-        padding: 2rem 0;
-        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        padding: 1.5rem 0;
+        background: linear-gradient(135deg, #f8fafc 0%, #e9edf5 100%);
         min-height: 100vh;
     }
 
     .section-title {
         text-align: center;
-        color: #2c3e50;
-        margin-bottom: 3rem;
-        font-size: 2.5rem;
-        font-weight: bold;
+        color: #1e293b;
+        margin-bottom: 2rem;
+        font-size: 2rem;
+        font-weight: 600;
+        letter-spacing: -0.02em;
     }
 
-    /* Filtros e Busca */
+    /* Estatísticas compactas */
+    .estatisticas {
+        background: white;
+        border-radius: 12px;
+        padding: 1.25rem;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        margin-bottom: 1.5rem;
+    }
+
+    .estatisticas-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 0.75rem;
+    }
+
+    .estatistica-item {
+        text-align: center;
+        padding: 0.75rem;
+        border-radius: 8px;
+        background: #f8fafc;
+    }
+
+    .estatistica-numero {
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: #3b82f6;
+        margin-bottom: 0.25rem;
+    }
+
+    .estatistica-label {
+        color: #64748b;
+        font-size: 0.8rem;
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 0.02em;
+    }
+
+    /* Filtros compactos */
     .filtros-container {
         background: white;
-        border-radius: 15px;
-        padding: 1.5rem;
-        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-        margin-bottom: 2rem;
+        border-radius: 12px;
+        padding: 1.25rem;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        margin-bottom: 1.5rem;
     }
 
     .filtros-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-        gap: 1rem;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 0.75rem;
         align-items: end;
     }
 
     .form-group label {
-        font-weight: 600;
-        color: #2c3e50;
-        margin-bottom: 0.5rem;
+        font-weight: 500;
+        color: #475569;
+        margin-bottom: 0.25rem;
         display: block;
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        letter-spacing: 0.02em;
     }
 
     .form-control, .form-select {
-        border-radius: 10px;
-        border: 2px solid #e0e6ed;
-        padding: 0.75rem;
-        transition: all 0.3s ease;
+        border-radius: 8px;
+        border: 1px solid #e2e8f0;
+        padding: 0.5rem 0.75rem;
+        font-size: 0.9rem;
+        transition: all 0.2s ease;
+        background-color: #f8fafc;
     }
 
     .form-control:focus, .form-select:focus {
-        border-color: #667eea;
-        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        border-color: #3b82f6;
+        box-shadow: 0 0 0 2px rgba(59,130,246,0.1);
+        background-color: white;
     }
 
     .btn-filtrar {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        background: #3b82f6;
         color: white;
         border: none;
-        padding: 0.75rem 1.5rem;
-        border-radius: 10px;
-        font-weight: 600;
-        transition: all 0.3s ease;
+        padding: 0.5rem 1rem;
+        border-radius: 8px;
+        font-weight: 500;
+        font-size: 0.9rem;
+        transition: all 0.2s ease;
         height: fit-content;
+        cursor: pointer;
     }
 
     .btn-filtrar:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        background: #2563eb;
     }
 
-    /* Cards de Livros */
+    /* Cards compactos */
     .livros-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-        gap: 2rem;
-        padding: 0 1rem;
+        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+        gap: 1.25rem;
+        padding: 0;
     }
 
     .livro-card {
         background: white;
-        border-radius: 15px;
+        border-radius: 10px;
         overflow: hidden;
-        box-shadow: 0 5px 20px rgba(0,0,0,0.1);
-        transition: all 0.3s ease;
-        position: relative;
-        height: 100%;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+        transition: all 0.2s ease;
         display: flex;
         flex-direction: column;
+        border: 1px solid #f0f2f5;
     }
 
     .livro-card:hover {
-        transform: translateY(-10px);
-        box-shadow: 0 15px 30px rgba(0,0,0,0.2);
+        transform: translateY(-3px);
+        box-shadow: 0 8px 16px rgba(0,0,0,0.08);
+        border-color: #e0e7ff;
     }
 
     .livro-capa {
-        height: 250px;
+        height: 160px;
         overflow: hidden;
         position: relative;
+        background: #f1f5f9;
     }
 
     .livro-capa-img {
         width: 100%;
         height: 100%;
         object-fit: cover;
-        transition: transform 0.5s ease;
+        transition: transform 0.3s ease;
     }
 
     .livro-card:hover .livro-capa-img {
-        transform: scale(1.05);
-    }
-
-    .capa-overlay {
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: linear-gradient(to bottom, transparent 50%, rgba(0,0,0,0.7));
-        display: flex;
-        align-items: flex-end;
-        padding: 1rem;
-    }
-
-    .capa-overlay .btn {
-        opacity: 0;
-        transform: translateY(20px);
-        transition: all 0.3s ease;
-    }
-
-    .livro-card:hover .capa-overlay .btn {
-        opacity: 1;
-        transform: translateY(0);
+        transform: scale(1.03);
     }
 
     .categoria-badge {
         position: absolute;
-        top: 15px;
-        right: 15px;
-        background: rgba(102, 126, 234, 0.9);
+        top: 8px;
+        right: 8px;
+        background: rgba(59,130,246,0.9);
         color: white;
-        padding: 0.3rem 0.8rem;
-        border-radius: 20px;
-        font-size: 0.8rem;
-        font-weight: 600;
+        padding: 0.2rem 0.5rem;
+        border-radius: 16px;
+        font-size: 0.7rem;
+        font-weight: 500;
+        letter-spacing: 0.02em;
+        backdrop-filter: blur(4px);
     }
 
     .livro-content {
-        padding: 1.5rem;
+        padding: 1rem;
         flex-grow: 1;
         display: flex;
         flex-direction: column;
     }
 
     .livro-titulo {
-        color: #2c3e50;
-        font-size: 1.3rem;
-        font-weight: bold;
-        margin-bottom: 0.5rem;
+        color: #1e293b;
+        font-size: 1rem;
+        font-weight: 600;
+        margin-bottom: 0.25rem;
         line-height: 1.4;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
     }
 
     .livro-autor {
-        color: #667eea;
-        font-weight: 600;
-        margin-bottom: 1rem;
+        color: #3b82f6;
+        font-weight: 500;
+        margin-bottom: 0.5rem;
         display: flex;
         align-items: center;
-        gap: 0.5rem;
+        gap: 0.25rem;
+        font-size: 0.8rem;
     }
 
     .livro-autor i {
-        font-size: 1rem;
+        font-size: 0.75rem;
+        opacity: 0.7;
     }
 
     .livro-descricao {
-        color: #666;
-        line-height: 1.6;
-        margin-bottom: 1rem;
+        color: #64748b;
+        line-height: 1.5;
+        margin-bottom: 0.75rem;
         flex-grow: 1;
-        font-size: 0.95rem;
+        font-size: 0.8rem;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
     }
 
     .livro-meta {
         display: flex;
         justify-content: space-between;
-        color: #888;
-        font-size: 0.9rem;
-        margin-bottom: 1rem;
-        padding-top: 1rem;
-        border-top: 1px solid #eee;
+        color: #94a3b8;
+        font-size: 0.7rem;
+        margin-bottom: 0.75rem;
+        padding-top: 0.5rem;
+        border-top: 1px solid #f1f5f9;
     }
 
     .meta-item {
         display: flex;
         align-items: center;
-        gap: 0.3rem;
+        gap: 0.2rem;
+    }
+
+    .meta-item i {
+        font-size: 0.7rem;
     }
 
     .livro-actions {
         display: grid;
         grid-template-columns: 1fr;
-        gap: 0.5rem;
+        gap: 0.25rem;
         margin-top: auto;
     }
 
     .btn-ler {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        color: white;
-        border: none;
-        padding: 0.75rem;
-        border-radius: 8px;
-        font-weight: 600;
+        background: #f1f5f9;
+        color: #334155;
+        border: 1px solid #e2e8f0;
+        padding: 0.4rem 0.75rem;
+        border-radius: 6px;
+        font-weight: 500;
+        font-size: 0.8rem;
         text-align: center;
         text-decoration: none;
-        transition: all 0.3s ease;
+        transition: all 0.2s ease;
         display: flex;
         align-items: center;
         justify-content: center;
-        gap: 0.5rem;
+        gap: 0.25rem;
     }
 
     .btn-ler:hover {
+        background: #3b82f6;
         color: white;
-        transform: translateY(-2px);
-        box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        border-color: #3b82f6;
+        text-decoration: none;
     }
 
-    /* Estatísticas */
-    .estatisticas {
+    .btn-ler i {
+        font-size: 0.75rem;
+    }
+
+    /* Overlay simplificado */
+    .capa-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(to bottom, transparent 60%, rgba(0,0,0,0.5));
+        opacity: 0;
+        transition: opacity 0.2s ease;
+        display: flex;
+        align-items: flex-end;
+        justify-content: center;
+        padding: 0.75rem;
+    }
+
+    .livro-card:hover .capa-overlay {
+        opacity: 1;
+    }
+
+    .capa-overlay .btn {
         background: white;
-        border-radius: 15px;
-        padding: 1.5rem;
-        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-        margin-bottom: 2rem;
+        color: #1e293b;
+        border: none;
+        padding: 0.2rem 0.5rem;
+        border-radius: 4px;
+        font-size: 0.7rem;
+        font-weight: 500;
+        text-decoration: none;
     }
 
-    .estatisticas-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-        gap: 1rem;
-    }
-
-    .estatistica-item {
-        text-align: center;
-        padding: 1rem;
-        border-radius: 10px;
-        background: #f8f9fa;
-    }
-
-    .estatistica-numero {
-        font-size: 2rem;
-        font-weight: bold;
-        color: #667eea;
-        margin-bottom: 0.5rem;
-    }
-
-    .estatistica-label {
-        color: #666;
-        font-size: 0.9rem;
-    }
-
-    /* Mensagem quando não há livros */
+    /* Mensagem sem livros */
     .no-livros {
         text-align: center;
-        padding: 4rem 2rem;
+        padding: 3rem 2rem;
         background: white;
-        border-radius: 15px;
-        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        border-radius: 12px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.05);
     }
 
     .no-livros i {
-        font-size: 4rem;
-        color: #ddd;
-        margin-bottom: 1.5rem;
+        font-size: 3rem;
+        color: #cbd5e1;
+        margin-bottom: 1rem;
     }
 
     .no-livros h3 {
-        color: #666;
-        margin-bottom: 1rem;
+        color: #475569;
+        margin-bottom: 0.5rem;
+        font-size: 1.1rem;
+        font-weight: 500;
+    }
+
+    .no-livros p {
+        color: #94a3b8;
+        font-size: 0.9rem;
+    }
+
+    .btn-primary {
+        background: #3b82f6;
+        color: white;
+        border: none;
+        padding: 0.5rem 1rem;
+        border-radius: 8px;
+        font-size: 0.9rem;
+        font-weight: 500;
+        text-decoration: none;
+        display: inline-block;
+    }
+
+    .btn-primary:hover {
+        background: #2563eb;
+        color: white;
+        text-decoration: none;
+    }
+
+    /* Paginação compacta */
+    .paginacao {
+        display: flex;
+        justify-content: center;
+        margin-top: 2rem;
+        gap: 0.25rem;
+    }
+
+    .pagina-link {
+        padding: 0.25rem 0.75rem;
+        border: 1px solid #e2e8f0;
+        border-radius: 6px;
+        color: #64748b;
+        text-decoration: none;
+        font-weight: 500;
+        font-size: 0.85rem;
+        transition: all 0.2s ease;
+    }
+
+    .pagina-link:hover {
+        background: #f1f5f9;
+        border-color: #cbd5e1;
+    }
+
+    .pagina-link.active {
+        background: #3b82f6;
+        color: white;
+        border-color: #3b82f6;
     }
 
     /* Responsividade */
     @media (max-width: 768px) {
         .section-title {
-            font-size: 2rem;
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
         }
 
         .livros-grid {
-            grid-template-columns: 1fr;
-            padding: 0;
+            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+            gap: 0.75rem;
+        }
+
+        .livro-capa {
+            height: 140px;
+        }
+
+        .livro-titulo {
+            font-size: 0.9rem;
         }
 
         .filtros-grid {
             grid-template-columns: 1fr;
         }
-
-        .livro-actions {
-            grid-template-columns: 1fr;
-        }
     }
 
     @media (max-width: 480px) {
-        .livro-card {
-            margin: 0 1rem;
+        .livros-grid {
+            grid-template-columns: 1fr 1fr;
         }
-    }
-
-    /* Paginação */
-    .paginacao {
-        display: flex;
-        justify-content: center;
-        margin-top: 3rem;
-        gap: 0.5rem;
-    }
-
-    .pagina-link {
-        padding: 0.5rem 1rem;
-        border: 2px solid #e0e6ed;
-        border-radius: 8px;
-        color: #667eea;
-        text-decoration: none;
-        font-weight: 600;
-        transition: all 0.3s ease;
-    }
-
-    .pagina-link:hover {
-        background: #667eea;
-        color: white;
-        border-color: #667eea;
-    }
-
-    .pagina-link.active {
-        background: #667eea;
-        color: white;
-        border-color: #667eea;
+        
+        .livro-content {
+            padding: 0.75rem;
+        }
     }
 </style>
 {% endblock %}
@@ -344,20 +420,18 @@
 {% block content %}
 <div class="acervo-container">
     <div class="container">
-        <h1 class="section-title">📚 Acervo Digital</h1>
+        <h1 class="section-title">Acervo Digital</h1>
         
         <!-- Estatísticas -->
         <div class="estatisticas">
             <div class="estatisticas-grid">
                 <div class="estatistica-item">
                     <div class="estatistica-numero">{{ total_livros }}</div>
-                    <div class="estatistica-label">Livros Disponíveis</div>
+                    <div class="estatistica-label">Livros</div>
                 </div>
                 <div class="estatistica-item">
-                    <div class="estatistica-numero">
-                        {{ livros.0.visualizacoes|default:0 }}
-                    </div>
-                    <div class="estatistica-label">Visualizações Totais</div>
+                    <div class="estatistica-numero">{{ total_visualizacoes|default:0 }}</div>
+                    <div class="estatistica-label">Visualizações</div>
                 </div>
                 <div class="estatistica-item">
                     <div class="estatistica-numero">{{ categorias|length }}</div>
@@ -366,24 +440,24 @@
             </div>
         </div>
 
-        <!-- Filtros e Busca -->
+        <!-- Filtros -->
         <div class="filtros-container">
             <form method="get" action="{% url 'acervo_pdf' %}">
                 <div class="filtros-grid">
                     <div class="form-group">
-                        <label for="busca"><i class="fas fa-search"></i> Buscar Livro</label>
+                        <label for="busca">Buscar</label>
                         <input type="text" 
                                class="form-control" 
                                id="busca" 
                                name="busca" 
-                               placeholder="Título, autor ou descrição..."
+                               placeholder="Título, autor..."
                                value="{{ busca }}">
                     </div>
                     
                     <div class="form-group">
-                        <label for="categoria"><i class="fas fa-filter"></i> Categoria</label>
+                        <label for="categoria">Categoria</label>
                         <select class="form-select" id="categoria" name="categoria">
-                            <option value="">Todas as Categorias</option>
+                            <option value="">Todas</option>
                             {% for valor, nome in categorias %}
                             <option value="{{ valor }}" {% if categoria_selecionada == valor %}selected{% endif %}>
                                 {{ nome }}
@@ -393,17 +467,17 @@
                     </div>
                     
                     <div class="form-group">
-                        <label for="ordenar"><i class="fas fa-sort"></i> Ordenar por</label>
+                        <label for="ordenar">Ordenar</label>
                         <select class="form-select" id="ordenar" name="ordenar">
-                            <option value="recentes" {% if ordenacao == 'recentes' %}selected{% endif %}>Mais Recentes</option>
-                            <option value="visualizacoes" {% if ordenacao == 'visualizacoes' %}selected{% endif %}>Mais Visualizados</option>
-                            <option value="titulo" {% if ordenacao == 'titulo' %}selected{% endif %}>Título (A-Z)</option>
+                            <option value="recentes" {% if ordenacao == 'recentes' %}selected{% endif %}>Recentes</option>
+                            <option value="visualizacoes" {% if ordenacao == 'visualizacoes' %}selected{% endif %}>Populares</option>
+                            <option value="titulo" {% if ordenacao == 'titulo' %}selected{% endif %}>A-Z</option>
                         </select>
                     </div>
                     
                     <div class="form-group">
-                        <button type="submit" class="btn btn-filtrar w-100">
-                            <i class="fas fa-filter"></i> Aplicar Filtros
+                        <button type="submit" class="btn-filtrar w-100">
+                            Filtrar
                         </button>
                     </div>
                 </div>
@@ -411,81 +485,94 @@
         </div>
 
         {% if livros %}
-            <!-- Grid de Livros -->
+            <!-- Grid de Livros Compacto -->
             <div class="livros-grid">
                 {% for livro in livros %}
                 <div class="livro-card">
-                    <!-- Badge de Categoria -->
                     <div class="categoria-badge">
-                        {{ livro.get_categoria_display }}
+                        {{ livro.get_categoria_display|truncatechars:15 }}
                     </div>
                     
-                    <!-- Capa do Livro -->
                     <div class="livro-capa">
                         {% if livro.capa %}
                         <img src="{{ livro.capa.url }}" alt="{{ livro.titulo }}" class="livro-capa-img">
                         {% else %}
-                        <div style="height: 100%; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
+                        <div style="height: 100%; background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%); 
                                    display: flex; align-items: center; justify-content: center;">
-                            <i class="fas fa-book" style="font-size: 4rem; color: white; opacity: 0.7;"></i>
+                            <i class="fas fa-book" style="font-size: 2.5rem; color: white; opacity: 0.5;"></i>
                         </div>
                         {% endif %}
                         
-                        <!-- Overlay com botão de leitura rápida -->
                         <div class="capa-overlay">
-                            <a href="{% url 'visualizar_pdf_seguro' livro.id %}" class="btn btn-light btn-sm">
-                                <i class="fas fa-eye"></i> Visualizar
+                            <a href="{% url 'visualizar_pdf_seguro' livro.id %}" class="btn">
+                                <i class="fas fa-eye"></i> Ver
                             </a>
                         </div>
                     </div>
                     
-                    <!-- Conteúdo do Card -->
                     <div class="livro-content">
                         <h3 class="livro-titulo">{{ livro.titulo }}</h3>
                         
                         <div class="livro-autor">
-                            <i class="fas fa-user-edit"></i>
-                            {{ livro.autor }}
+                            <i class="fas fa-pen-fancy"></i>
+                            {{ livro.autor|truncatechars:20 }}
                         </div>
                         
                         <p class="livro-descricao">
-                            {{ livro.descricao|truncatechars:120 }}
+                            {{ livro.descricao|truncatechars:60 }}
                         </p>
                         
                         <div class="livro-meta">
                             <div class="meta-item">
                                 <i class="fas fa-file-pdf"></i>
-                                {{ livro.paginas }} páginas
+                                {{ livro.paginas|default:"0" }}
                             </div>
                             <div class="meta-item">
                                 <i class="fas fa-eye"></i>
-                                {{ livro.visualizacoes }}
+                                {{ livro.visualizacoes|default:"0" }}
                             </div>
                         </div>
                         
                         <div class="livro-actions">
                             <a href="{% url 'visualizar_imagens' livro.id %}" class="btn-ler">
-                                <i class="fas fa-book-open"></i> Ler Online
+                                <i class="fas fa-book-open"></i> Ler
                             </a>
                         </div>
                     </div>
                 </div>
                 {% endfor %}
             </div>
-        {% else %}
-            <!-- Mensagem quando não há livros -->
-            <div class="no-livros">
-                <i class="fas fa-book-open"></i>
-                <h3>Nenhum livro encontrado</h3>
-                <p>{% if busca or categoria_selecionada %}
-                    Tente ajustar seus filtros de busca.
-                    {% else %}
-                    Em breve teremos livros disponíveis em nosso acervo digital.
+
+            <!-- Paginação -->
+            {% if livros.has_other_pages %}
+            <div class="paginacao">
+                {% if livros.has_previous %}
+                <a href="?page=1{% if busca %}&busca={{ busca }}{% endif %}{% if categoria_selecionada %}&categoria={{ categoria_selecionada }}{% endif %}{% if ordenacao %}&ordenar={{ ordenacao }}{% endif %}" class="pagina-link">«</a>
+                <a href="?page={{ livros.previous_page_number }}{% if busca %}&busca={{ busca }}{% endif %}{% if categoria_selecionada %}&categoria={{ categoria_selecionada }}{% endif %}{% if ordenacao %}&ordenar={{ ordenacao }}{% endif %}" class="pagina-link">‹</a>
+                {% endif %}
+
+                {% for i in livros.paginator.page_range %}
+                    {% if livros.number == i %}
+                    <span class="pagina-link active">{{ i }}</span>
+                    {% elif i > livros.number|add:'-3' and i < livros.number|add:'3' %}
+                    <a href="?page={{ i }}{% if busca %}&busca={{ busca }}{% endif %}{% if categoria_selecionada %}&categoria={{ categoria_selecionada }}{% endif %}{% if ordenacao %}&ordenar={{ ordenacao }}{% endif %}" class="pagina-link">{{ i }}</a>
                     {% endif %}
-                </p>
+                {% endfor %}
+
+                {% if livros.has_next %}
+                <a href="?page={{ livros.next_page_number }}{% if busca %}&busca={{ busca }}{% endif %}{% if categoria_selecionada %}&categoria={{ categoria_selecionada }}{% endif %}{% if ordenacao %}&ordenar={{ ordenacao }}{% endif %}" class="pagina-link">›</a>
+                <a href="?page={{ livros.paginator.num_pages }}{% if busca %}&busca={{ busca }}{% endif %}{% if categoria_selecionada %}&categoria={{ categoria_selecionada }}{% endif %}{% if ordenacao %}&ordenar={{ ordenacao }}{% endif %}" class="pagina-link">»</a>
+                {% endif %}
+            </div>
+            {% endif %}
+        {% else %}
+            <div class="no-livros">
+                <i class="fas fa-books"></i>
+                <h3>Nenhum livro encontrado</h3>
+                <p>{% if busca or categoria_selecionada %}Tente outros filtros{% else %}Acervo em atualização{% endif %}</p>
                 {% if busca or categoria_selecionada %}
-                <a href="{% url 'acervo_pdf' %}" class="btn btn-primary mt-3">
-                    <i class="fas fa-times"></i> Limpar Filtros
+                <a href="{% url 'acervo_pdf' %}" class="btn-primary">
+                    Limpar Filtros
                 </a>
                 {% endif %}
             </div>
@@ -497,43 +584,33 @@
 {% block extra_js %}
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // Adicionar efeito de carregamento nos cards
+        // Animação suave nos cards
         const cards = document.querySelectorAll('.livro-card');
         cards.forEach((card, index) => {
             card.style.opacity = '0';
-            card.style.transform = 'translateY(20px)';
+            card.style.transform = 'translateY(10px)';
             
             setTimeout(() => {
-                card.style.transition = 'all 0.5s ease';
+                card.style.transition = 'all 0.3s ease';
                 card.style.opacity = '1';
                 card.style.transform = 'translateY(0)';
-            }, index * 100);
+            }, index * 50);
         });
         
-        // Feedback visual ao clicar em ler online
+        // Feedback visual nos botões de leitura
         const lerButtons = document.querySelectorAll('.btn-ler');
         lerButtons.forEach(button => {
-            button.addEventListener('click', function() {
-                this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Carregando...';
+            button.addEventListener('click', function(e) {
+                const originalText = this.innerHTML;
+                this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Carregando';
                 this.style.opacity = '0.7';
+                
+                setTimeout(() => {
+                    this.innerHTML = originalText;
+                    this.style.opacity = '1';
+                }, 1000);
             });
         });
-        
-        // Filtro automático por categoria
-        const categoriaSelect = document.getElementById('categoria');
-        if (categoriaSelect) {
-            categoriaSelect.addEventListener('change', function() {
-                this.form.submit();
-            });
-        }
-        
-        // Ordenação automática
-        const ordenarSelect = document.getElementById('ordenar');
-        if (ordenarSelect) {
-            ordenarSelect.addEventListener('change', function() {
-                this.form.submit();
-            });
-        }
     });
 </script>
 {% endblock %}
